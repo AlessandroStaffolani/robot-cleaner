@@ -1,0 +1,65 @@
+/**
+ * Il sistema è formato da 2 componenti il roboto e la console, essi sono dei attori che lavorano su contesti differenti,
+ * ovvero su nodi differenti in quanto dal requisito 1 
+ * - (r-start): "an authorized user has sent a START command by using a human GUI interface (console) running on a conventional PC or
+ * on a smart device (Android)." 
+ * - (r-stop): "an authorized user has sent a STOP command by using the console."
+ * si evince che la console 
+ * deve funzionare su di un PC o uno smart device differente dal robot.
+ * Quindi la STRUTTURA base è robot e console
+ * 
+ * La loro INTERAZIONE avviene tramite scambio di messaggi perchè per il requisito 1 (r-start) si ha che la console deve
+ * inviare al robot il comando di start
+ * 
+ * Siccome siamo in fase di analisi dei requisiti del problema si fanno delle assunzioni che verranno poi sviscerate in fase di 
+ * progettazione:
+ * 1) si assume che la console abbia già verificato l'identità dell'utente e che quindi solo chi autorizzato possa inviare i comandi
+ * startBot e stopBot
+ * 
+ * Al fine di mostrare al committente un prototipo eseguibile per mostrare il soddisfacimento del lavoro si utilizza un'ambiente 
+ * virtuale già disponibile nella nostra software house in cui viene simulato il comportamento del sistema
+ * 
+ */
+System robotRoomba
+
+Dispatch moveRobot : usercmd(CMD)
+
+Context ctxRobot ip [ host="localhost" port=8032 ] 
+Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver   
+
+QActor robot context ctxRobot {
+	Plan init normal [
+		/*javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
+		delay 1000;
+		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");*/ // necessario per non farlo andare contro il sonar appena parte
+		println("Robot ready")
+	]
+	switchTo waitForCmd            
+		 
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg moveRobot   -> execMove  	  
+ 	finally repeatPlan 
+ 	
+ 	Plan execMove resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) -> {
+ 			//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
+ 			println("Inizio a spazzare")
+ 		};
+ 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 			//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
+ 			println("Termino a spazzare")
+ 		}
+ 	] 
+}
+
+QActor console context ctxConsole -g cyan {
+	Plan init normal [
+		println("Console ready");
+		delay 5000;
+		forward robot -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 1000;
+		forward robot -m moveRobot : usercmd( consoleGui( stopBot ) )
+	] 
+}
