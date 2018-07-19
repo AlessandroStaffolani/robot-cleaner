@@ -1,0 +1,57 @@
+/**
+ * In fase di progettuazione la prima modifica che andiamo a fare è quella di effettuare un "refactorin" alla console in quanto:
+ * per avere un prodotto più appetibile sul mercato si richiede un interfaccia gui accattivante ed inoltre per la gestione 
+ * dell'autenticazione risulta una scelta opportuna quella di creare un server il quale si occuperà della verifica dell'identità
+ * dell'utente e di un client web (frontend) in grado di comunicare con il server e di mostrare questa interfaccia all'utente.
+ * Per realizzare ciò non si utilizza più un qactor per la console ma un server nodeJS affiancato ad un client reactJS; per quanto 
+ * l'interazione tra il robot e la console avverrà ancora tramite messaggi veicolati però tramite un server mqtt, perciò sarà 
+ * necessario aprire un canale di comunicazione su entrambi i componenti.
+ * 
+ * Per quanto riguarda il robot invece il sistema non subisce variazioni, semplicemente si aggiunge un ambiente virtuale già 
+ * disponibile nella nostra software house in grado di simulare il movimento del robot all'interno della stanza, cosi da mostrare
+ * al committente un prototipo completamente funzionante in grado di soddisfare il primo requisito: 
+ * - (r-start): "an authorized user has sent a START command by using a human GUI interface (console) running on a conventional PC or
+ * on a smart device (Android)." 
+ * - (r-stop): "an authorized user has sent a STOP command by using the console."
+ * 
+ * Nella console gui e nel robot vengono aggiunti i comandi per muovere il robot a destra, a sinistra e indietro in aggiunta a 
+ * quelli già presenti in analisi del problema (avanti e stop) in quanto il costo di tale operazione è praticamente nulla ma permette
+ * di aggiungere la possibilità da parte dell'utente di pilotare manualmente il robot, cosa che potrebbe rendere più appetibile
+ * sul mercato il prodotto
+ */
+System robotRoomba
+
+Dispatch moveRobot : usercmd(CMD)
+
+pubSubServer "ws://localhost:1884"
+
+Context ctxRobot ip [ host="localhost" port=8032 ] 
+
+QActor robotexecutor context ctxRobot -pubsub {
+	Plan init normal [
+		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
+		delay 1000;
+		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }"); // necessario per non farlo andare contro il sonar appena parte
+		println("Robot ready")
+	]
+	switchTo waitForCmd            
+		 
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg moveRobot   -> execMove  	  
+ 	finally repeatPlan 
+ 	
+ 	Plan execMove resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( robotgui(h(X)) )    -> 
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
+    	onMsg moveRobot : usercmd( robotgui(w(X)) )    -> 
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
+     	onMsg moveRobot : usercmd( robotgui(s(X)) )    -> 
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': -1 }");
+   		onMsg moveRobot : usercmd( robotgui(a(X)) )    -> 
+  			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+    	onMsg moveRobot : usercmd( robotgui(d(X)) )    -> 
+   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
+ 	] 
+}

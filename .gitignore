@@ -1,7 +1,7 @@
 # jetBrains folder
 .idea
 
-bin/ 
+it.unibo.*/bin/
 /.metadata/
 RemoteSystemsTempFiles
 .DS_Store
