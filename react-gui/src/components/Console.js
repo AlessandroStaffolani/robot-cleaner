@@ -37,7 +37,11 @@ class Gui extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            robotStatus: false,
+            robotStatus: {
+                obstacle: '',
+                sonar1: false,
+                sonar2: false,
+            },
             command: false,
         };
 
@@ -54,7 +58,7 @@ class Gui extends Component {
         this.clientMqtt.on('message', (topic, payload, packet) => {
             //console.log(topic, payload.toString(), packet);
             this.setState({
-                robotStatus: getRobotMessage(payload.toString())
+                robotStatus: getRobotMessage(payload.toString(), this.state.robotStatus)
             })
         })
     }
@@ -82,13 +86,21 @@ class Gui extends Component {
             if (useMqtt) {
                 this.executeCommandMqtt(command);
             } else {
-                this.executeCommandHttp(path);
+                this.executeCommandHttp(path, command);
             }
         }
 
     };
 
     executeCommandHttp = (path, command) => {
+
+        this.setState({
+            robotStatus: {
+                obstacle: '',
+                sonar1: false,
+                sonar2: false,
+            }
+        });
 
         const headers = new Headers();
         headers.append('Accept', 'application/json');
@@ -124,6 +136,7 @@ class Gui extends Component {
     };
 
     render() {
+        const { robotStatus } = this.state;
         return (
             <div tabIndex={0} onKeyDown={this.handleKeyDown}>
                 <div className={'gui-wrapper'}>
@@ -169,11 +182,15 @@ class Gui extends Component {
                     </div>
                     <div className={'robot-status'}>
                         <ul>
+                            <li><b>Robot status:</b>
+                                <ul>
+                                    <li><b>Obstacle:</b> {robotStatus.obstacle}</li>
+                                    <li><b>Sonar 1:</b> {robotStatus.sonar1 ? 'distance = ' + robotStatus.sonar1 : '' }</li>
+                                    <li><b>Sonar 2:</b> {robotStatus.sonar2 ? 'distance = ' + robotStatus.sonar2 : '' }</li>
+                                </ul>
+                            </li>
                             {this.state.command ?
                                 <li><b>Latest command:</b> {this.state.command}</li> : ''
-                            }
-                            {this.state.robotStatus ?
-                                <li><b>Latest robot message:</b> {this.state.robotStatus}</li> : ''
                             }
                         </ul>
                     </div>
@@ -185,14 +202,24 @@ class Gui extends Component {
 
 export default Gui;
 
-const getRobotMessage = (message) => {
+const getRobotMessage = (message, robotStatus) => {
     let robotMessage = message.split('(');
-    if (message.indexOf('moveRobot') !== -1) {
-        robotMessage = robotMessage[2];
-        console.log(robotMessage);
-    } else {
+    if (message.indexOf('sonarDetect') !== -1) {
+        // find obstacle
         robotMessage = robotMessage[2].split(')');
+        robotStatus.obstacle = robotMessage[0];
+    } else if (message.indexOf('sonar') !== -1) {
+        // sonar message
+        robotMessage = robotMessage[2].split(')')[0];
+        robotMessage = robotMessage.split(',');
+        let sonar = robotMessage[0];
+        if (sonar == 'sonar1') {
+            robotStatus.sonar1 = robotMessage[2];
+        }
+        if (sonar == 'sonar2') {
+            robotStatus.sonar2 = robotMessage[2];
+        }
     }
-    return robotMessage;
+    return robotStatus;
 };
 
