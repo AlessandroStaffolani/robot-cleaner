@@ -51,8 +51,8 @@ public static void initClientConn(QActor qa ) throws Exception {
 							JSONObject jsonArg = jsonObject.getJSONObject("arg");
 							String sonarName   = jsonArg.getString("sonarName");							
 							int distance       = jsonArg.getInt( "distance" );
-							System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
-							System.out.println(qa.getName());
+							//System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
+							//System.out.println(qa.getName());
 							qa.emit("sonar", 
 								"sonar(NAME, robot, DISTANCE)".replace("NAME", sonarName.replace("-", "")).replace("DISTANCE", (""+distance) ));
 							break;
@@ -61,7 +61,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 							//System.out.println( "collision"   );
 							JSONObject jsonArg  = jsonObject.getJSONObject("arg");
 							String objectName   = jsonArg.getString("objectName");
-							System.out.println( "collision objectName=" +  objectName  );
+							//System.out.println( "collision objectName=" +  objectName  );
 							qa.emit("sonarDetect",
 									"sonarDetect(TARGET)".replace("TARGET", objectName.replace("-", "")));
 							break;

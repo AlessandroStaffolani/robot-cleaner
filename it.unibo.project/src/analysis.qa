@@ -29,9 +29,6 @@ Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver
 
 QActor robot context ctxRobot {
 	Plan init normal [
-		/*javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
-		delay 1000;
-		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");*/ // necessario per non farlo andare contro il sonar appena parte
 		println("Robot ready")
 	]
 	switchTo waitForCmd            
@@ -44,11 +41,9 @@ QActor robot context ctxRobot {
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( consoleGui( startBot ) ) -> {
- 			//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
  			println("Inizio a spazzare")
  		};
  		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
- 			//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
  			println("Termino a spazzare")
  		}
  	] 
