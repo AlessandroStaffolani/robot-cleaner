@@ -5,3 +5,4 @@ it.unibo.*/bin/
 /.metadata/
 RemoteSystemsTempFiles
 .DS_Store
+*/node_modules
