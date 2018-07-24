@@ -1,8 +1,13 @@
 # jetBrains folder
 .idea
 
+# QActor ignores
 it.unibo.*/bin/
 /.metadata/
 RemoteSystemsTempFiles
+.recommenders
+
 .DS_Store
+
+# node modules
 */node_modules
