@@ -101,7 +101,7 @@ class App extends Component {
         });
         let hasErros = false;
         fetch(path, {
-            method: 'POSt',
+            method: 'POST',
             headers: API_HEADERS,
             body: userBody,
         })
