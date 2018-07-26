@@ -19,6 +19,9 @@
  * Al fine di mostrare al committente un prototipo eseguibile per mostrare il soddisfacimento del lavoro si utilizza un'ambiente 
  * virtuale già disponibile nella nostra software house in cui viene simulato il comportamento del sistema
  * 
+ * TODO aggiungere cosiderazioni sulla città (il sistema deve sapere in che città siamo) potremmo essere un'assunzione
+ * TODO valutare se far diventare questo requisito due requisiti separati (r-start e r-stop)
+ * 
  */
 System robotRoomba
 
