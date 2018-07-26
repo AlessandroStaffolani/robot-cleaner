@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("Test ready")),'','' ))
+plan(2,init, sentence(true,delay( 5000) ,'','' ))
+plan(3,init, sentence(true,raise( constraint , constraint( temp,20) )'),'','' ))
+plan(4,init, sentence(true,delay( 10000) ,'','' ))
+plan(5,init, sentence(true,raise( constraint , constraint( temp,28) )'),'','' ))

@@ -1,0 +1,8 @@
+plan(1,init, sentence(true,move(print("Mind robot ready")),'','' ))
+plan(1,handleEvent, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,handleEvent, sentence(true,eventswitch(constraint, Â»constraint( temp,V), not here StateMoveNormal ),'','' ))
+plan(3,handleEvent, sentence(true,move(resumeplan),'','' ))
+plan(1,handleMsg, sentence(true,printCurrentMessage(''),'','' ))
+plan(2,handleMsg, sentence(true,msgswitch(moveRobot, usercmd( consoleGui( startBot)) , not here StateMoveNormal),'','' ))
+plan(3,handleMsg, sentence(true,msgswitch(moveRobot, usercmd( consoleGui( stopBot)) , not here StateMoveNormal),'','' ))
+plan(4,handleMsg, sentence(true,move(resumeplan),'','' ))

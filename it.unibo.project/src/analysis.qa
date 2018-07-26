@@ -1,60 +1,126 @@
 /**
- * Il sistema è formato da 2 componenti il roboto e la console, essi sono dei attori che lavorano su contesti differenti,
- * ovvero su nodi differenti in quanto dal requisito 1 
- * - (r-start): "an authorized user has sent a START command by using a human GUI interface (console) running on a conventional PC or
- * on a smart device (Android)." 
- * - (r-stop): "an authorized user has sent a STOP command by using the console."
- * si evince che la console 
- * deve funzionare su di un PC o uno smart device differente dal robot.
- * Quindi la STRUTTURA base è robot e console
+ * Il secondo requisito di questo sistema prevede: R-TempOk: the value temperature of the city is not higher than a prefi􏰂xed value
+ *  (e.g. 25 degrees Celsius).
  * 
- * La loro INTERAZIONE avviene tramite scambio di messaggi perchè per il requisito 1 (r-start) si ha che la console deve
- * inviare al robot il comando di start
+ * Questo requisito rappresenta un constraint (un vincolo) del sistema, ovvero lo start non deve essere eseguito se non è soddisfatto
+ * il vincolo della temperatura.
+ * Perciò per il nostro sistema richiede delle modifiche a livello di architettura. In quanto risulta più conveniente aggiungere un
+ * nuovo attore nel contesto del robot. Cosi da separare la logica dalla mera esecuzione dei comandi; questa scelta ci viene utile
+ * anche nel caso in cui in futuro vengano aggiunti dei nuovi vincoli, perchè basterà chiedere al nuovo attore (che chiameremo 
+ * mindrobot) di avviare il robot, sarà lui chi si occuperà di verificare il soddisfacimento dei vincoli e poi eventualmente lanciare
+ * il comando di start.
  * 
- * Siccome siamo in fase di analisi dei requisiti del problema si fanno delle assunzioni che verranno poi sviscerate in fase di 
- * progettazione:
- * 1) si assume che la console abbia già verificato l'identità dell'utente e che quindi solo chi autorizzato possa inviare i comandi
- * startBot e stopBot
+ * L'aggiunta del nuovo attore mindrobot implica una modifica anche per la console, in quanto ora lei non comunica più direttamente 
+ * con il robotexecutor ma solamente con la mindrobot.
  * 
- * Al fine di mostrare al committente un prototipo eseguibile per mostrare il soddisfacimento del lavoro si utilizza un'ambiente 
- * virtuale già disponibile nella nostra software house in cui viene simulato il comportamento del sistema
+ * la mindrobot in quanto deve verificare un vincolo ambientale (la temperatura) dovrà essere in ascolto per eventi emessi 
+ * dall'ambiente circostante per poi aggiornare il suo stato o meglio la sua base di conoscenza.
  * 
+ * Per realizzare quanto detto sopra è necessario aggiungere un nuovo tipo di messaggio execMoveRobot (con stesso payload di 
+ * moveRobot) che verrà usato internamente al contesto del robot per dare i segnali di start e stop tra la mindrobot e il 
+ * robotexecutor. 
  */
 System robotRoomba
+Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
 
 Dispatch moveRobot : usercmd(CMD)
+Dispatch execMoveRobot : usercmd(CMD)
 
-Context ctxRobot ip [ host="localhost" port=8032 ] 
+Context ctxRobot ip [ host="localhost" port=8032 ]
 Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver   
 
-QActor robot context ctxRobot {
+QActor robotexecutor context ctxRobot {
 	Plan init normal [
-		println("Robot ready")
+		println("Robot executor ready")
 	]
 	switchTo waitForCmd            
 		 
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h 
- 		whenMsg moveRobot   -> execMove  	  
+ 		whenMsg execMoveRobot -> execMove  	  
  	finally repeatPlan 
  	
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
- 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) -> {
+ 		onMsg execMoveRobot : usercmd( consoleGui( startBot ) ) -> {
  			println("Inizio a spazzare")
  		};
- 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 		onMsg execMoveRobot : usercmd( consoleGui( stopBot ) ) -> {
  			println("Termino a spazzare")
  		}
  	] 
 }
 
-QActor console context ctxConsole -g cyan {
+QActor mindrobot context ctxRobot {
+	Rules {
+		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( let, X, V ):- eval( lt, X , V ) .
+		maxTemperature(25).
+		currentTemperature(12).
+		checkTemperature(cold):-
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				output("current temp = "),
+				output(CURRENT),
+				eval(let, CURRENT, MAX), !.
+		checkTemperature(hot):- 
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				eval(gt, CURRENT, MAX), !.
+	}
+	
+	Plan init normal [
+		println("Mind robot ready")
+	]
+	switchTo waitPlan
+	
+	Plan waitPlan[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent constraint -> handleEvent,
+ 		whenMsg moveRobot -> handleMsg
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent constraint : constraint(temp, V) -> {
+ 			//ReplaceRule currentTemperature(X) with currentTemperature(V)
+ 			removeRule currentTemperature(X);
+ 			addRule currentTemperature(V)
+ 		}
+ 	]
+ 	
+ 	Plan handleMsg resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
+ 			[ !? checkTemperature(cold)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( startBot ) )
+ 			else println("Too hot to work")
+		};
+ 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 			[ !? checkTemperature(cold)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( stopBot ) )
+ 			else println("Too hot to work")
+		}
+ 	]
+}
+
+QActor console context ctxConsole {
 	Plan init normal [
 		println("Console ready");
-		delay 5000;
-		forward robot -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 6000;
+		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 1000;
-		forward robot -m moveRobot : usercmd( consoleGui( stopBot ) )
+		forward mindrobot -m moveRobot : usercmd( consoleGui( stopBot ) );
+		delay 10000;
+		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) )
 	] 
+}
+
+// Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura
+QActor test context ctxConsole {
+	Plan init normal [
+		println("Test ready");
+		delay 5000;
+		emit constraint : constraint(temp, 20);
+		delay 10000;
+		emit constraint : constraint(temp, 28)
+	]
 }

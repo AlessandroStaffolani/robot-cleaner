@@ -75,15 +75,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 800 }"  );
-	    	temporaryStr = "\"Robot ready\"";
+	    	temporaryStr = "\"Robot executor ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "robotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -101,7 +94,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"robotexecutor_"+myselfName,false,
 	          new StateFun[]{stateTab.get("execMove") }, 
-	          new String[]{"true","M","moveRobot" },
+	          new String[]{"true","M","execMoveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -116,63 +109,27 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	curT = Term.createTerm("usercmd(consoleGui(startBot))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'alarm' }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		temporaryStr = "\"Inizio a spazzare\"";
+	    		println( temporaryStr );  
+	    		};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	curT = Term.createTerm("usercmd(consoleGui(stopBot))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveForward', 'arg': -1 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveBackward', 'arg': -1 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnLeft', 'arg': 800 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnRight', 'arg': 800 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		temporaryStr = "\"Termino a spazzare\"";
+	    		println( temporaryStr );  
+	    		};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"robotexecutor_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  
