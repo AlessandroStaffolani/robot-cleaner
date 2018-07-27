@@ -21,7 +21,7 @@
  * 
  * TODO aggiungere cosiderazioni sulla città (il sistema deve sapere in che città siamo) potremmo essere un'assunzione
  * TODO valutare se far diventare questo requisito due requisiti separati (r-start e r-stop)
- * 
+ * TODO Valutare se usare già in fase di analisi MQTT per i messaggi console/robot
  */
 System robotRoomba
 
