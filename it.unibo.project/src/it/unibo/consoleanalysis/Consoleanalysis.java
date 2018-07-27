@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.robot;
+package it.unibo.consoleanalysis;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Robot extends AbstractRobot { 
-	public Robot(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Consoleanalysis extends AbstractConsoleanalysis { 
+	public Consoleanalysis(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*

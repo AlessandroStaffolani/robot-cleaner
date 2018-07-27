@@ -27,10 +27,10 @@ System robotRoomba
 
 Dispatch moveRobot : usercmd(CMD)
 
-Context ctxRobot ip [ host="localhost" port=8032 ] 
-Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver   
+Context ctxRobotAnalysis ip [ host="localhost" port=8032 ] 
+Context ctxConsoleAnalysis ip [ host="localhost" port=8042 ] -httpserver   
 
-QActor robot context ctxRobot {
+QActor robotanalysis context ctxRobotAnalysis {
 	Plan init normal [
 		println("Robot ready")
 	]
@@ -52,12 +52,12 @@ QActor robot context ctxRobot {
  	] 
 }
 
-QActor console context ctxConsole -g cyan {
+QActor consoleanalysis context ctxConsoleAnalysis -g cyan {
 	Plan init normal [
 		println("Console ready");
 		delay 5000;
-		forward robot -m moveRobot : usercmd( consoleGui( startBot ) );
+		forward robotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 1000;
-		forward robot -m moveRobot : usercmd( consoleGui( stopBot ) )
+		forward robotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) )
 	] 
 }
