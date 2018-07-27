@@ -1,5 +1,5 @@
 %====================================================================================
-% Context ctxRobot  SYSTEM-configuration: file it.unibo.ctxRobot.robotRoomba.pl 
+% Context ctxResourceModel  SYSTEM-configuration: file it.unibo.ctxResourceModel.robotRoomba.pl 
 %====================================================================================
 context(ctxrobot, "localhost",  "TCP", "8032" ).  		 
 context(ctxresourcemodel, "localhost",  "TCP", "8030" ).  		 
