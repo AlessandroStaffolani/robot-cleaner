@@ -8,8 +8,6 @@ qactor( robotexecutor , ctxrobot, "it.unibo.robotexecutor.MsgHandle_Robotexecuto
 qactor( robotexecutor_ctrl , ctxrobot, "it.unibo.robotexecutor.Robotexecutor"   ). %%control-driven 
 qactor( mindrobot , ctxrobot, "it.unibo.mindrobot.MsgHandle_Mindrobot"   ). %%store msgs 
 qactor( mindrobot_ctrl , ctxrobot, "it.unibo.mindrobot.Mindrobot"   ). %%control-driven 
-qactor( console , ctxconsole, "it.unibo.console.MsgHandle_Console"   ). %%store msgs 
-qactor( console_ctrl , ctxconsole, "it.unibo.console.Console"   ). %%control-driven 
 qactor( test , ctxconsole, "it.unibo.test.MsgHandle_Test"   ). %%store msgs 
 qactor( test_ctrl , ctxconsole, "it.unibo.test.Test"   ). %%control-driven 
 %%% -------------------------------------------

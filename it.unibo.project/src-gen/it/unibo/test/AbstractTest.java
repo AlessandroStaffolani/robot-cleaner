@@ -82,11 +82,29 @@ public abstract class AbstractTest extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(temp,20)", guardVars ).toString();
 	    	emit( "constraint", temporaryStr );
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(10000,"" , "");
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
+	    	sendMsg("moveRobot","mindrobot", QActorContext.dispatch, temporaryStr ); 
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
+	    	sendMsg("moveRobot","mindrobot", QActorContext.dispatch, temporaryStr ); 
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(2000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(temp,28)", guardVars ).toString();
 	    	emit( "constraint", temporaryStr );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(2000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
+	    	sendMsg("moveRobot","mindrobot", QActorContext.dispatch, temporaryStr ); 
 	    	repeatPlanNoTransition(pr,myselfName,"test_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );

@@ -19,6 +19,8 @@
  * Per realizzare quanto detto sopra è necessario aggiungere un nuovo tipo di messaggio execMoveRobot (con stesso payload di 
  * moveRobot) che verrà usato internamente al contesto del robot per dare i segnali di start e stop tra la mindrobot e il 
  * robotexecutor. 
+ * 
+ * TODO Valuare se usare già in fase di analisi MQTT per la comunicazione tra ambiente/robot e console/robot
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -60,8 +62,6 @@ QActor mindrobot context ctxRobot {
 		checkTemperature(cold):-
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
-				output("current temp = "),
-				output(CURRENT),
 				eval(let, CURRENT, MAX), !.
 		checkTemperature(hot):- 
 				maxTemperature(MAX), 
@@ -82,11 +82,10 @@ QActor mindrobot context ctxRobot {
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
- 		onEvent constraint : constraint(temp, V) -> {
- 			//ReplaceRule currentTemperature(X) with currentTemperature(V)
- 			removeRule currentTemperature(X);
- 			addRule currentTemperature(V)
- 		}
+ 		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
+ 		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
+ 		// TODO valutare se è giusta o no come cosa
+ 		[ !? checkTemperature(hot)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( stopBot ) ) 		
  	]
  	
  	Plan handleMsg resumeLastPlan [
@@ -102,6 +101,8 @@ QActor mindrobot context ctxRobot {
  	]
 }
 
+/*
+ * TODO valutare se separare il test usando i due componenti
 QActor console context ctxConsole {
 	Plan init normal [
 		println("Console ready");
@@ -113,14 +114,23 @@ QActor console context ctxConsole {
 		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) )
 	] 
 }
+*/
 
-// Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura
+/* Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura e che mandi 
+ * i messaggi di start e stop del robot
+ * */
 QActor test context ctxConsole {
 	Plan init normal [
 		println("Test ready");
 		delay 5000;
 		emit constraint : constraint(temp, 20);
-		delay 10000;
-		emit constraint : constraint(temp, 28)
+		delay 1000;
+		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 1000;
+		forward mindrobot -m moveRobot : usercmd( consoleGui( stopBot ) );
+		delay 2000;
+		emit constraint : constraint(temp, 28);
+		delay 2000;
+		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) )
 	]
 }

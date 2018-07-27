@@ -114,13 +114,18 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("constraint") && 
 	    		pengine.unify(curT, Term.createTerm("constraint(CONSTRAINT,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			temporaryStr = "currentTemperature(X)";
-	    			removeRule( temporaryStr );  
-	    			temporaryStr = "currentTemperature(V)";
-	    			addRule( temporaryStr );  
-	    			};//actionseq
+	    			String parg  ="currentTemperature(X)";
+	    			String parg1 ="currentTemperature(V)";
+	    			/* ReplaceRule */
+	    			parg = updateVars(Term.createTerm("constraint(CONSTRAINT,VALUE)"),  Term.createTerm("constraint(temp,V)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			parg1 = updateVars(Term.createTerm("constraint(CONSTRAINT,VALUE)"),  Term.createTerm("constraint(temp,V)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg1);
+	    			if( parg != null && parg1 != null  ) replaceRule(parg, parg1);	    		  					
+	    	}
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(hot)" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
+	    	sendMsg("execMoveRobot","robotexecutor", QActorContext.dispatch, temporaryStr ); 
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleEvent){  
