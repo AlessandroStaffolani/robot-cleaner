@@ -6,6 +6,9 @@ it.unibo.*/bin/
 /.metadata/
 RemoteSystemsTempFiles
 .recommenders
+it.unibo.*/.classpath
+it.unibo.*/.gradle
+it.unibo.*/.settings
 
 .DS_Store
 
