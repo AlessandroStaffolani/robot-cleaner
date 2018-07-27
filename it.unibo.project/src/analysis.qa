@@ -28,10 +28,10 @@ Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tip
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
-Context ctxRobot ip [ host="localhost" port=8032 ]
-Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver   
+Context ctxRobotAnalysis ip [ host="localhost" port=8032 ]
+Context ctxConsoleAnalysis ip [ host="localhost" port=8042 ] -httpserver   
 
-QActor robotexecutor context ctxRobot {
+QActor robotexecutoranalysis context ctxRobotAnalysis {
 	Plan init normal [
 		println("Robot executor ready")
 	]
@@ -53,7 +53,7 @@ QActor robotexecutor context ctxRobot {
  	] 
 }
 
-QActor mindrobot context ctxRobot {
+QActor mindrobotanalysis context ctxRobotAnalysis {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
@@ -85,17 +85,17 @@ QActor mindrobot context ctxRobot {
  		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
  		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
  		// TODO valutare se è giusta o no come cosa
- 		[ !? checkTemperature(hot)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( stopBot ) ) 		
+ 		[ !? checkTemperature(hot)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) ) 		
  	]
  	
  	Plan handleMsg resumeLastPlan [
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
- 			[ !? checkTemperature(cold)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( startBot ) )
+ 			[ !? checkTemperature(cold)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) )
  			else println("Too hot to work")
 		};
  		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
- 			[ !? checkTemperature(cold)  ] forward robotexecutor -m execMoveRobot : usercmd( consoleGui( stopBot ) )
+ 			[ !? checkTemperature(cold)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
  			else println("Too hot to work")
 		}
  	]
@@ -103,7 +103,7 @@ QActor mindrobot context ctxRobot {
 
 /*
  * TODO valutare se separare il test usando i due componenti
-QActor console context ctxConsole {
+QActor console context ctxConsoleAnalysis {
 	Plan init normal [
 		println("Console ready");
 		delay 6000;
@@ -119,18 +119,18 @@ QActor console context ctxConsole {
 /* Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura e che mandi 
  * i messaggi di start e stop del robot
  * */
-QActor test context ctxConsole {
+QActor testanalysis context ctxConsoleAnalysis {
 	Plan init normal [
 		println("Test ready");
 		delay 5000;
 		emit constraint : constraint(temp, 20);
 		delay 1000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) );
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 1000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( stopBot ) );
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) );
 		delay 2000;
 		emit constraint : constraint(temp, 28);
 		delay 2000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) )
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) )
 	]
 }

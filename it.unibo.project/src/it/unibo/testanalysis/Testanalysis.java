@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.test;
+package it.unibo.testanalysis;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Test extends AbstractTest { 
-	public Test(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Testanalysis extends AbstractTestanalysis { 
+	public Testanalysis(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*
