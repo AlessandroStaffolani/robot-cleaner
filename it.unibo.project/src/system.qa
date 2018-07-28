@@ -26,13 +26,14 @@ Dispatch moveRobot : usercmd(CMD)
 pubSubServer "ws://localhost:1884"
 
 Context ctxRobot ip [ host="localhost" port=8032 ] 
+Context ctxVirtualRobot ip [ host="localhost" port=8042 ]
 
-QActor robotexecutor context ctxRobot -pubsub {
+QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		delay 1000;
 		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }"); // necessario per non farlo andare contro il sonar appena parte
-		println("Robot ready")
+		println("Virtual robot ready")
 	]
 	switchTo waitForCmd            
 		 
@@ -53,5 +54,32 @@ QActor robotexecutor context ctxRobot -pubsub {
   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
     	onMsg moveRobot : usercmd( robotgui(d(X)) )    -> 
    			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
+ 	] 
+}
+
+QActor robotexecutor context ctxRobot -pubsub {
+	Plan init normal [
+		javaOp "customExecute(\"sh init.sh\")";
+		println("Robot ready")
+	]
+	switchTo waitForCmd            
+		 
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg moveRobot   -> execMove  	  
+ 	finally repeatPlan 
+ 	
+ 	Plan execMove resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( robotgui(h(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py h\")";
+    	onMsg moveRobot : usercmd( robotgui(w(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py w\")";
+     	onMsg moveRobot : usercmd( robotgui(s(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py s\")";
+   		onMsg moveRobot : usercmd( robotgui(a(X)) )    -> 
+  			javaOp "customExecute(\"python3 executor.py a\")";
+    	onMsg moveRobot : usercmd( robotgui(d(X)) )    -> 
+   			javaOp "customExecute(\"python3 executor.py d\")"
  	] 
 }

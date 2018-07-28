@@ -14,3 +14,6 @@ it.unibo.*/.settings
 
 # node modules
 */node_modules
+it.unibo.project/.gradle
+it.unibo.project/build
+/it.unibo.project/.gradle
