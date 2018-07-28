@@ -23,7 +23,7 @@ System robotRoomba
 
 Dispatch moveRobot : usercmd(CMD)
 
-pubSubServer "ws://localhost:1884"
+pubSubServer "ws://192.168.1.4:1884"
 
 Context ctxRobot ip [ host="localhost" port=8032 ] 
 Context ctxVirtualRobot ip [ host="localhost" port=8042 ]

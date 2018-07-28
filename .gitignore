@@ -17,3 +17,24 @@ it.unibo.*/.settings
 it.unibo.project/.gradle
 it.unibo.project/build
 /it.unibo.project/.gradle
+
+# eclipse
+.metadata/*
+**/.metadata/
+**/bin/
+**/tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+**/.settings/
+**/.loadpath
+**/.classpath
+**/.recommenders
+**/.project
+
+# Gradle
+
+**/.gradle
+**/build/

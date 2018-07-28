@@ -78,7 +78,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	customExecute("sh init.sh");
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.1.4:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "robotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 
