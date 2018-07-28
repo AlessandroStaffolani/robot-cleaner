@@ -56,8 +56,6 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
-	    	stateTab.put("waitForCmd",waitForCmd);
-	    	stateTab.put("execMove",execMove);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -78,88 +76,13 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	customExecute("sh init.sh");
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://192.168.1.4:1884");
-	    	//switchTo waitForCmd
-	        switchToPlanAsNextState(pr, myselfName, "robotexecutor_"+myselfName, 
-	              "waitForCmd",false, false, null); 
+	     connectToMqttServer("ws://localhost:1884");
+	    	repeatPlanNoTransition(pr,myselfName,"robotexecutor_"+myselfName,false,false);
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
-	    
-	    StateFun waitForCmd = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitForCmd",0);
-	     pr.incNumIter(); 	
-	    	String myselfName = "waitForCmd";  
-	    	//bbb
-	     msgTransition( pr,myselfName,"robotexecutor_"+myselfName,false,
-	          new StateFun[]{stateTab.get("execMove") }, 
-	          new String[]{"true","M","moveRobot" },
-	          3600000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_waitForCmd){  
-	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//waitForCmd
-	    
-	    StateFun execMove = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("execMove",-1);
-	    	String myselfName = "execMove";  
-	    	printCurrentMessage(false);
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py h");
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py w");
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py s");
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py a");
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py d");
-	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"robotexecutor_"+myselfName,false,true);
-	    }catch(Exception e_execMove){  
-	    	 println( getName() + " plan=execMove WARNING:" + e_execMove.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//execMove
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

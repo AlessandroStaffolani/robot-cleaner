@@ -20,21 +20,23 @@ it.unibo.project/build
 
 # eclipse
 .metadata/*
-**/.metadata/
-**/bin/
-**/tmp/
+*/.metadata/
+*/bin/
+*/tmp/
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-**/.settings/
-**/.loadpath
-**/.classpath
-**/.recommenders
-**/.project
+*/.settings/
+*/.loadpath
+*/.classpath
+*/.recommenders
+*/.project
 
 # Gradle
 
-**/.gradle
-**/build/
+*/.gradle
+*/build/
+/it.unibo.project/.classpath
+/it.unibo.project/.settings
