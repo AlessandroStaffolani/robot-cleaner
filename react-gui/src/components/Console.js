@@ -2,18 +2,12 @@ import React, {Component} from 'react';
 import '../components-styles/console.css';
 import mqtt from 'mqtt';
 import { getToken } from '../utils/localStorageUtils';
+import config from '../config/config';
 
-const API_HEADERS = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-};
+const API_PATH = config.serverHost;
 
-const API_PATH = 'http://localhost:5000/robot/command/';
-
-const MQTT_HOST = 'ws://localhost:1884';
-//const MQTT_HOST = 'ws://192.168.2.24:1884';
-//const MQTT_HOST = 'ws://192.168.1.253:1884';
-const MQTT_TOPIC = 'unibo/qasys';
+const MQTT_HOST = config.mqttUrl;
+const MQTT_TOPIC = config.mqttTopic;
 
 const KEY_BIND = {
     87: 'w',
@@ -42,6 +36,7 @@ class Gui extends Component {
                 sonar1: false,
                 sonar2: false,
             },
+            temperature: null,
             command: false,
         };
 
@@ -50,8 +45,11 @@ class Gui extends Component {
             this.clientMqtt.subscribe(MQTT_TOPIC);
         });
 
+        this.temperatureInterval = null;
+
         this.handleButtonClicked = this.handleButtonClicked.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.temperatureCheck = this.temperatureCheck.bind(this);
     }
 
     componentDidMount() {
@@ -60,12 +58,20 @@ class Gui extends Component {
             this.setState({
                 robotStatus: getRobotMessage(payload.toString(), this.state.robotStatus)
             })
-        })
+        });
+
+        this.temperatureCheck();
+        this.temperatureInterval = setInterval(
+            () => this.temperatureCheck(), 30000); // 30 seconds
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.temperatureInterval);
     }
 
     handleButtonClicked = (event, command) => {
         event.preventDefault();
-        let path = API_PATH + command;
+        let path = API_PATH + '/robot/command/' + command;
 
         if (useMqtt) {
             this.executeCommandMqtt(command);
@@ -81,7 +87,7 @@ class Gui extends Component {
         let command = KEY_BIND[event.keyCode];
 
         if (command) {
-            let path = API_PATH + command;
+            let path = API_PATH + '/robot/command/' + command;
 
             if (useMqtt) {
                 this.executeCommandMqtt(command);
@@ -135,12 +141,34 @@ class Gui extends Component {
         });
     };
 
+    temperatureCheck = () => {
+        const path = API_PATH + '/weather/temperature/' + this.props.userData.city;
+        const headers = new Headers();
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${getToken()}`);
+
+        fetch(path, {
+            method: 'GET',
+            headers: headers
+        })
+            .then(result => result.json())
+            .then(result => {
+                this.setState({
+                    temperature: result.temperature + '°'
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+
     render() {
         const { robotStatus } = this.state;
         return (
             <div tabIndex={0} onKeyDown={this.handleKeyDown}>
                 <div className={'gui-wrapper'}>
-                    <h2>Welcome back {this.props.username}</h2>
+                    <h2>Welcome back <span className="uc-first">{this.props.userData.username}</span></h2>
                     <hr />
                     <div className="row justify-content-center my-2 mt-5">
                         <div className="col-4">
@@ -182,15 +210,18 @@ class Gui extends Component {
                     </div>
                     <div className={'robot-status'}>
                         <ul>
+                            <li><b>Current temperature in <span className="uc-first">{this.props.userData.city}</span>: </b>
+                                {this.state.temperature}
+                            </li>
                             <li><b>Robot status:</b>
                                 <ul>
-                                    <li><b>Obstacle:</b> {robotStatus.obstacle}</li>
-                                    <li><b>Sonar 1:</b> {robotStatus.sonar1 ? 'distance = ' + robotStatus.sonar1 : '' }</li>
-                                    <li><b>Sonar 2:</b> {robotStatus.sonar2 ? 'distance = ' + robotStatus.sonar2 : '' }</li>
+                                    <li><b>Obstacle: </b> {robotStatus.obstacle}</li>
+                                    <li><b>Sonar 1: </b> {robotStatus.sonar1 ? 'distance = ' + robotStatus.sonar1 : '' }</li>
+                                    <li><b>Sonar 2: </b> {robotStatus.sonar2 ? 'distance = ' + robotStatus.sonar2 : '' }</li>
                                 </ul>
                             </li>
                             {this.state.command ?
-                                <li><b>Latest command:</b> {this.state.command}</li> : ''
+                                <li><b>Latest command: </b> {this.state.command}</li> : ''
                             }
                         </ul>
                     </div>

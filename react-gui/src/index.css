@@ -35,6 +35,9 @@ body {
     margin-bottom: 0;
 }
 
+.uc-first {
+    text-transform: capitalize;
+}
 
 @keyframes app-logo-spin {
     from {

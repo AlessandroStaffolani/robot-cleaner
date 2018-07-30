@@ -1,0 +1,5 @@
+{
+  "serverHost": "<url>",
+  "mqttUrl": "<url>",
+  "mqttTopic": "<topic>"
+}

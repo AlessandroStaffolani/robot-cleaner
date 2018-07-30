@@ -102,7 +102,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"robotexecutor_"+myselfName,false,
 	          new StateFun[]{stateTab.get("execMove") }, 
-	          new String[]{"true","M","moveRobot" },
+	          new String[]{"true","M","execMoveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitForCmd){  
 	    	 println( getName() + " plan=waitForCmd WARNING:" + e_waitForCmd.getMessage() );
@@ -118,7 +118,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(h(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -130,7 +130,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(w(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -142,7 +142,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(s(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -154,7 +154,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(a(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
@@ -166,7 +166,7 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("usercmd(robotgui(d(X)))");
-	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 

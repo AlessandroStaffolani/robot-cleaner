@@ -4,10 +4,10 @@
 * =====================================
 */
 const mqtt = require('mqtt');
-const topic = "unibo/qasys";
-//var client = mqtt.connect('mqtt://iot.eclipse.org');
-let client = mqtt.connect('ws://localhost:1884');
-//var client   = mqtt.connect('tcp://192.168.43.229:1883');
+const config = require('../config/config');
+
+const topic = config.mqttTopic;
+const client = mqtt.connect(config.mqttUrl);
 
 client.on('connect', function () {
     client.subscribe(topic);

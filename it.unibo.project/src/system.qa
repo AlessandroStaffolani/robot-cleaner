@@ -39,25 +39,25 @@ QActor robotexecutor context ctxRobot -pubsub {
 		 
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h 
- 		whenMsg moveRobot   -> execMove  	  
+ 		whenMsg execMoveRobot -> execMove  	  
  	finally repeatPlan 
  	
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
- 		onMsg moveRobot : usercmd( robotgui(h(X)) )    -> 
+ 		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
-    	onMsg moveRobot : usercmd( robotgui(w(X)) )    -> 
+    	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
-     	onMsg moveRobot : usercmd( robotgui(s(X)) )    -> 
+     	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': -1 }");
-   		onMsg moveRobot : usercmd( robotgui(a(X)) )    -> 
+   		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
-    	onMsg moveRobot : usercmd( robotgui(d(X)) )    -> 
+    	onMsg execMoveRobot : usercmd( robotgui(d(X)) )    -> 
    			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
  	] 
 }
 
-QActor mindrobot context ctxResourceModel {
+QActor mindrobot context ctxResourceModel -pubsub -g cyan {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
@@ -95,13 +95,31 @@ QActor mindrobot context ctxResourceModel {
  	
  	Plan handleMsg resumeLastPlan [
  		printCurrentMessage;
- 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
+ 		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? checkTemperature(cold)  ] 
  				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) )	
  			else
  				 println("Too hot to work")
 		};
- 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
+ 			[ !? checkTemperature(cold)  ] 
+ 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) )	
+ 			else
+ 				 println("Too hot to work")
+		};
+		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
+ 			[ !? checkTemperature(cold)  ] 
+ 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )	
+ 			else
+ 				 println("Too hot to work")
+		};
+		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
+ 			[ !? checkTemperature(cold)  ] 
+ 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )	
+ 			else
+ 				 println("Too hot to work")
+		};
+ 		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
  			[ !? checkTemperature(cold)  ] 
  				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
  			else 

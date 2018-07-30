@@ -14,3 +14,5 @@ it.unibo.*/.settings
 
 # node modules
 */node_modules
+/react-gui/src/config/development.json
+/react-gui/src/config/production.json

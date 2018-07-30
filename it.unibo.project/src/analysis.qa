@@ -35,7 +35,7 @@ QActor robotexecutoranalysis context ctxRobotAnalysis {
 	Plan init normal [
 		println("Robot executor ready")
 	]
-	switchTo waitForCmd            
+	switchTo waitForCmd           
 		 
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h 

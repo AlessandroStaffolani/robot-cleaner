@@ -9,7 +9,7 @@ let UserSchema = new Schema(
         password: {type: String, required: true},
         salt: {type: String},
         created_at: {type: Date, default: Date.now()},
-        role: {type: String}
+        city: {type: String, required: true}
     }
 );
 

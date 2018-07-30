@@ -37,10 +37,12 @@ exports.post_user = [
         .exists().withMessage('Password must be specified')
         .isLength({min: 5}).withMessage('passwords must be at least 5 chars long and contain one number')
         .matches(/\d/).withMessage('passwords must be at least 5 chars long and contain one number'),
+    body('user.city')
+        .exists().withMessage('City must be specified.'),
 
     sanitizeBody('user.username').trim().escape(),
     sanitizeBody('user.password').trim().escape(),
-    sanitizeBody('user.role').trim().escape(),
+    sanitizeBody('user.city').trim().escape(),
 
     (req, res, next) => {
 
@@ -51,7 +53,7 @@ exports.post_user = [
             const user = new User({
                 username: req.body.user.username,
                 password: req.body.user.password,
-                role: req.body.user.role
+                city: req.body.user.city
             });
 
             save_user(req, res, next, user, requested_user, true);
@@ -79,11 +81,13 @@ exports.update_user = [
         .withMessage('passwords must be at least 5 chars long and contain one number')
         .custom(value => customValidator.matchIfExist(value, /\d/))
         .withMessage('passwords must be at least 5 chars long and contain one number'),
+    body('user.city')
+        .exists().withMessage('City must be specified.'),
 
     sanitizeBody('user.username').trim().escape(),
     sanitizeBody('user.oldPassword').trim().escape(),
     sanitizeBody('user.newPassword').trim().escape(),
-    sanitizeBody('user.role').trim().escape(),
+    sanitizeBody('user.city').trim().escape(),
 
     (req, res, next) => {
 
@@ -102,10 +106,7 @@ exports.update_user = [
                                     // password match can update the user
                                     user.password = req.body.user.newPassword;
                                     user.username = req.body.user.username;
-                                    let new_role = req.body.user.role;
-                                    if (new_role !== undefined) {
-                                        user.role = new_role
-                                    }
+                                    user.city = req.body.user.city;
 
                                     save_user(req, res, next, user, requested_user);
                                 } else {
@@ -123,10 +124,7 @@ exports.update_user = [
                             .catch(err => next(err));
                     } else {
                         user.username = req.body.user.username;
-                        let new_role = req.body.user.role;
-                        if (new_role !== undefined) {
-                            user.role = new_role
-                        }
+                        user.city = req.body.user.city;
 
                         save_user(req, res, next, user, requested_user);
                     }

@@ -114,6 +114,7 @@ const robotExecutor = require('./api/robot-executor');
 const user = require('./api/user');
 const auth = require('./api/auth');
 const publicRoute = require('./api/public');
+const weather = require('./api/weather');
 const authController = require('./controller/authController');
 
 app.use('/', index);
@@ -122,6 +123,7 @@ app.use('/public/', publicRoute);
 app.use(authController.is_authenticated);
 app.use('/users/', user);
 app.use('/robot/', robotExecutor);
+app.use('/weather/', weather);
 
 //==============================================================================
 
