@@ -40,3 +40,5 @@ local.properties
 */build/
 /it.unibo.project/.classpath
 /it.unibo.project/.settings
+/react-gui/src/config/development.json
+/react-gui/src/config/production.json
