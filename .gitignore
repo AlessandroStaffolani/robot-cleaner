@@ -19,8 +19,8 @@ it.unibo.*/bin/
 /.metadata/
 RemoteSystemsTempFiles
 .recommenders
-it.unibo.project/*
-!it.unibo.project/src/*
-!it.unibo.project/src-gen/*
-!it.unibo.project/srcMore/*
-!it.unibo.project/scripts/*
+/it.unibo.project/*
+!/it.unibo.project/src/*
+!/it.unibo.project/src-gen/*
+!/it.unibo.project/srcMore/*
+!/it.unibo.project/scripts/*
