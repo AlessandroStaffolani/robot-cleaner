@@ -20,6 +20,7 @@ it.unibo.*/bin/
 RemoteSystemsTempFiles
 .recommenders
 it.unibo.project/*
-!it.unibo.project/src/it/unibo/utils/*
-!it.unibo.project/src/*.qa
+!it.unibo.project/src/*
+!it.unibo.project/src-gen/*
+!it.unibo.project/srcMore/*
 !it.unibo.project/scripts/*
