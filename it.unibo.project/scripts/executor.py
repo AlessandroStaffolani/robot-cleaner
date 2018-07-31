@@ -26,19 +26,18 @@ print("Sensor ready!")
 
 
 def move_forward():
-    print("Ci sono")
     GPIO.output(FR,True)
     GPIO.output(FL,True)
 
 def move_right():
     GPIO.output(FR,True)
-    time.sleep(1)
+    time.sleep(0.5)
     GPIO.output(FR,False)
     GPIO.cleanup()
 
 def move_left():
     GPIO.output(FL,True)
-    time.sleep(1)
+    time.sleep(0.5)
     GPIO.output(FL,False)
     GPIO.cleanup()
 

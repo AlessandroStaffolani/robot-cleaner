@@ -146,7 +146,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	//PublishMsgMove
 	    	parg = "usercmd(robotgui(h(low)))";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
-	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleEvent){  
@@ -169,13 +169,16 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(w(low)))";
-	    		parg = QActorUtils.substituteVars(guardVars,parg);
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(w(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -188,13 +191,16 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(s(low)))";
-	    		parg = QActorUtils.substituteVars(guardVars,parg);
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(s(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -207,13 +213,16 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
-	    		parg = QActorUtils.substituteVars(guardVars,parg);
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(a(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -226,13 +235,16 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
-	    		parg = QActorUtils.substituteVars(guardVars,parg);
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(d(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -245,13 +257,16 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(h(low)))";
-	    		parg = QActorUtils.substituteVars(guardVars,parg);
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "robotexecutor", parg );
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(h(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}

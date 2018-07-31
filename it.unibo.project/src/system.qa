@@ -15,6 +15,10 @@
  * essere appesantiti dalla cosa) forse conviene fare un altro contesto in cui mettere la mind e il resouce model 
  * (GUARDA L'ARCHITETTURA ESAGONALE come spunto per risolvere questo problema)
  * (Per ora creo un constesto a se)
+ * 
+ * TODO valutare se avere due mind una per il virtual robot uno per il real robot. Questo perché i due ambienti potrebbero essere differenti
+ * 
+ * TODO valutare se aggiungere anche la parte di simulazione del robot fisico in fase di analisi (nel requisito uno è stato fatto)
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -24,10 +28,11 @@ Dispatch execMoveRobot : usercmd(CMD)
 
 pubSubServer "ws://localhost:1884"
 
-Context ctxRobot ip [ host="localhost" port=8032 ] 
+Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxResourceModel ip [ host="localhost" port=8030 ]
+Context ctxRealRobot ip [ host="localhost" port=8031]
 
-QActor robotexecutor context ctxRobot -pubsub {
+QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		delay 1000;
@@ -57,6 +62,36 @@ QActor robotexecutor context ctxRobot -pubsub {
  	] 
 }
 
+QActor realrobotexecutor context ctxRealRobot -pubsub {
+	Plan init normal [
+		javaOp "customExecute(\"python3 executor.py d\")";
+		delay 5000;
+		javaOp "customExecute(\"python3 executor.py a\")";
+		delay 1000;
+		println("Robot ready!")
+	]
+	switchTo waitForCmd
+	
+	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg execMoveRobot -> execMove  	  
+ 	finally repeatPlan
+ 	
+ 	Plan execMove resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py h\")";
+    	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py w\")";
+     	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
+    		javaOp "customExecute(\"python3 executor.py s\")";
+   		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
+  			javaOp "customExecute(\"python3 executor.py a\")";
+    	onMsg execMoveRobot : usercmd( robotgui(d(X)) )    -> 
+   			javaOp "customExecute(\"python3 executor.py d\")"
+ 	] 
+ 	
+}
 QActor mindrobot context ctxResourceModel -pubsub -g cyan {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
@@ -90,38 +125,50 @@ QActor mindrobot context ctxResourceModel -pubsub -g cyan {
  		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
  		// TODO valutare se è giusta o no come cosa
  		[ !? checkTemperature(hot)  ] 
- 			publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )		
+ 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
+ 			//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
  	]
  	
  	Plan handleMsg resumeLastPlan [
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] 
- 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) )	
+ 			[ !? checkTemperature(cold)  ] {
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) )
+ 				}		
  			else
  				 println("Too hot to work")
 		};
 		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] 
- 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) )	
+ 			[ !? checkTemperature(cold)  ] {
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) )
+ 				}		
  			else
  				 println("Too hot to work")
 		};
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] 
- 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )	
+ 			[ !? checkTemperature(cold)  ]{
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )	
+ 				}	
  			else
  				 println("Too hot to work")
 		};
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] 
- 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )	
+ 			[ !? checkTemperature(cold)  ] {
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )	
+ 				}
  			else
  				 println("Too hot to work")
 		};
  		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
- 			[ !? checkTemperature(cold)  ] 
- 				publishMsg "unibo/qasys" for "robotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 			[ !? checkTemperature(cold)  ] {
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 				
+ 				}	
  			else 
  				println("Too hot to work")
 		}
