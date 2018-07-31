@@ -33,7 +33,8 @@ QActor robotexecutor context ctxRobot -pubsub {
 		delay 1000;
 		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }"); // necessario per non farlo andare contro il sonar appena parte
 		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }"); // necessario per non farlo andare contro il sonar appena parte
-		println("Robot ready")
+		println("Robot ready");
+		println("Prova della push")
 	]
 	switchTo waitForCmd            
 		 

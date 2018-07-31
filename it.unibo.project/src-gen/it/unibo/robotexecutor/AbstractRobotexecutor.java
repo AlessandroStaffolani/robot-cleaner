@@ -84,6 +84,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 800 }"  );
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
+	    	temporaryStr = "\"Prova della push\"";
+	    	println( temporaryStr );  
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "robotexecutor_"+myselfName, 
