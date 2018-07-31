@@ -2,10 +2,7 @@
 .idea
 
 # QActor ignores
-it.unibo.*/bin/
-/.metadata/
-RemoteSystemsTempFiles
-.recommenders
+
 it.unibo.*/.classpath
 it.unibo.*/.gradle
 it.unibo.*/.settings
@@ -14,31 +11,15 @@ it.unibo.*/.settings
 
 # node modules
 */node_modules
-it.unibo.project/.gradle
-it.unibo.project/build
-/it.unibo.project/.gradle
-
-# eclipse
-.metadata/*
-*/.metadata/
-*/bin/
-*/tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-*/.settings/
-*/.loadpath
-*/.classpath
-*/.recommenders
-*/.project
-
-# Gradle
-
-*/.gradle
-*/build/
-/it.unibo.project/.classpath
-/it.unibo.project/.settings
 /react-gui/src/config/development.json
 /react-gui/src/config/production.json
+
+# eclipse
+it.unibo.*/bin/
+/.metadata/
+RemoteSystemsTempFiles
+.recommenders
+it.unibo.project/*
+!it.unibo.project/src/it/unibo/utils/*
+!it.unibo.project/src/*.qa
+!it.unibo.project/scripts/*
