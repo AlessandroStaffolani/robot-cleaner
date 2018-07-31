@@ -1,15 +1,6 @@
 # jetBrains folder
 .idea
 
-# QActor ignores
-it.unibo.*/bin/
-/.metadata/
-RemoteSystemsTempFiles
-.recommenders
-it.unibo.*/.classpath
-it.unibo.*/.gradle
-it.unibo.*/.settings
-
 .DS_Store
 
 # node modules
@@ -19,24 +10,11 @@ it.unibo.*/.settings
 
 
 # eclipse
-*/.metadata/
-*/RemoteSystemsTempFiles/
-*/bin/
-*/tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-*/.settings/
-*/.loadpath
-*/.classpath
-*/.recommenders
-*/.project
-
-# Gradle
-
-*/.gradle
-*/build/
-/it.unibo.project/.gradle
-/it.unibo.project/.settings
+it.unibo.*/bin/
+/.metadata/
+RemoteSystemsTempFiles
+.recommenders
+it.unibo.project/*
+!it.unibo.project/src/*.qa
+!it.unibo.project/src/utils/*
+!it.unibo.project/scripts/*

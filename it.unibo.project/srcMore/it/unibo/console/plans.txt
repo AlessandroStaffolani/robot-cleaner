@@ -1,7 +1,0 @@
-plan(1,init, sentence(true,move(print("Console ready")),'','' ))
-plan(2,init, sentence(true,delay( 6000) ,'','' ))
-plan(3,init, sentence(true,forward(mindrobot, moveRobot,usercmd( consoleGui( startBot))),'','' ))
-plan(4,init, sentence(true,delay( 1000) ,'','' ))
-plan(5,init, sentence(true,forward(mindrobot, moveRobot,usercmd( consoleGui( stopBot))),'','' ))
-plan(6,init, sentence(true,delay( 10000) ,'','' ))
-plan(7,init, sentence(true,forward(mindrobot, moveRobot,usercmd( consoleGui( startBot))),'','' ))
