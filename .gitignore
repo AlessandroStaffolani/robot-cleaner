@@ -16,3 +16,27 @@ it.unibo.*/.settings
 */node_modules
 /react-gui/src/config/development.json
 /react-gui/src/config/production.json
+
+
+# eclipse
+*/.metadata/
+*/RemoteSystemsTempFiles/
+*/bin/
+*/tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+*/.settings/
+*/.loadpath
+*/.classpath
+*/.recommenders
+*/.project
+
+# Gradle
+
+*/.gradle
+*/build/
+/it.unibo.project/.gradle
+/it.unibo.project/.settings
