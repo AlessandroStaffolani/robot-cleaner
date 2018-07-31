@@ -54,15 +54,21 @@ class Gui extends Component {
 
     componentDidMount() {
         this.clientMqtt.on('message', (topic, payload, packet) => {
-            //console.log(topic, payload.toString(), packet);
-            this.setState({
-                robotStatus: getRobotMessage(payload.toString(), this.state.robotStatus)
-            })
+            const payloadString = payload.toString();
+            if (payloadString.indexOf('constraint') !== -1) {
+                this.setState({
+                    temperature: getTemperatureConstraint(payloadString) + '°'
+                })
+            } else {
+                this.setState({
+                    robotStatus: getRobotMessage(payloadString, this.state.robotStatus)
+                })
+            }
         });
 
-        this.temperatureCheck();
+        /*this.temperatureCheck();
         this.temperatureInterval = setInterval(
-            () => this.temperatureCheck(), 30000); // 30 seconds
+            () => this.temperatureCheck(), 30000); // 30 seconds*/
     }
 
     componentWillUnmount() {
@@ -252,5 +258,10 @@ const getRobotMessage = (message, robotStatus) => {
         }
     }
     return robotStatus;
+};
+
+const getTemperatureConstraint = (message) => {
+    let splitValues = message.split(',');
+    return splitValues[5].replace(')', '');
 };
 

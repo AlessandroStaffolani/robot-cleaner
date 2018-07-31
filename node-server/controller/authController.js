@@ -3,6 +3,7 @@ const {body} = require('express-validator/check');
 const {sanitizeBody} = require('express-validator/filter');
 const jsonWebToken = require('../crypto/jsonWebToken');
 const jwt = require('jsonwebtoken');
+const eventEmitter = require('../utils/eventEmitter');
 
 const User = require('../model/user');
 
@@ -38,7 +39,8 @@ exports.login = [
                                         username: user.username,
                                         city: user.city,
                                         token: jsonWebToken.generateToken(user),
-                                    })
+                                    });
+                                    eventEmitter.emit_weather_temperature(user);
                                 } else {
                                     let errorPayload = {
                                         errors: {
@@ -73,6 +75,17 @@ exports.login = [
         }
     }
 ];
+
+exports.logout = (req, res, next) => {
+    const user = req.user;
+    eventEmitter.clear_weather_emitter(user._id);
+    res.header('Content-Type', 'application/json');
+    res.status(200);
+    res.json({
+        auth: false,
+        command: 'User log out'
+    });
+};
 
 exports.is_authenticated = (req, res, next) => {
     let token = req.headers['authorization'];

@@ -3,6 +3,7 @@ const {body} = require('express-validator/check');
 const {sanitizeBody} = require('express-validator/filter');
 const customValidator = require('../utils/customValidators');
 const jsonWebToken = require('../crypto/jsonWebToken');
+const eventEmitter = require('../utils/eventEmitter');
 
 const User = require('../model/user');
 
@@ -108,6 +109,8 @@ exports.update_user = [
                                     user.username = req.body.user.username;
                                     user.city = req.body.user.city;
 
+                                    eventEmitter.clear_weather_emitter(user._id);
+                                    eventEmitter.emit_weather_temperature(user);
                                     save_user(req, res, next, user, requested_user);
                                 } else {
                                     let errorPayload = {
@@ -126,6 +129,8 @@ exports.update_user = [
                         user.username = req.body.user.username;
                         user.city = req.body.user.city;
 
+                        eventEmitter.clear_weather_emitter(user._id);
+                        eventEmitter.emit_weather_temperature(user);
                         save_user(req, res, next, user, requested_user);
                     }
 
@@ -231,6 +236,9 @@ const save_user = (req, res, next, user, requested_user, addToken=false) => {
             let returnObject = {user: userObject};
             if (addToken) {
                 returnObject.token = jsonWebToken.generateToken(userObject);
+            }
+            if (req.user) {
+                req.user = user;
             }
             abstractController.return_request(req, res, next, returnObject)
         })

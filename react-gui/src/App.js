@@ -170,39 +170,54 @@ class App extends Component {
 
     handleLogoutClick = (event) => {
         event.preventDefault();
-        this.setState({
-            title: 'FuffaTeam',
-            isLoading: false,
-            userLogged: false,
-            userId: '',
-            username: {
-                className: 'form-control',
-                errorMsg: '',
-                value: '',
-            },
-            password: {
-                className: 'form-control',
-                errorMsg: '',
-                value: '',
-            },
-            newPassword: {
-                className: 'form-control',
-                errorMsg: '',
-                value: '',
-            },
-            confirmPassword: {
-                className: 'form-control',
-                errorMsg: '',
-                value: '',
-            },
-            city: {
-                className: 'form-control',
-                errorMsg: '',
-                value: '',
-            },
-            currentPage: 'home'
-        });
-        removeToken();
+        const token = getToken();
+        const headers = new Headers();
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${token}`);
+        fetch(APPLICATION_API_HOST + '/users/logout', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({}),
+        })
+            .then(response => response.json())
+            .then(response => {
+                console.log(response);
+                this.setState({
+                    title: 'FuffaTeam',
+                    isLoading: false,
+                    userLogged: false,
+                    userId: '',
+                    username: {
+                        className: 'form-control',
+                        errorMsg: '',
+                        value: '',
+                    },
+                    password: {
+                        className: 'form-control',
+                        errorMsg: '',
+                        value: '',
+                    },
+                    newPassword: {
+                        className: 'form-control',
+                        errorMsg: '',
+                        value: '',
+                    },
+                    confirmPassword: {
+                        className: 'form-control',
+                        errorMsg: '',
+                        value: '',
+                    },
+                    city: {
+                        className: 'form-control',
+                        errorMsg: '',
+                        value: '',
+                    },
+                    currentPage: 'home'
+                });
+                removeToken();
+            })
+            .catch(err => console.log(err));
     };
 
     handleLinkClick = (event, page) => {

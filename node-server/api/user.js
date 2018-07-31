@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controller/userController');
+const authController = require('../controller/authController');
 const router = express.Router();
 
 /**
@@ -53,6 +54,11 @@ router.put('/:id', userController.update_user);
  * }
  */
 router.put('/:id/password', userController.reset_user_password);
+
+/**
+ * User logout used to clear emitter events
+ */
+router.post('/logout', authController.logout);
 
 /**
  * Delete user document
