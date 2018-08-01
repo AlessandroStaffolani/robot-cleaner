@@ -1,5 +1,5 @@
 %====================================================================================
-% Context ctxRealRobot  SYSTEM-configuration: file it.unibo.ctxRealRobot.robotRoomba.pl 
+% Context ctxMindRobot  SYSTEM-configuration: file it.unibo.ctxMindRobot.robotRoomba.pl 
 %====================================================================================
 context(ctxvirtualrobot, "localhost",  "TCP", "8032" ).  		 
 context(ctxmindrobot, "localhost",  "TCP", "8030" ).  		 

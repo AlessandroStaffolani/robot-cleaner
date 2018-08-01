@@ -96,7 +96,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://192.168.43.214:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitPlan
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "waitPlan",false, false, null); 

@@ -20,8 +20,6 @@
  * 		(sarebbe possibile usare una sola mind? e fare 3 file qactor diversi? O sarebbe troppo costoso? Oppure lasciare la mind
  * 		in uno dei file (virtual o real) e fare un file separato per l'altro robot (totale 2 file:
  * 		es. 1 virtualrobot e mind, 1 realrobot)
- * 
- * TODO valutare se aggiungere anche la parte di simulazione del robot fisico in fase di analisi (nel requisito uno è stato fatto)
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -29,11 +27,11 @@ Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tip
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
-//pubSubServer "ws://localhost:1884" //virtual robot
-pubSubServer "ws://192.168.43.214:1884" //real robot
+pubSubServer "ws://localhost:1884" //virtual robot
+//pubSubServer "ws://192.168.43.214:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
-Context ctxResourceModel ip [ host="localhost" port=8030 ]
+Context ctxMindRobot ip [ host="localhost" port=8030 ]
 Context ctxRealRobot ip [ host="localhost" port=8031]
 
 QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
@@ -96,7 +94,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
  	] 
  	
 }
-QActor mindrobot context ctxResourceModel -pubsub -g cyan {
+QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
