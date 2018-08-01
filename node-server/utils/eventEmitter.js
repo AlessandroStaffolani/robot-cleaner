@@ -6,7 +6,10 @@ const weatherIntervals = {};
 exports.emit_weather_temperature = (user) => {
     if (user.city) {
         weather_emit(user.city);
-        weatherIntervals[user._id] = setInterval(() => weather_emit(user.city), 3000); // 30 seconds
+        if (weatherIntervals[user._id]) {
+            clearInterval(weatherIntervals[user._id]);
+        }
+        weatherIntervals[user._id] = setInterval(() => weather_emit(user.city), 30000); // 30 seconds
     }
 };
 
