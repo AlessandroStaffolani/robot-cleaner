@@ -144,10 +144,17 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %------------------------------------------------- 
 eval( let,X,X).
 eval( let,X,V):-eval( lt,X,V).
+eval( get,X,X).
+eval( get,X,V):-eval( gt,X,V).
 maxTemperature( 25).
+startTime( 7).
+endTime( 10).
 currentTemperature( 12).
+currentTime( 8).
 checkTemperature( cold):-maxTemperature( MAX),currentTemperature( CURRENT),eval( let,CURRENT,MAX), ! .
-checkTemperature( hot):-maxTemperature( MAX),currentTemperature( CURRENT),eval( gt,CURRENT,MAX).
+checkTemperature( hot):-maxTemperature( MAX),currentTemperature( CURRENT),eval( gt,CURRENT,MAX), ! .
+checkTime( X):-startTime( START),endTime( END),currentTime( CURRENT),eval( get,CURRENT,START),eval( let,CURRENT,END).
+checkConstraints( X):-checkTemperature( cold),checkTime( X).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

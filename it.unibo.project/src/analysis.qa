@@ -1,26 +1,17 @@
 /**
- * Il secondo requisito di questo sistema prevede: R-TempOk: the value temperature of the city is not higher than a prefi􏰂xed value
- *  (e.g. 25 degrees Celsius).
+ * Il terzo requisito di questo sistema prevede: R-TimeOk: the current clock time is within a given interval (e.g. between 7 a.m
+ *  and 10 a.m ).
  * 
- * Questo requisito rappresenta un constraint (un vincolo) del sistema, ovvero lo start non deve essere eseguito se non è soddisfatto
+ * In fase di analisi dei requisiti si è chiesto al committente se il tempo deve essere newtoniano o relativistico. Il committente
+ * ha specificato che il tempo deve essere newtoniano e deve essere relativo al robot e non alla console.
+ * 
+ * Questo requisito rappresenta un altro constraint (un vincolo) del sistema, ovvero lo start non deve essere eseguito se non è soddisfatto
  * il vincolo della temperatura.
- * Perciò per il nostro sistema richiede delle modifiche a livello di architettura. In quanto risulta più conveniente aggiungere un
- * nuovo attore nel contesto del robot. Cosi da separare la logica dalla mera esecuzione dei comandi; questa scelta ci viene utile
- * anche nel caso in cui in futuro vengano aggiunti dei nuovi vincoli, perchè basterà chiedere al nuovo attore (che chiameremo 
- * mindrobot) di avviare il robot, sarà lui chi si occuperà di verificare il soddisfacimento dei vincoli e poi eventualmente lanciare
- * il comando di start.
+ * Per questo requisito la scelta effettuata nel secondo requisito di creare un attore in grado di valutare i constraint e ed 
+ * eventualmente eseguire le azioni richieste, risulta una scelta vincente, in quanto per soddisfare questo task è sufficiente 
+ * aggiungere una nuova regola nella base di conoscenza della mindRobot
  * 
- * L'aggiunta del nuovo attore mindrobot implica una modifica anche per la console, in quanto ora lei non comunica più direttamente 
- * con il robotexecutor ma solamente con la mindrobot.
- * 
- * la mindrobot in quanto deve verificare un vincolo ambientale (la temperatura) dovrà essere in ascolto per eventi emessi 
- * dall'ambiente circostante per poi aggiornare il suo stato o meglio la sua base di conoscenza.
- * 
- * Per realizzare quanto detto sopra è necessario aggiungere un nuovo tipo di messaggio execMoveRobot (con stesso payload di 
- * moveRobot) che verrà usato internamente al contesto del robot per dare i segnali di start e stop tra la mindrobot e il 
- * robotexecutor. 
- * 
- * TODO Valuare se usare già in fase di analisi MQTT per la comunicazione tra ambiente/robot e console/robot
+ * la mindrobot ora deve controllare anche che l'ora corrente del robot sia compresa tra le 7 e le 10 a.m
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -57,8 +48,13 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
+		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( get, X, V ):- eval( gt, X , V ) .
 		maxTemperature(25).
+		startTime(7).
+		endTime(10).
 		currentTemperature(12).
+		currentTime(8).
 		checkTemperature(cold):-
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
@@ -66,7 +62,16 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
 		checkTemperature(hot):- 
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
-				eval(gt, CURRENT, MAX).
+				eval(gt, CURRENT, MAX), !.
+		checkTime(X):- 
+				startTime(START),
+				endTime(END),
+				currentTime(CURRENT),
+				eval(get, CURRENT, START),
+				eval(let, CURRENT, END).
+		checkConstraints(X):-
+			checkTemperature(cold),
+			checkTime(X).
 	}
 	
 	Plan init normal [
@@ -91,11 +96,11 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
  	Plan handleMsg resumeLastPlan [
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
- 			[ !? checkTemperature(cold)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) )
+ 			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) )
  			else println("Too hot to work")
 		};
  		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
- 			[ !? checkTemperature(cold)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
+ 			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
  			else println("Too hot to work")
 		}
  	]

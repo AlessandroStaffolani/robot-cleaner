@@ -107,7 +107,7 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 		checkTemperature(hot):- 
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
-				eval(gt, CURRENT, MAX).
+				eval(gt, CURRENT, MAX), !.
 	}
 	
 	Plan init normal [

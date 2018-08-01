@@ -147,7 +147,7 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    		sendMsg("execMoveRobot","robotexecutoranalysis", QActorContext.dispatch, temporaryStr ); 
 	    		}
@@ -164,7 +164,7 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
 	    		sendMsg("execMoveRobot","robotexecutoranalysis", QActorContext.dispatch, temporaryStr ); 
 	    		}
