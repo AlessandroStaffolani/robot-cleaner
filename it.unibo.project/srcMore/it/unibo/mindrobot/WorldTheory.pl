@@ -147,7 +147,7 @@ eval( let,X,V):-eval( lt,X,V).
 maxTemperature( 25).
 currentTemperature( 12).
 checkTemperature( cold):-maxTemperature( MAX),currentTemperature( CURRENT),eval( let,CURRENT,MAX), ! .
-checkTemperature( hot):-maxTemperature( MAX),currentTemperature( CURRENT),eval( gt,CURRENT,MAX), ! .
+checkTemperature( hot):-maxTemperature( MAX),currentTemperature( CURRENT),eval( gt,CURRENT,MAX).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
