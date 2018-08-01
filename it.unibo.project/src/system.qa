@@ -17,6 +17,9 @@
  * (Per ora creo un constesto a se)
  * 
  * TODO valutare se avere due mind una per il virtual robot uno per il real robot. Questo perché i due ambienti potrebbero essere differenti
+ * 		(sarebbe possibile usare una sola mind? e fare 3 file qactor diversi? O sarebbe troppo costoso? Oppure lasciare la mind
+ * 		in uno dei file (virtual o real) e fare un file separato per l'altro robot (totale 2 file:
+ * 		es. 1 virtualrobot e mind, 1 realrobot)
  * 
  * TODO valutare se aggiungere anche la parte di simulazione del robot fisico in fase di analisi (nel requisito uno è stato fatto)
  */
@@ -26,7 +29,8 @@ Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tip
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
-pubSubServer "ws://localhost:1884"
+//pubSubServer "ws://localhost:1884" //virtual robot
+pubSubServer "ws://192.168.43.214:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxResourceModel ip [ host="localhost" port=8030 ]
@@ -124,9 +128,10 @@ QActor mindrobot context ctxResourceModel -pubsub -g cyan {
  		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
  		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
  		// TODO valutare se è giusta o no come cosa
- 		[ !? checkTemperature(hot)  ] 
- 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
- 			//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 		[ !? checkTemperature(hot)  ]{
+ 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 		}
  	]
  	
  	Plan handleMsg resumeLastPlan [

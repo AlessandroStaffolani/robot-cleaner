@@ -96,7 +96,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.43.214:1884");
 	    	//switchTo waitPlan
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "waitPlan",false, false, null); 
@@ -143,10 +143,14 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    			if( parg != null && parg1 != null  ) replaceRule(parg, parg1);	    		  					
 	    	}
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(hot)" )) != null ){
+	    	{//actionseq
 	    	//PublishMsgMove
 	    	parg = "usercmd(robotgui(h(low)))";
-	    	parg = QActorUtils.substituteVars(guardVars,parg);
 	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    	//PublishMsgMove
+	    	parg = "usercmd(robotgui(h(low)))";
+	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    	};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleEvent){  
