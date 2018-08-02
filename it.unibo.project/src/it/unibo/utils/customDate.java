@@ -1,18 +1,18 @@
 package it.unibo.utils;
 
-import java.util.Calendar;
-
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import it.unibo.qactors.akka.QActor;
 
 public class customDate {
 
 	public static void getHours(QActor myActor) {
-		Calendar now = Calendar.getInstance();
-		int hours = now.get(Calendar.HOUR);
+		SimpleDateFormat sdf = new SimpleDateFormat("HH");
+		String hours = sdf.format(new Date());
 		/*Only For test*/
-		hours = 7;
-		System.out.println("Ore: " + hours);
+		//hours = "7";
+		//System.out.println("Ore: " + hours);
 		/*************************************/
 		myActor.replaceRule("currentTime(X)", "currentTime("+hours+")");
 	}

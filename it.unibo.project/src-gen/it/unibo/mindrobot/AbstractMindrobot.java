@@ -74,6 +74,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
+	    	stateTab.put("afterInit",afterInit);
 	    	stateTab.put("waitPlan",waitPlan);
 	    	stateTab.put("handleEvent",handleEvent);
 	    	stateTab.put("handleMsg",handleMsg);
@@ -97,14 +98,37 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
 	     connectToMqttServer("ws://localhost:1884");
-	    	//switchTo waitPlan
+	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
-	              "waitPlan",false, false, null); 
+	              "afterInit",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
+	    
+	    StateFun afterInit = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("afterInit",-1);
+	    	String myselfName = "afterInit";  
+	    	it.unibo.utils.customDate.getHours( myself  );
+	    	parg = "currentTime(V)";
+	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    	solveGoal( parg ); //sept2017
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(currentTime(R))" )) != null ){
+	    	//PublisEventhMove
+	    	parg = "constraint(tempo,R)";
+	    	parg = QActorUtils.substituteVars(guardVars,parg);
+	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
+	    	}
+	    	//switchTo waitPlan
+	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
+	              "waitPlan",false, false, null); 
+	    }catch(Exception e_afterInit){  
+	    	 println( getName() + " plan=afterInit WARNING:" + e_afterInit.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//afterInit
 	    
 	    StateFun waitPlan = () -> {	
 	    try{	
@@ -167,7 +191,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	parg = "currentTime(V)";
 	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    	solveGoal( parg ); //sept2017
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(R)" )) != null ){
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(currentTime(R))" )) != null ){
 	    	//PublisEventhMove
 	    	parg = "constraint(tempo,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);

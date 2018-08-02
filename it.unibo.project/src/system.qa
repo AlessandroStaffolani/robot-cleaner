@@ -118,9 +118,17 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	Plan init normal [
 		println("Mind robot ready")
 	]
+	switchTo afterInit
+	
+	Plan afterInit [
+		// Allo start della mind robot invio l'ora corrente su MQTT per la console
+		javaRun it.unibo.utils.customDate.getHours();
+ 		demo currentTime(V); //recupero il tempo (Attualmente è 8 per provare che funzioni)
+ 		[ ?? goalResult(currentTime(R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R)
+	]
 	switchTo waitPlan
 	
-	Plan waitPlan[  ]
+	Plan waitPlan[ ]
 	transition stopAfter 3600000   	//1h 
  		whenEvent constraint -> handleEvent,
  		whenMsg moveRobot -> handleMsg
@@ -143,8 +151,7 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  		/* Pubblico un messaggio realativo al tempo:
  		 * Attenzione devo far capire che il messaggio è per la console*/
  		demo currentTime(V); //recupero il tempo (Attualmente è 8 per provare che funzioni)
- 		[ ?? goalResult(R) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
- 		//publishMsg "unibo/qasys" for "console" -m constraint : constraint(tempo, currentTime(V));
+ 		[ ?? goalResult(currentTime(R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
  		
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
