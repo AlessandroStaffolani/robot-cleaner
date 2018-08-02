@@ -37,6 +37,7 @@ class Gui extends Component {
                 sonar2: false,
             },
             temperature: null,
+            time: null,
             command: false,
         };
 
@@ -56,9 +57,7 @@ class Gui extends Component {
         this.clientMqtt.on('message', (topic, payload, packet) => {
             const payloadString = payload.toString();
             if (payloadString.indexOf('constraint') !== -1) {
-                this.setState({
-                    temperature: getTemperatureConstraint(payloadString) + '°'
-                })
+                this.setState(getConstraintsValue(payloadString))
             } else {
                 this.setState({
                     robotStatus: getRobotMessage(payloadString, this.state.robotStatus)
@@ -219,6 +218,7 @@ class Gui extends Component {
                             <li><b>Current temperature in <span className="uc-first">{this.props.userData.city}</span>: </b>
                                 {this.state.temperature}
                             </li>
+                            {this.state.time === null ? '' : <li><b>Current time for robot is: </b>{this.state.time}</li>}
                             <li><b>Robot status:</b>
                                 <ul>
                                     <li><b>Obstacle: </b> {robotStatus.obstacle}</li>
@@ -260,8 +260,18 @@ const getRobotMessage = (message, robotStatus) => {
     return robotStatus;
 };
 
-const getTemperatureConstraint = (message) => {
+const getConstraintsValue = (message) => {
     let splitValues = message.split(',');
-    return splitValues[5].replace(')', '');
+    let type = splitValues[4].replace('constraint(', '');
+    let value = splitValues[5].replace(')', '');
+    if (type === 'temp') {
+        return {
+            temperature: value + '°'
+        }
+    } else if (type === 'tempo') {
+        return {
+            time: value
+        }
+    }
 };
 
