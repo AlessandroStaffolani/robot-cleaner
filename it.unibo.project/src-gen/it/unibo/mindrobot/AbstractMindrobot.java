@@ -164,6 +164,15 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	     PlanRepeat pr = PlanRepeat.setUp("handleMsg",-1);
 	    	String myselfName = "handleMsg";  
 	    	it.unibo.utils.customDate.getHours( myself  );
+	    	parg = "currentTime(V)";
+	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    	solveGoal( parg ); //sept2017
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(R)" )) != null ){
+	    	//PublisEventhMove
+	    	parg = "constraint(tempo,R)";
+	    	parg = QActorUtils.substituteVars(guardVars,parg);
+	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
+	    	}
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 

@@ -10,8 +10,10 @@ public class customDate {
 	public static void getHours(QActor myActor) {
 		Calendar now = Calendar.getInstance();
 		int hours = now.get(Calendar.HOUR);
+		/*Only For test*/
+		hours = 7;
 		System.out.println("Ore: " + hours);
-		hours = 8;
-		myActor.replaceRule("currentTime(X)", "currentTime(hours)");
+		/*************************************/
+		myActor.replaceRule("currentTime(X)", "currentTime("+hours+")");
 	}
 }
