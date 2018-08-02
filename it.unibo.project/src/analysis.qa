@@ -1,17 +1,18 @@
 /**
- * Il terzo requisito di questo sistema prevede: R-TimeOk: the current clock time is within a given interval (e.g. between 7 a.m
- *  and 10 a.m ).
+ * Il terzo requisito di questo sistema è il seguente: 
+ * R-TimeOk: the current clock time is within a given interval (e.g. between 7 a.m and 10 a.m ).
+ * Questo prevede che il robot debba funzionare in un determinato intervallo di tempo.
  * 
  * In fase di analisi dei requisiti si è chiesto al committente se il tempo deve essere newtoniano o relativistico. Il committente
  * ha specificato che il tempo deve essere newtoniano e deve essere relativo al robot e non alla console.
  * 
- * Questo requisito rappresenta un altro constraint (un vincolo) del sistema, ovvero lo start non deve essere eseguito se non è soddisfatto
- * il vincolo della temperatura.
- * Per questo requisito la scelta effettuata nel secondo requisito di creare un attore in grado di valutare i constraint e ed 
- * eventualmente eseguire le azioni richieste, risulta una scelta vincente, in quanto per soddisfare questo task è sufficiente 
- * aggiungere una nuova regola nella base di conoscenza della mindRobot
+ * Questo requisito rappresenta un altro constraint (un vincolo) del sistema. Il che significa che la mind (che è stata creata con il requisito
+ * precedente) deve anche tenere conto del clock time.
+ * Quindila scelta effettuata nel secondo requisito di creare questo attore in grado di valutare i constraint ed 
+ * eventualmente eseguire le azioni richieste, risulta una scelta vincente, in quanto per far sì che il tempo sia compreso in un intervallo
+ * di tempo è sufficiente aggiungere una nuova regola nella base di conoscenza della mindRobot
  * 
- * la mindrobot ora deve controllare anche che l'ora corrente del robot sia compresa tra le 7 e le 10 a.m
+ * la mindrobot ora deve controllare anche che l'ora corrente del robot sia compresa tra le 7 a.m. e le 10 a.m.
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -102,7 +103,9 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
  		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
  			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
  			else println("Too hot to work")
-		}
+		};
+		ReplaceRule currentTime(X) with currentTime(11);
+		emit constraint : contraint(tempo, 11)
  	]
 }
 
@@ -138,4 +141,15 @@ QActor testanalysis context ctxConsoleAnalysis {
 		delay 2000;
 		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) )
 	]
+	switchTo waitPlan
+	
+	Plan waitPlan[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent constraint -> handleEvent
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		onEvent constraint : constraint(tempo, V) -> printCurrentEvent
+ 	]
+
 }

@@ -56,6 +56,8 @@ public abstract class AbstractTestanalysis extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
+	    	stateTab.put("waitPlan",waitPlan);
+	    	stateTab.put("handleEvent",handleEvent);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -105,12 +107,50 @@ public abstract class AbstractTestanalysis extends QActor {
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotanalysis", QActorContext.dispatch, temporaryStr ); 
-	    	repeatPlanNoTransition(pr,myselfName,"testanalysis_"+myselfName,false,false);
+	    	//switchTo waitPlan
+	        switchToPlanAsNextState(pr, myselfName, "testanalysis_"+myselfName, 
+	              "waitPlan",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//init
+	    
+	    StateFun waitPlan = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_waitPlan",0);
+	     pr.incNumIter(); 	
+	    	String myselfName = "waitPlan";  
+	    	//bbb
+	     msgTransition( pr,myselfName,"testanalysis_"+myselfName,false,
+	          new StateFun[]{stateTab.get("handleEvent") }, 
+	          new String[]{"true","E","constraint" },
+	          3600000, "handleToutBuiltIn" );//msgTransition
+	    }catch(Exception e_waitPlan){  
+	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//waitPlan
+	    
+	    StateFun handleEvent = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleEvent",-1);
+	    	String myselfName = "handleEvent";  
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("constraint(tempo,V)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("constraint") && 
+	    		pengine.unify(curT, Term.createTerm("constraint(CONSTRAINT,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			printCurrentEvent(false);
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"testanalysis_"+myselfName,false,true);
+	    }catch(Exception e_handleEvent){  
+	    	 println( getName() + " plan=handleEvent WARNING:" + e_handleEvent.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//handleEvent
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor
