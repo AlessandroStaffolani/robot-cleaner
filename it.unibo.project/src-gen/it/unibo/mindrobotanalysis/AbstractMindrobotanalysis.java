@@ -173,7 +173,11 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
-	    	//not here genMove StateMoveNormaltemporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(tempo,11)", guardVars ).toString();
+	    	//not here genMove StateMoveNormal//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(100,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "handleMsg";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(tempo,11)", guardVars ).toString();
 	    	emit( "constraint", temporaryStr );
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobotanalysis_"+myselfName,false,true);
 	    }catch(Exception e_handleMsg){  

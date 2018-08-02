@@ -13,6 +13,10 @@
  * di tempo è sufficiente aggiungere una nuova regola nella base di conoscenza della mindRobot
  * 
  * la mindrobot ora deve controllare anche che l'ora corrente del robot sia compresa tra le 7 a.m. e le 10 a.m.
+ * 
+ * Per mantenere sincronizzata la console con il robot, il robot di volta in volta andrà ad emettere un evento
+ * relativo al tempo, in modo tale che la console possa mostrare all'utente che utilizza la console che il tempo
+ * attuale del robot non è compreso dell'intervallo e viceversa.
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -104,7 +108,11 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
  			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
  			else println("Too hot to work")
 		};
+		/* Test dell'aggiornamento del tempo:
+		 * simula l'acquisizione del tempo attuale del sistema e 
+		 * la relativa emissione dell'evento da parte della mind alla console*/
 		ReplaceRule currentTime(X) with currentTime(11);
+		delay 100;
 		emit constraint : constraint(tempo, 11)
  	]
 }
