@@ -142,7 +142,10 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  		javaRun it.unibo.utils.customDate.getHours();
  		/* Pubblico un messaggio realativo al tempo:
  		 * Attenzione devo far capire che il messaggio è per la console*/
+ 		demo currentTime(V); //recupero il tempo (Attualmente è 8 per provare che funzioni)
+ 		[ ?? goalResult(R) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
  		//publishMsg "unibo/qasys" for "console" -m constraint : constraint(tempo, currentTime(V));
+ 		
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? checkConstraints(X)   ] {
