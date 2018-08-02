@@ -1,25 +1,16 @@
 /**
- * In fase di progettazione il requisito due richiede l'utilizzo di MQTT per ricevere le informazioni dall'ambiente 
- * e dalla console, richiede la creazione anche di un resource model del sistema che conterrà le informazioni sullo stato
- * del robot, dei vari "sensori" (per ora solo quello di temperatura che tra l'altro non è un sensore perchè otteniamo 
- * dall'esterno le info) il resource model sarà anche utile per eventuali sensori/attuatori futuri.
+ * Anche in questo caso, come nel requisito 2, si richiede l'utilizzo di MQTT, ma a differenza del caso precedente
+ * dove era utilizzato per ricevere informazioni dall'ambiente e dalla console, in questo caso verrà usato per inviare le informazioni.
+ * In particolare dovrà inviare informazioni relativi al clock time del robot, questo per far sì che l'utente possa rendersi
+ * conto, in base allo stato del robot, se è possibile usarlo o meno.
  * 
- * Questo resource model verrà realizzato mediante fatti e regole prolog (per quanto riguarda il robot) mentre sarà realizzato
- * in json e salvato in un database mongodb per quanto riguarda il server node
- * 
+ * Dall'analisi si deduce che questo è un vincoli da aggiungere alla base di conoscenza del qactor che si occupa di verificare che i 
+ * vincoli siano rispettati: mindrobot (attore introdotto già nel requisito precedente).
  * La mindrobot sarà il componente (l'attore) che avrà il compito di interagire con il resouce model andando a leggere e a 
  * modificare le informazioni in esso salvate.
  * 
- * TODO valutare dove mettere la mindrobot in fase di progettazione e quindi in fase di implementazione, perchè se sta nello 
- * stesso contesto del robot vuol dire che deve essere messo anche nella raspberry e altri eventuali dispositivi (che potrebbero
- * essere appesantiti dalla cosa) forse conviene fare un altro contesto in cui mettere la mind e il resouce model 
- * (GUARDA L'ARCHITETTURA ESAGONALE come spunto per risolvere questo problema)
- * (Per ora creo un constesto a se)
- * 
- * TODO valutare se avere due mind una per il virtual robot uno per il real robot. Questo perché i due ambienti potrebbero essere differenti
- * 		(sarebbe possibile usare una sola mind? e fare 3 file qactor diversi? O sarebbe troppo costoso? Oppure lasciare la mind
- * 		in uno dei file (virtual o real) e fare un file separato per l'altro robot (totale 2 file:
- * 		es. 1 virtualrobot e mind, 1 realrobot)
+ * Per ottenere il clock time è stata creata una classe java apposita it.unibo.utils.customDate, che contiene un metodo
+ * getHours che aggiorna la base di conoscenza con l'orario attuale.
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -98,8 +89,13 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	Rules {
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
+		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( get, X, V ):- eval( gt, X , V ) .
 		maxTemperature(25).
+		startTime(7).
+		endTime(10).
 		currentTemperature(12).
+		currentTime(8).
 		checkTemperature(cold):-
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
@@ -108,6 +104,15 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 				maxTemperature(MAX), 
 				currentTemperature(CURRENT), 
 				eval(gt, CURRENT, MAX), !.
+		checkTime(X):- 
+				startTime(START),
+				endTime(END),
+				currentTime(CURRENT),
+				eval(get, CURRENT, START),
+				eval(let, CURRENT, END).
+		checkConstraints(X):-
+			checkTemperature(cold),
+			checkTime(X).
 	}
 	
 	Plan init normal [
@@ -124,8 +129,6 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
  		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
- 		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
- 		// TODO valutare se è giusta o no come cosa
  		[ !? checkTemperature(hot)  ]{
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
@@ -133,47 +136,54 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  	]
  	
  	Plan handleMsg resumeLastPlan [
+ 		/* Ogni volta che si riceve un messaggio di movimento deve essere aggiornato il clock time
+ 		 * in modo tale da verificare se il movimento del robot è consentito o meno
+ 		 */
+ 		javaRun it.unibo.utils.customDate.getHours();
+ 		/* Pubblico un messaggio realativo al tempo:
+ 		 * Attenzione devo far capire che il messaggio è per la console*/
+ 		//publishMsg "unibo/qasys" for "console" -m constraint : constraint(tempo, currentTime(V));
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] {
+ 			[ !? checkConstraints(X)   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) )
  				}		
  			else
- 				 println("Too hot to work")
+ 				 println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] {
+ 			[ !? checkConstraints(X)   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) )
  				}		
  			else
- 				 println("Too hot to work")
+ 				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
- 			[ !? checkTemperature(cold)  ]{
+ 			[ !? checkConstraints(X) ]{
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )	
  				}	
  			else
- 				 println("Too hot to work")
+ 				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
- 			[ !? checkTemperature(cold)  ] {
+ 			[ !? checkConstraints(X) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )	
  				}
  			else
- 				 println("Too hot to work")
+ 				  println("Too hot to work or out of time")
 		};
  		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
- 			[ !? checkTemperature(cold)  ] {
+ 			[ !? checkConstraints(X) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
  				
  				}	
  			else 
- 				println("Too hot to work")
+ 				 println("Too hot to work or out of time")
 		}
  	]
 }

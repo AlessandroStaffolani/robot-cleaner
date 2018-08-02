@@ -163,6 +163,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleMsg",-1);
 	    	String myselfName = "handleMsg";  
+	    	it.unibo.utils.customDate.getHours( myself  );
 	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -172,7 +173,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(w(low)))";
@@ -182,7 +183,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		};//actionseq
 	    		}
-	    		else{ temporaryStr = "\"Too hot to work\"";
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -194,7 +195,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(s(low)))";
@@ -204,7 +205,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		};//actionseq
 	    		}
-	    		else{ temporaryStr = "\"Too hot to work\"";
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -216,7 +217,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
@@ -226,7 +227,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		};//actionseq
 	    		}
-	    		else{ temporaryStr = "\"Too hot to work\"";
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -238,7 +239,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
@@ -248,7 +249,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		};//actionseq
 	    		}
-	    		else{ temporaryStr = "\"Too hot to work\"";
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -260,7 +261,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(cold)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(h(low)))";
@@ -270,7 +271,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		};//actionseq
 	    		}
-	    		else{ temporaryStr = "\"Too hot to work\"";
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}

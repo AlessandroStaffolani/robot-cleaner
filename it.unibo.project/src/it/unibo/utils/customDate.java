@@ -11,7 +11,7 @@ public class customDate {
 		Calendar now = Calendar.getInstance();
 		int hours = now.get(Calendar.HOUR);
 		System.out.println("Ore: " + hours);
-		//hours = 12;
+		hours = 8;
 		myActor.replaceRule("currentTime(X)", "currentTime(hours)");
 	}
 }
