@@ -10,6 +10,8 @@ qactor( mindrobotanalysis , ctxrobotanalysis, "it.unibo.mindrobotanalysis.MsgHan
 qactor( mindrobotanalysis_ctrl , ctxrobotanalysis, "it.unibo.mindrobotanalysis.Mindrobotanalysis"   ). %%control-driven 
 qactor( testanalysis , ctxconsoleanalysis, "it.unibo.testanalysis.MsgHandle_Testanalysis"   ). %%store msgs 
 qactor( testanalysis_ctrl , ctxconsoleanalysis, "it.unibo.testanalysis.Testanalysis"   ). %%control-driven 
+qactor( testanalysistime , ctxconsoleanalysis, "it.unibo.testanalysistime.MsgHandle_Testanalysistime"   ). %%store msgs 
+qactor( testanalysistime_ctrl , ctxconsoleanalysis, "it.unibo.testanalysistime.Testanalysistime"   ). %%control-driven 
 %%% -------------------------------------------
 %%% -------------------------------------------
 

@@ -105,7 +105,7 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
  			else println("Too hot to work")
 		};
 		ReplaceRule currentTime(X) with currentTime(11);
-		emit constraint : contraint(tempo, 11)
+		emit constraint : constraint(tempo, 11)
  	]
 }
 
@@ -141,6 +141,14 @@ QActor testanalysis context ctxConsoleAnalysis {
 		delay 2000;
 		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) )
 	]
+	
+
+}
+
+QActor testanalysistime context ctxConsoleAnalysis {
+	Plan init normal[
+		println("Test time ready")
+	]
 	switchTo waitPlan
 	
 	Plan waitPlan[  ]
@@ -151,5 +159,4 @@ QActor testanalysis context ctxConsoleAnalysis {
  	Plan handleEvent resumeLastPlan [
  		onEvent constraint : constraint(tempo, V) -> printCurrentEvent
  	]
-
 }

@@ -10,11 +10,6 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
-	waitPlan [ color = black ][ fontcolor = black ][ penwidth = 3 ]
-	handleEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	init [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
 	
-	waitPlan -> handleEvent [ label = "constraint" ][ color = red ][ fontcolor = red ][ dir = both ]
-	init -> waitPlan [ label = "switch" ][ color = black ][ fontcolor = black ]
-	waitPlan -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
-	waitPlan -> waitPlan [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 }
