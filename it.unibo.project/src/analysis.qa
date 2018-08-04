@@ -1,31 +1,34 @@
-/**
- * Il terzo requisito di questo sistema è il seguente: 
- * R-TimeOk: the current clock time is within a given interval (e.g. between 7 a.m and 10 a.m ).
- * Questo prevede che il robot debba funzionare in un determinato intervallo di tempo.
+/** 
+ * Arrivati a questo punto bisogna aggiungere dei dettagli alla struttura che è stata creata in precedenza. In particolare:
+ * mentre il robot è in movimento (quindi l'unico caso da tenere in considerazione è quando il robot è fermo) deve:
+ * 	- se si parla di robot reale deve blinkare un led posizionato su di esso;
+ * 	- se si parla di robot virtuale deve blinkare una lampada in particolare la Led Hue Lamp;
+ * 	- e deve anche evitare ostacoli fissi e mobili presenti all'interno della stanza.
  * 
- * In fase di analisi dei requisiti si è chiesto al committente se il tempo deve essere newtoniano o relativistico. Il committente
- * ha specificato che il tempo deve essere newtoniano e deve essere relativo al robot e non alla console.
+ * In questa fase di analisi del problema ci concentremo sul far blinkare il led mentre il robot è in movimento. In particolare
+ * in questo caso vedremo le cose dall'alto, quindi non considereremo un robot virtuale e un robot fisico, ma considereremo un unico robot che
+ * cattura gli aspetti essenziali di entrambi .
  * 
- * Questo requisito rappresenta un altro constraint (un vincolo) del sistema. Il che significa che la mind (che è stata creata con il requisito
- * precedente) deve anche tenere conto del clock time.
- * Quindila scelta effettuata nel secondo requisito di creare questo attore in grado di valutare i constraint ed 
- * eventualmente eseguire le azioni richieste, risulta una scelta vincente, in quanto per far sì che il tempo sia compreso in un intervallo
- * di tempo è sufficiente aggiungere una nuova regola nella base di conoscenza della mindRobot
+ * Visto che vengono catturati soltanto gli aspetti essenziali del robot verrà fatto lo stesso per il led. Il che significa che che del led
+ * verrà realizzata una struttura molto generale (il blink del led è una semplice stampa) ma verrà analizzata più nel dettaglio l'interazione
+ * del led con la mind del robot
  * 
- * la mindrobot ora deve controllare anche che l'ora corrente del robot sia compresa tra le 7 a.m. e le 10 a.m.
- * 
- * Per mantenere sincronizzata la console con il robot, il robot di volta in volta andrà ad emettere un evento
- * relativo al tempo, in modo tale che la console possa mostrare all'utente che utilizza la console che il tempo
- * attuale del robot non è compreso dell'intervallo e viceversa.
+ * Sarà l'attore che è stato usato nei precendenti requisiti a stabilire se il led deve blinkare o meno
+ * E' stato aggiunto un nuovo attore che simula il comportamento generale del led
+ * Tutto sarà basato sulla generazione di un evento che permette al led di inizare a blinkare
+ * Per ora il non si fa distinzione tra le due strutture di led, il tutto potrà essere stesso specificando nell'evento 
+ * anche la categoria del led, poi sarà l'attore del led a stabilire quale led fare blinkare.
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
+Event ctrlEvent   : ctrlEvent(CMD) //Evento generato per far blinkare un led
 
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
 Context ctxRobotAnalysis ip [ host="localhost" port=8032 ]
-Context ctxConsoleAnalysis ip [ host="localhost" port=8042 ] -httpserver   
+Context ctxConsoleAnalysis ip [ host="localhost" port=8042 ] -httpserver
+Context ctxLedAnalysis ip [ host="localhost" port=8052 ]   
 
 QActor robotexecutoranalysis context ctxRobotAnalysis {
 	Plan init normal [
@@ -93,78 +96,69 @@ QActor mindrobotanalysis context ctxRobotAnalysis {
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
  		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
- 		// dopo che cambio la temperatura se è troppo caldo devo stoppare il robot
- 		// TODO valutare se è giusta o no come cosa
- 		[ !? checkTemperature(hot)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) ) 		
+ 		[ !? checkTemperature(hot)  ] {
+ 			forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 			delay 100;
+ 			emit ctrlEvent : ctrlEvent(off) 
+ 			}		
  	]
  	
  	Plan handleMsg resumeLastPlan [
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
- 			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) )
+ 			[ !? checkConstraints(X)  ]{
+ 				forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(on)
+ 				}
  			else println("Too hot to work")
 		};
  		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
- 			[ !? checkConstraints(X)  ] forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) )
+ 			[ !? checkConstraints(X)  ] {
+ 				forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(off)
+ 				}
  			else println("Too hot to work")
-		};
-		/* Test dell'aggiornamento del tempo:
-		 * simula l'acquisizione del tempo attuale del sistema e 
-		 * la relativa emissione dell'evento da parte della mind alla console*/
-		ReplaceRule currentTime(X) with currentTime(11);
-		delay 100;
-		emit constraint : constraint(tempo, 11)
+		}
  	]
 }
 
-/*
- * TODO valutare se separare il test usando i due componenti
-QActor console context ctxConsoleAnalysis {
+QActor ledanalysis context ctxLedAnalysis {
 	Plan init normal [
-		println("Console ready");
-		delay 6000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) );
-		delay 1000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( stopBot ) );
-		delay 10000;
-		forward mindrobot -m moveRobot : usercmd( consoleGui( startBot ) )
-	] 
+		println("Led ready!");
+		println("Led not blink")
+	]
+	switchTo waitMove
+	
+	
+	Plan waitMove[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent ctrlEvent -> handleEvent
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent ctrlEvent : ctrlEvent(on) -> println("Led blink");
+ 		onEvent ctrlEvent : ctrlEvent(off) -> println("Led not blink")
+ 	]
 }
-*/
 
 /* Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura e che mandi 
  * i messaggi di start e stop del robot
- * */
+ */
 QActor testanalysis context ctxConsoleAnalysis {
 	Plan init normal [
 		println("Test ready");
 		delay 5000;
-		emit constraint : constraint(temp, 20);
-		delay 1000;
 		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 1000;
 		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) );
+		delay 4000;
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 2000;
-		emit constraint : constraint(temp, 28);
-		delay 2000;
-		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) )
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) )
 	]
 	
 
-}
-
-QActor testanalysistime context ctxConsoleAnalysis {
-	Plan init normal[
-		println("Test time ready")
-	]
-	switchTo waitPlan
-	
-	Plan waitPlan[  ]
-	transition stopAfter 3600000   	//1h 
- 		whenEvent constraint -> handleEvent
- 	finally repeatPlan 
- 	
- 	Plan handleEvent resumeLastPlan [
- 		onEvent constraint : constraint(tempo, V) -> printCurrentEvent
- 	]
 }

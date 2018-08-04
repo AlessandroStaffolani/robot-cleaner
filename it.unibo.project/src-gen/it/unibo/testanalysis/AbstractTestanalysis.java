@@ -79,12 +79,6 @@ public abstract class AbstractTestanalysis extends QActor {
 	    	aar = delayReactive(5000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(temp,20)", guardVars ).toString();
-	    	emit( "constraint", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	//delay  ( no more reactive within a plan)
@@ -94,16 +88,16 @@ public abstract class AbstractTestanalysis extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
+	    	aar = delayReactive(4000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(temp,28)", guardVars ).toString();
-	    	emit( "constraint", temporaryStr );
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
+	    	sendMsg("moveRobot","mindrobotanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(2000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	repeatPlanNoTransition(pr,myselfName,"testanalysis_"+myselfName,false,false);
 	    }catch(Exception e_init){  

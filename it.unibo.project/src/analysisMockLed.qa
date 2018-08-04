@@ -1,0 +1,155 @@
+/* 
+ * In questa analisi cerchiamo di entrare più nei particolari con la descrizione della struttura e del comportamento del led.
+ * Andremo ad utilizzare un mock object che vada a simulare il comportamento del led. In particolare:
+ *  - se il led è spento avremo una piccola gui di colore rosso
+ *  - se il led è acceso avremo una gui un po' più grande rispetto alla precedente
+ * Quindi sostanzialmente quando il led blinka ci sarà un passaggio da una gui all'altra.
+ *  */
+
+System robotRoombaAnalysis
+
+Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
+Event ctrlEvent   : ctrlEvent(CMD) //Evento generato per far blinkare un led
+
+Dispatch moveRobot : usercmd(CMD)
+Dispatch execMoveRobot : usercmd(CMD)
+
+Context ctxRobotMockLedAnalysis ip [ host="localhost" port=8032 ]
+Context ctxConsoleMockLedAnalysis ip [ host="localhost" port=8042 ] -httpserver
+Context ctxLedMockLedAnalysis ip [ host="localhost" port=8052 ]   
+
+QActor robotexecutormockledanalysis context ctxRobotMockLedAnalysis {
+	Plan init normal [
+		println("Robot executor ready")
+	]
+	switchTo waitForCmd           
+		 
+   	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg execMoveRobot -> execMove  	  
+ 	finally repeatPlan 
+ 	
+ 	Plan execMove resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg execMoveRobot : usercmd( consoleGui( startBot ) ) -> {
+ 			println("Inizio a spazzare")
+ 		};
+ 		onMsg execMoveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 			println("Termino a spazzare")
+ 		}
+ 	] 
+}
+
+QActor mindrobotmockledanalysis context ctxRobotMockLedAnalysis {
+	Rules {
+		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( let, X, V ):- eval( lt, X , V ) .
+		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( get, X, V ):- eval( gt, X , V ) .
+		maxTemperature(25).
+		startTime(7).
+		endTime(10).
+		currentTemperature(12).
+		currentTime(8).
+		checkTemperature(cold):-
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				eval(let, CURRENT, MAX), !.
+		checkTemperature(hot):- 
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				eval(gt, CURRENT, MAX), !.
+		checkTime(X):- 
+				startTime(START),
+				endTime(END),
+				currentTime(CURRENT),
+				eval(get, CURRENT, START),
+				eval(let, CURRENT, END).
+		checkConstraints(X):-
+			checkTemperature(cold),
+			checkTime(X).
+	}
+	
+	Plan init normal [
+		println("Mind robot ready")
+	]
+	switchTo waitPlan
+	
+	Plan waitPlan[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent constraint -> handleEvent,
+ 		whenMsg moveRobot -> handleMsg
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
+ 		[ !? checkTemperature(hot)  ] {
+ 			forward robotexecutormockledanalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 			delay 100;
+ 			emit ctrlEvent : ctrlEvent(off) 
+ 			}		
+ 	]
+ 	
+ 	Plan handleMsg resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
+ 			[ !? checkConstraints(X)  ]{
+ 				forward robotexecutormockledanalysis -m execMoveRobot : usercmd( consoleGui( startBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(on)
+ 				}
+ 			else println("Too hot to work")
+		};
+ 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 			[ !? checkConstraints(X)  ] {
+ 				forward robotexecutormockledanalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(off)
+ 				}
+ 			else println("Too hot to work")
+		}
+ 	]
+}
+
+QActor ledmockledanalysis context ctxLedMockLedAnalysis {
+	Plan init normal [
+		println( "ledmock starts") ;
+   		javaRun it.unibo.ledmockgui.customGui.createCustomLedGui()  
+   		/*delay 1000;
+   		javaRun it.unibo.ledmockgui.customGui.setLedBlink("on");
+   		delay 3000;
+   		javaRun it.unibo.ledmockgui.customGui.setLedBlink("off");
+   		println("siamo qui")*/
+	]
+	switchTo waitMove
+	
+	
+	Plan waitMove[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent ctrlEvent -> handleEvent
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent ctrlEvent : ctrlEvent(on) -> javaRun it.unibo.ledmockgui.customGui.setLedBlink("on");
+ 		onEvent ctrlEvent : ctrlEvent(off) -> javaRun it.unibo.ledmockgui.customGui.setLedBlink("off")
+ 	]
+}
+
+/* Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura e che mandi 
+ * i messaggi di start e stop del robot
+ */
+QActor testmockledanalysis context ctxConsoleMockLedAnalysis {
+	Plan init normal [
+		println("Test ready");
+		delay 5000;
+		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 1000;
+		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( stopBot ) );
+		delay 4000;
+		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 2000;
+		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( stopBot ) )
+	]
+}

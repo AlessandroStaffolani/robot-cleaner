@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.testanalysistime;
+package it.unibo.consoleanalysis;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Testanalysistime extends AbstractTestanalysistime { 
-	public Testanalysistime(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Consoleanalysis extends AbstractConsoleanalysis { 
+	public Consoleanalysis(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*

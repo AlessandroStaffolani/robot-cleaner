@@ -1,0 +1,6 @@
+plan(1,init, sentence(true,move(print("ledmock starts")),'','' ))
+plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(1,handleEvent, sentence(true,printCurrentEvent(false),'','' ))
+plan(2,handleEvent, sentence(true,eventswitch(ctrlEvent, Â»ctrlEvent( on), not here StateMoveNormal ),'','' ))
+plan(3,handleEvent, sentence(true,eventswitch(ctrlEvent, Â»ctrlEvent( off), not here StateMoveNormal ),'','' ))
+plan(4,handleEvent, sentence(true,move(resumeplan),'','' ))

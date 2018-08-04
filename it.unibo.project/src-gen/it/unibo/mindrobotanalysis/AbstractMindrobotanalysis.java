@@ -124,8 +124,16 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    			if( parg != null && parg1 != null  ) replaceRule(parg, parg1);	    		  					
 	    	}
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(hot)" )) != null ){
+	    	{//actionseq
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
 	    	sendMsg("execMoveRobot","robotexecutoranalysis", QActorContext.dispatch, temporaryStr ); 
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(100,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "handleEvent";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(off)", guardVars ).toString();
+	    	emit( "ctrlEvent", temporaryStr );
+	    	};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobotanalysis_"+myselfName,false,true);
 	    }catch(Exception e_handleEvent){  
@@ -148,11 +156,18 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    		sendMsg("execMoveRobot","robotexecutoranalysis", QActorContext.dispatch, temporaryStr ); 
+	    		//delay  ( no more reactive within a plan)
+	    		aar = delayReactive(100,"" , "");
+	    		if( aar.getInterrupted() ) curPlanInExec   = "handleMsg";
+	    		if( ! aar.getGoon() ) return ;
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(on)", guardVars ).toString();
+	    		emit( "ctrlEvent", temporaryStr );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -165,20 +180,21 @@ public abstract class AbstractMindrobotanalysis extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
 	    		sendMsg("execMoveRobot","robotexecutoranalysis", QActorContext.dispatch, temporaryStr ); 
+	    		//delay  ( no more reactive within a plan)
+	    		aar = delayReactive(100,"" , "");
+	    		if( aar.getInterrupted() ) curPlanInExec   = "handleMsg";
+	    		if( ! aar.getGoon() ) return ;
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine, "ctrlEvent(CMD)","ctrlEvent(off)", guardVars ).toString();
+	    		emit( "ctrlEvent", temporaryStr );
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
-	    	//not here genMove StateMoveNormal//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(100,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "handleMsg";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "constraint(CONSTRAINT,VALUE)","constraint(tempo,11)", guardVars ).toString();
-	    	emit( "constraint", temporaryStr );
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobotanalysis_"+myselfName,false,true);
 	    }catch(Exception e_handleMsg){  
 	    	 println( getName() + " plan=handleMsg WARNING:" + e_handleMsg.getMessage() );
