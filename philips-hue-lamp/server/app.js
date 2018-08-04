@@ -5,6 +5,7 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const config = require('./config/config');
 
@@ -36,6 +37,20 @@ app.locals.errMsg = app.locals.errMsg || null;
 app.set('port', port);
 app.set('env', env);
 
+/**
+ *DB Config
+ */
+mongoose.connect(config.dbURL);
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('connected', function () {
+    return console.log('Successfully connected to ' + config.dbURL);
+});
+db.once('disconnected', function () {
+    return console.error('Successfully disconnected from ' + config.dbURL);
+});
+
 //==============================================================================
 
 /**
@@ -53,8 +68,10 @@ app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
  *Routes
  */
 const index = require('./routes/index');
+const lamp = require('./routes/lamp');
 
 app.use('/', index);
+app.use('/lamp/', lamp);
 
 //==============================================================================
 

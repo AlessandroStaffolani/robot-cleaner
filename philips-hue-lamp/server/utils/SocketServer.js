@@ -10,7 +10,7 @@ const init = (server) => {
             connectedClient = socket;
             console.log("Client connected");
             socket.on('message', data => console.log(data));
-            socket.emit("Ciao", "python 3");
+            socket.emit("message", "Message from node"); // for testing
         });
 
         io.on('close', () => {
@@ -19,10 +19,8 @@ const init = (server) => {
     }
 };
 
-const emit = (type, value) => {
-    connectedClient.emit(type, {
-        value: value
-    });
+const emit = (type, message) => {
+    connectedClient.emit(type, message);
 };
 
 module.exports = {
