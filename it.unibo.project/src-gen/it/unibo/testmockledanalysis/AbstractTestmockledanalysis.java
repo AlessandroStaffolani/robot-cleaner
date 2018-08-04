@@ -82,7 +82,7 @@ public abstract class AbstractTestmockledanalysis extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotmockledanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
+	    	aar = delayReactive(6000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();
@@ -94,7 +94,7 @@ public abstract class AbstractTestmockledanalysis extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(startBot))", guardVars ).toString();
 	    	sendMsg("moveRobot","mindrobotmockledanalysis", QActorContext.dispatch, temporaryStr ); 
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
+	    	aar = delayReactive(6000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"usercmd(CMD)","usercmd(consoleGui(stopBot))", guardVars ).toString();

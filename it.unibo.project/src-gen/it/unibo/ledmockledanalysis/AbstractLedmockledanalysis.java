@@ -78,6 +78,18 @@ public abstract class AbstractLedmockledanalysis extends QActor {
 	    	temporaryStr = "\"ledmock starts\"";
 	    	println( temporaryStr );  
 	    	it.unibo.ledmockgui.customGui.createCustomLedGui( myself  );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	it.unibo.ledmockgui.customGui.setLedBlink( myself ,"on"  );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(6000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	it.unibo.ledmockgui.customGui.setLedBlink( myself ,"off"  );
+	    	temporaryStr = "\"siamo qui\"";
+	    	println( temporaryStr );  
 	    	//switchTo waitMove
 	        switchToPlanAsNextState(pr, myselfName, "ledmockledanalysis_"+myselfName, 
 	              "waitMove",false, false, null); 

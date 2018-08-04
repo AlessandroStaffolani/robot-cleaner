@@ -124,9 +124,9 @@ public class customGui {
 	    
 	    public void startBlinkLed(boolean on) {
 	    	int i = 0;
-	    	System.out.println("Prima del while:" + on);
-	    	while(on) {
-	    		System.out.println(on);
+	    	//System.out.println("Prima del while:" + on);
+	    	while(on && i <= 5) {
+	    		//System.out.println(on);
 	    		if(i%2 == 0)
 	    			this.setLedGui(on);
 	    		else

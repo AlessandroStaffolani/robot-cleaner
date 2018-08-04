@@ -115,12 +115,12 @@ QActor mindrobotmockledanalysis context ctxRobotMockLedAnalysis {
 QActor ledmockledanalysis context ctxLedMockLedAnalysis {
 	Plan init normal [
 		println( "ledmock starts") ;
-   		javaRun it.unibo.ledmockgui.customGui.createCustomLedGui()  
-   		/*delay 1000;
+   		javaRun it.unibo.ledmockgui.customGui.createCustomLedGui();  
+   		delay 1000;
    		javaRun it.unibo.ledmockgui.customGui.setLedBlink("on");
-   		delay 3000;
+   		delay 6000;
    		javaRun it.unibo.ledmockgui.customGui.setLedBlink("off");
-   		println("siamo qui")*/
+   		println("siamo qui")
 	]
 	switchTo waitMove
 	
@@ -145,11 +145,11 @@ QActor testmockledanalysis context ctxConsoleMockLedAnalysis {
 		println("Test ready");
 		delay 5000;
 		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
-		delay 1000;
+		delay 6000;
 		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( stopBot ) );
 		delay 4000;
 		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
-		delay 2000;
+		delay 6000;
 		forward mindrobotmockledanalysis -m moveRobot : usercmd( consoleGui( stopBot ) )
 	]
 }
