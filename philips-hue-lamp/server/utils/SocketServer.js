@@ -11,6 +11,9 @@ const init = (server) => {
             console.log("Client connected");
             socket.on('message', data => console.log(data));
             socket.emit("message", "Message from node"); // for testing
+            socket.on('close', () => {
+                socket.emit('close', true);
+            })
         });
 
         io.on('close', () => {
