@@ -19,3 +19,9 @@ RemoteSystemsTempFiles
 !/it.unibo.project/src-gen/
 !/it.unibo.project/srcMore/
 !/it.unibo.project/scripts/
+
+philips-hue-lamp/\.project
+
+philips-hue-lamp/\.pydevproject
+
+philips-hue-lamp/\.settings/

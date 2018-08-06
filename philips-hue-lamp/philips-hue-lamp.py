@@ -13,11 +13,15 @@ def start_node():
 
 
 def main(argv):
-    if argv[1] == '--node-start':
-        print("Starting node will cause problem on stop application, need to force to quit")
-        node_thread = Thread(target=start_node)
-        node_thread.start()
-
+    
+    if len(argv) > 1:
+        if argv[1] == '--node-start':
+            print("Starting node will cause problem on stop application, need to force to quit")
+            node_thread = Thread(target=start_node)
+            node_thread.start()
+        else:
+            println("Invalid argument:\npython3 philips-hue-lamp --node-start")
+            exit(1)    
     client_socket = ClientSocketIO(host, port)
     client_socket.connect()
 
