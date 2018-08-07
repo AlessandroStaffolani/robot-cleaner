@@ -51,7 +51,36 @@ const update_status = (req, res, next) => {
         });
     lampPromise.then(lamp => {
     	socketServer.emitAll('color', lamp.color);
-        if(lamp.value){
+    	socketServer.emitAll('value',lamp.value);
+        res.header('Content-Type', 'application/json');
+        res.status(200);
+        res.json({
+            lamp: lamp
+        });
+        
+    })
+};
+
+const blink_lamp = (req, res, next) => {
+    const idLamp = req.params.id;
+    let lampPromise = Lamp.findById(idLamp)
+        .then(lamp => {
+            if (lamp) {
+                const value = req.body.value;
+                lamp.value = value;
+                return lamp.save().then(lamp => lamp).catch(err => next(err));
+            } else {
+                res.header('Content-Type', 'application/json');
+                res.status(400);
+                res.json({
+                    error: 'Lamp id doesn\'t exist'
+                });
+            }
+        });
+    lampPromise.then(lamp => {
+    	socketServer.emitAll('value',lamp.value);
+    	if(lamp.value)
+    	{
         	if(refreshIntervalId == 0){
         		/*Blinking (se già sta blinkando non viene chiamata)*/
 	        	refreshIntervalId = setInterval(()=>{
@@ -60,7 +89,8 @@ const update_status = (req, res, next) => {
 	        	}, 2000);
         	}
         }
-        else{
+        else
+        {
         	if(refreshIntervalId != 0){
         		clearInterval(refreshIntervalId);
         		refreshIntervalId = 0;
@@ -76,5 +106,7 @@ const update_status = (req, res, next) => {
     })
 };
 
+
 exports.add_lamp = add_lamp;
 exports.update_status = update_status;
+exports.blink_lamp = blink_lamp;
