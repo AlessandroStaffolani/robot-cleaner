@@ -49,8 +49,8 @@ const update_status = (req, res, next) => {
         });
 
     lampPromise.then(lamp => {
-        socketServer.emit('color', lamp.color);
-        socketServer.emit('value', lamp.value);
+        socketServer.emitAll('color', lamp.color);
+        socketServer.emitAll('value', lamp.value);
         res.header('Content-Type', 'application/json');
         res.status(200);
         res.json({

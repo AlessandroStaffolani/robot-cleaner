@@ -1,5 +1,5 @@
 
-let connectedClient = undefined;
+let connectedClients = {};
 let io = undefined;
 
 const init = (server) => {
@@ -7,8 +7,8 @@ const init = (server) => {
         io = require('socket.io')(server);
 
         io.on('connection', (socket) => {
-            connectedClient = socket;
-            console.log("Client connected");
+            connectedClients[socket.id] = socket;
+            console.log("Client " + socket.id + " connected");
             socket.on('message', data => console.log(data));
             socket.emit("message", "Message from node"); // for testing
             socket.on('close', () => {
@@ -22,11 +22,13 @@ const init = (server) => {
     }
 };
 
-const emit = (type, message) => {
-    connectedClient.emit(type, message);
+const emitAll = (type, message) => {
+    Object.keys(connectedClients).forEach(key => {
+        connectedClients[key].emit(type, message);
+    });
 };
 
 module.exports = {
     init: init,
-    emit: emit
+    emitAll: emitAll
 };
