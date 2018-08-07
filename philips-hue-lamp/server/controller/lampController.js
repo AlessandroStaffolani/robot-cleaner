@@ -2,6 +2,8 @@ const socketServer = require('../utils/SocketServer');
 
 const Lamp = require('../model/lamp');
 
+let refreshIntervalId = 0;
+
 const add_lamp = (req, res, next) => {
     const lampData = req.body.lamp;
     if (lampData) {
@@ -47,15 +49,30 @@ const update_status = (req, res, next) => {
                 });
             }
         });
-
     lampPromise.then(lamp => {
-        socketServer.emitAll('color', lamp.color);
-        socketServer.emitAll('value', lamp.value);
+    	socketServer.emitAll('color', lamp.color);
+        if(lamp.value){
+        	if(refreshIntervalId == 0){
+        		/*Blinking (se già sta blinkando non viene chiamata)*/
+	        	refreshIntervalId = setInterval(()=>{
+	        		socketServer.emitAll('value', lamp.value);
+	        		lamp.value = !lamp.value;
+	        	}, 2000);
+        	}
+        }
+        else{
+        	if(refreshIntervalId != 0){
+        		clearInterval(refreshIntervalId);
+        		refreshIntervalId = 0;
+        	}
+        	socketServer.emitAll('value', lamp.value)
+        }
         res.header('Content-Type', 'application/json');
         res.status(200);
         res.json({
             lamp: lamp
         });
+        
     })
 };
 
