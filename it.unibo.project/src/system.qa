@@ -1,16 +1,32 @@
 /**
- * Anche in questo caso, come nel requisito 2, si richiede l'utilizzo di MQTT, ma a differenza del caso precedente
- * dove era utilizzato per ricevere informazioni dall'ambiente e dalla console, in questo caso verrà usato per inviare le informazioni.
- * In particolare dovrà inviare informazioni relativi al clock time del robot, questo per far sì che l'utente possa rendersi
- * conto, in base allo stato del robot, se è possibile usarlo o meno.
+ * Dalla fase di analisi si è dedotto che il led è diverso a secondo dei contesti di utilizzo. In particolare:
+ *  - nel caso del real robot è un led posto direttamente sulla raspberry
+ *  - nel caso del virtual robot è una lampadina HUE posta in qualche posto nella casa (ricordando che questa lavora con il protocollo ZIGBEE)
+ * In quest'ultimo cosa non avendo a disposizione una lampadina HUE si è deciso di simulare l'iterazione attraverso un server node, in modo 
+ * tale che attraverso delle chiamate RESTFUL si può far blinkare la lampadina HUE il cui comportamento è simulato da una gui realizzata
+ * in python.
  * 
- * Dall'analisi si deduce che questo è un vincoli da aggiungere alla base di conoscenza del qactor che si occupa di verificare che i 
- * vincoli siano rispettati: mindrobot (attore introdotto già nel requisito precedente).
- * La mindrobot sarà il componente (l'attore) che avrà il compito di interagire con il resouce model andando a leggere e a 
- * modificare le informazioni in esso salvate.
+ * Perché python e non java?
+ * Analizzando il problema ci siamo resi conto che sarebbe stato più comodo usare python,nonostante avessimo un'interfaccia java pronta,
+ * visto che per interagire con i vari pin della raspberry viene usato python.
  * 
- * Per ottenere il clock time è stata creata una classe java apposita it.unibo.utils.customDate, che contiene un metodo
- * getHours che aggiorna la base di conoscenza con l'orario attuale.
+ * Quindi utilizzeremo il server node non solo per la lampadina HUE ma anche per il led sulla raspberry in maniera tale che qualsiasi sia il 
+ * robot in movimento sarà possibile accendere entrambi i led in un colpo solo e interagendo con un unico componente.
+ * 
+ * Sarà il server node a capire quale dei due led accendere in base al robot in movimento. Per capire quale robot sarà in movimento
+ * si utilizzerà un RESOURCE MODEL.
+ * TODO scrivere qui sotto quali sono le risorse modellate attraverso il resourse model
+ * TODO tenere in considerazione che il robot è in movimento anche quando gira a destra e a sinistra (proprio per questo ci serve un resource
+ * model)
+ * 
+ * In questa fase verranno rimossi:
+ *  - il contesto, in quanto mi permetteva di eseguire il led in un nodo separato, cosa che ora posso fare ugualmente attraverso il server node
+ *  - l'evento ctrlevent, in quanto verrà sostituito da una chiamata Restful al server
+ * 
+ * Cose che verranno aggiunte/aggiornate:
+ * - Resource model in maniera tale da avere un modello di tutte le risorse ( sensori e attuatori )
+ * - Aggiornate le rules attraverso l'utilizzo del resource model
+ * 
  */
 System robotRoomba
 Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -87,6 +103,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
 }
 QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	Rules {
+		/* TODO Aggiornare */
 		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
 		eval( let, X, V ):- eval( lt, X , V ) .
 		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/

@@ -1,9 +1,9 @@
 /* 
  * In questa analisi cerchiamo di entrare più nei particolari con la descrizione della struttura e del comportamento del led.
- * Andremo ad utilizzare un mock object che vada a simulare il comportamento del led. In particolare:
+ * Andremo ad utilizzare un mock object (customGui) che vada a simulare il comportamento del led. In particolare:
  *  - se il led è spento avremo una piccola gui di colore rosso
  *  - se il led è acceso avremo una gui un po' più grande rispetto alla precedente
- * Quindi sostanzialmente quando il led blinka ci sarà un passaggio da una gui all'altra.
+ * Quindi sostanzialmente quando il led blinka ci sarà un aggiornamento della gui.
  *  */
 
 System robotRoombaAnalysis

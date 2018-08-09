@@ -79,8 +79,7 @@ const blink_lamp = (req, res, next) => {
         });
     lampPromise.then(lamp => {
     	socketServer.emitAll('value',lamp.value);
-    	if(lamp.value)
-    	{
+    	if(lamp.value){
         	if(refreshIntervalId == 0){
         		/*Blinking (se già sta blinkando non viene chiamata)*/
 	        	refreshIntervalId = setInterval(()=>{
@@ -89,8 +88,7 @@ const blink_lamp = (req, res, next) => {
 	        	}, 2000);
         	}
         }
-        else
-        {
+        else{
         	if(refreshIntervalId != 0){
         		clearInterval(refreshIntervalId);
         		refreshIntervalId = 0;

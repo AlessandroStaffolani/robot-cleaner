@@ -1,6 +1,6 @@
 /** 
  * Arrivati a questo punto bisogna aggiungere dei dettagli alla struttura che è stata creata in precedenza. In particolare:
- * mentre il robot è in movimento (quindi l'unico caso da tenere in considerazione è quando il robot è fermo) deve:
+ * mentre il robot è in movimento deve:
  * 	- se si parla di robot reale deve blinkare un led posizionato su di esso;
  * 	- se si parla di robot virtuale deve blinkare una lampada in particolare la Led Hue Lamp;
  * 	- e deve anche evitare ostacoli fissi e mobili presenti all'interno della stanza.
@@ -13,7 +13,7 @@
  * verrà realizzata una struttura molto generale (il blink del led è una semplice stampa) ma verrà analizzata più nel dettaglio l'interazione
  * del led con la mind del robot
  * 
- * Sarà l'attore che è stato usato nei precendenti requisiti a stabilire se il led deve blinkare o meno
+ * Sarà l'attore che è stato usato nei precendenti requisiti a stabilire se il led deve blinkare o meno (quindi la mind del robot).
  * E' stato aggiunto un nuovo attore che simula il comportamento generale del led
  * Tutto sarà basato sulla generazione di un evento che permette al led di inizare a blinkare
  * Per ora il non si fa distinzione tra le due strutture di led, il tutto potrà essere stesso specificando nell'evento 
