@@ -134,6 +134,7 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	
 	Plan init normal [
 		println("Mind robot ready")
+		//javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#0000ff", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")
 	]
 	switchTo afterInit
 	

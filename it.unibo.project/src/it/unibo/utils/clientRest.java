@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import it.unibo.qactors.akka.QActor;
 
 import java.net.URL;
 
@@ -14,7 +15,7 @@ import org.json.JSONObject;
 
 public class clientRest {
 
-	public static void sendPutBlink(boolean value, String color, String id_lamp, String url) {
+	public static void sendPutBlink(QActor qa, String value, String color, String url) {
 		try {	
 			URL urlblink = new URL(url);
 			//URL urlswitch = new URL("http://127.0.0.1:5005/lamp/"+id_lamp);
