@@ -11,7 +11,7 @@ public class customDate {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH");
 		String hours = sdf.format(new Date());
 		/*Only For test*/
-		//hours = "7";
+		hours = "8";
 		//System.out.println("Ore: " + hours);
 		/*************************************/
 		myActor.replaceRule("currentTime(X)", "currentTime("+hours+")");

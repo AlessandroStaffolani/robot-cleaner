@@ -157,7 +157,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
  		[ !? checkTemperature(hot)  ]{
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
- 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")	
  		}
  	]
  	
@@ -175,7 +176,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? checkConstraints(X)   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) )
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")	
  				}		
  			else
  				 println("Too hot to work or out of time")
@@ -183,7 +185,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
  			[ !? checkConstraints(X)   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) )
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")
  				}		
  			else
  				  println("Too hot to work or out of time")
@@ -191,7 +194,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
  			[ !? checkConstraints(X) ]{
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )	
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")
  				}	
  			else
  				  println("Too hot to work or out of time")
@@ -199,7 +203,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
  			[ !? checkConstraints(X) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )	
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")
  				}
  			else
  				  println("Too hot to work or out of time")
@@ -207,7 +212,8 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
  			[ !? checkConstraints(X) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )	
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink")	
  				
  				}	
  			else 
