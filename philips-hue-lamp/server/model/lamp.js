@@ -7,6 +7,7 @@ let LampSchema = new Schema(
         name: {type: String},
         value: {type: Boolean, default: false},
         color: {type: String},
+        code: {type: String, required: true, unique: true}
     }
 );
 

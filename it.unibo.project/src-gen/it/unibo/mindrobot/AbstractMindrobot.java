@@ -174,7 +174,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	//PublishMsgMove
 	    	parg = "usercmd(robotgui(h(low)))";
 	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    	it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    	it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    	};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
@@ -215,7 +215,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(w(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -238,7 +238,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(s(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -261,7 +261,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -284,7 +284,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -307,7 +307,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(h(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/5b65bcf5da41c00a321979a8/blink"  );
+	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";

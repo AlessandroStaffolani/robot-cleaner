@@ -10,7 +10,8 @@ const add_lamp = (req, res, next) => {
         let lamp = new Lamp({
             name: lampData.name,
             value: lampData.value,
-            color: lampData.color
+            color: lampData.color,
+            code: lampData.code
         });
 
         lamp.save()
@@ -32,8 +33,8 @@ const add_lamp = (req, res, next) => {
 };
 
 const update_status = (req, res, next) => {
-    const idLamp = req.params.id;
-    let lampPromise = Lamp.findById(idLamp)
+    const codeLamp = req.params.code;
+    let lampPromise = Lamp.findOne({code: codeLamp})
         .then(lamp => {
             if (lamp) {
                 const value = req.body.value;
@@ -62,8 +63,8 @@ const update_status = (req, res, next) => {
 };
 
 const blink_lamp = (req, res, next) => {
-    const idLamp = req.params.id;
-    let lampPromise = Lamp.findById(idLamp)
+    const codeLamp = req.params.code;
+    let lampPromise = Lamp.findOne({code: codeLamp})
         .then(lamp => {
             if (lamp) {
                 const value = req.body.value;
