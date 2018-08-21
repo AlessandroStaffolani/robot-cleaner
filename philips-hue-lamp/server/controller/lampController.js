@@ -105,6 +105,17 @@ const blink_lamp = (req, res, next) => {
 };
 
 
+exports.get_lamps = (req, res, next) => {
+    Lamp.find()
+        .then(lamps => {
+            res.header('Content-Type', 'application/json');
+            res.status(200);
+            res.json({
+                lamps: lamps
+            });
+        })
+};
+
 exports.add_lamp = add_lamp;
 exports.update_status = update_status;
 exports.blink_lamp = blink_lamp;
