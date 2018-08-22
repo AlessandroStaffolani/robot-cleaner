@@ -101,38 +101,9 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
  	] 
  	
 }
-QActor mindrobot context ctxMindRobot -pubsub -g cyan {
-	Rules {
-		/* TODO Aggiornare */
-		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-		eval( let, X, V ):- eval( lt, X , V ) .
-		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-		eval( get, X, V ):- eval( gt, X , V ) .
-		maxTemperature(25).
-		startTime(7).
-		endTime(10).
-		currentTemperature(12).
-		currentTime(8).
-		checkTemperature(cold):-
-				maxTemperature(MAX), 
-				currentTemperature(CURRENT), 
-				eval(let, CURRENT, MAX), !.
-		checkTemperature(hot):- 
-				maxTemperature(MAX), 
-				currentTemperature(CURRENT), 
-				eval(gt, CURRENT, MAX), !.
-		checkTime(X):- 
-				startTime(START),
-				endTime(END),
-				currentTime(CURRENT),
-				eval(get, CURRENT, START),
-				eval(let, CURRENT, END).
-		checkConstraints(X):-
-			checkTemperature(cold),
-			checkTime(X).
-	}
-	
+QActor mindrobot context ctxMindRobot -pubsub -g cyan {	
 	Plan init normal [
+		demo consult("./resourceModel.pl");  //contains the models and related rules
 		println("Mind robot ready")
 		//javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")
 	]
@@ -154,7 +125,7 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
- 		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
+ 		onEvent constraint : constraint(temp, V) -> demo changeModelItem(temperature, cityTemperature, V); //ReplaceRule currentTemperature(X) with currentTemperature(V);
  		[ !? checkTemperature(hot)  ]{
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );

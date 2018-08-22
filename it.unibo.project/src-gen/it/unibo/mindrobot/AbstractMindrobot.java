@@ -95,6 +95,9 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	parg = "consult(\"./resourceModel.pl\")";
+	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
 	     connectToMqttServer("ws://localhost:1884");
@@ -157,14 +160,23 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	if( currentEvent != null && currentEvent.getEventId().equals("constraint") && 
 	    		pengine.unify(curT, Term.createTerm("constraint(CONSTRAINT,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg  ="currentTemperature(X)";
-	    			String parg1 ="currentTemperature(V)";
-	    			/* ReplaceRule */
-	    			parg = updateVars(Term.createTerm("constraint(CONSTRAINT,VALUE)"),  Term.createTerm("constraint(temp,V)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
-	    			parg1 = updateVars(Term.createTerm("constraint(CONSTRAINT,VALUE)"),  Term.createTerm("constraint(temp,V)"), 
-	    				    		  					Term.createTerm(currentEvent.getMsg()), parg1);
-	    			if( parg != null && parg1 != null  ) replaceRule(parg, parg1);	    		  					
+	    			String parg="changeModelItem(temperature,cityTemperature,V)";
+	    			/* PHead */
+	    			parg =  updateVars( Term.createTerm("constraint(CONSTRAINT,VALUE)"), 
+	    			                    Term.createTerm("constraint(temp,V)"), 
+	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
+	    				if( parg != null ) {
+	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    					//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    					if( aar.getInterrupted() ){
+	    						curPlanInExec   = "handleEvent";
+	    						if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    						if( ! aar.getGoon() ) return ;
+	    					} 			
+	    					if( aar.getResult().equals("failure")){
+	    						if( ! aar.getGoon() ) return ;
+	    					}else if( ! aar.getGoon() ) return ;
+	    				}
 	    	}
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(hot)" )) != null ){
 	    	{//actionseq
