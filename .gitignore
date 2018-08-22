@@ -19,7 +19,7 @@ RemoteSystemsTempFiles
 !/it.unibo.project/src-gen/
 !/it.unibo.project/srcMore/
 !/it.unibo.project/scripts/
-!/it.unibo.project/resouceModel.pl
+!/it.unibo.project/resourceModel.pl
 
 philips-hue-lamp/\.project
 
