@@ -13,10 +13,6 @@ model( type(sensor, sonarVirtual), name(sonar1), value(0)).
 model( type(sensor, sonarVirtual), name(sonar2), value(0)).
 model( type(sensor, sonarRobot), name(sonarVirtual), value(0)).
 model( type(sensor, sonarRobot), name(sonarReal), value(0)).
-
-/*
-* Model methods 
-*/
  
 getModelItem( TYPE, CATEG, NAME, VALUE ) :-
 		model( type(TYPE, CATEG), name(NAME), value(VALUE) ).
@@ -29,27 +25,20 @@ changeModelItem( CATEG, NAME, VALUE ) :-
 		%%output( changedModelAction(CATEG, NAME, VALUE) ),
 		( changedModelAction(CATEG, NAME, VALUE) %%to be defined by the appl designer
 		  ; true ).	
-
-emitevent( EVID, EVCONTENT ) :- 
-	actorobj( Actor ), 
-	%%output( emit( Actor, EVID, EVCONTENT ) ),
-	Actor <- emit( EVID, EVCONTENT ).
-
-/*
-* System constants
-*/
-
+		  
+eval( let, X, X ).
+eval( let, X, V ):- eval( lt, X , V ) .
+eval( get, X, X ). 
+eval( get, X, V ):- eval( gt, X , V ) .
+	
 maxTemperature(25).
 startTime(7).
 endTime(10).
-
-/*
-* Model Actions
-*/
-
+	
 changedModelAction( temperature, cityTemperature, V  ):-
 	maxTemperature( MAX ),
 	eval( let, V , MAX ), !,   
+	%%output( getModelItem( sensor, temperature, cityTemperature, V)),
 	changeModelItem( virtualRobot, soffritti, true).
 changedModelAction( temperature, cityTemperature, V  ):-	 
  			changeModelItem( leds, ledHue, off),
@@ -60,42 +49,11 @@ changedModelAction( leds, ledHue, V  ):-
 
 changedModelAction( virtualRobot, soffritti, CMD ):- 
     		emitevent( execMoveRobot, usercmd(CMD)).
-    		
-/*
-* Global methods
-*/
-  		
-eval( let, X, X ). %% lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-eval( let, X, V ):- eval( lt, X , V ) .
-eval( get, X, X ). %% greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-eval( get, X, V ):- eval( gt, X , V ) .
 
-/*
-Old Rules
-eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-		eval( let, X, V ):- eval( lt, X , V ) .
-		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
-		eval( get, X, V ):- eval( gt, X , V ) .
-		maxTemperature(25).
-		startTime(7).
-		endTime(10).
-		currentTemperature(12).
-		currentTime(8).
-		checkTemperature(cold):-
-				maxTemperature(MAX), 
-				currentTemperature(CURRENT), 
-				eval(let, CURRENT, MAX), !.
-		checkTemperature(hot):- 
-				maxTemperature(MAX), 
-				currentTemperature(CURRENT), 
-				eval(gt, CURRENT, MAX), !.
-		checkTime(X):- 
-				startTime(START),
-				endTime(END),
-				currentTime(CURRENT),
-				eval(get, CURRENT, START),
-				eval(let, CURRENT, END).
-		checkConstraints(X):-
-			checkTemperature(cold),
-			checkTime(X).
-*/
+emitevent( EVID, EVCONTENT ) :- 
+	actorobj( Actor ), 
+	output( emit( Actor, EVID, EVCONTENT ) ),
+	Actor <- emit( EVID, EVCONTENT ).
+%%%  initialize
+initResourceTheory :- output("initializing the initResourceTheory ...").
+:- initialization(initResourceTheory).

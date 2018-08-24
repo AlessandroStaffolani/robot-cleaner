@@ -29,7 +29,8 @@
  * 
  */
 System robotRoomba
-Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
+Event constraint   : constraint( CONSTRAINT, VALUE ) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
+Event resourceChange : resourceChange( TYPE, CATEG, NAME, VALUE ) // Evento generato dal resource model quando c'è un cambiamento di stato
 
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
@@ -101,7 +102,9 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
  	] 
  	
 }
-QActor mindrobot context ctxMindRobot -pubsub -g cyan {	
+QActor mindrobot context ctxMindRobot -pubsub {	
+	
+	
 	Plan init normal [
 		demo consult("./resourceModel.pl");  //contains the models and related rules
 		println("Mind robot ready")
@@ -120,13 +123,23 @@ QActor mindrobot context ctxMindRobot -pubsub -g cyan {
 	Plan waitPlan[ ]
 	transition stopAfter 3600000   	//1h 
  		whenEvent constraint -> handleEvent,
+ 		whenEvent resourceChange -> handleChange,
  		whenMsg moveRobot -> handleMsg
  	finally repeatPlan 
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
- 		onEvent constraint : constraint(temp, V) -> demo changeModelItem(temperature, cityTemperature, V); //ReplaceRule currentTemperature(X) with currentTemperature(V);
- 		[ !? checkTemperature(hot)  ]{
+ 		onEvent constraint : constraint(temp, V) -> demo changeModelItem(temperature, cityTemperature, V) //ReplaceRule currentTemperature(X) with currentTemperature(V);
+// 		[ !? checkTemperature(hot)  ]{
+// 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+// 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+// 			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink")	
+// 		}
+ 	]
+ 	
+ 	Plan handleChange resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent resourceChange : resourceChange( sensor, temperature, cityTemperature, hot ) -> {
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink")	

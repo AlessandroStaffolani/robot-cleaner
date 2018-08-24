@@ -17,11 +17,7 @@ import java.util.concurrent.Callable;
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
 import it.unibo.qactors.action.ActorTimedAction;
-import it.unibo.baseEnv.basicFrame.EnvFrame;
-import alice.tuprolog.SolveInfo;
-import it.unibo.is.interfaces.IActivity;
-import it.unibo.is.interfaces.IIntent;
-public abstract class AbstractMindrobot extends QActor implements IActivity{ 
+public abstract class AbstractMindrobot extends QActor { 
 	protected AsynchActionResult aar = null;
 	protected boolean actionResult = true;
 	protected alice.tuprolog.SolveInfo sol;
@@ -33,28 +29,14 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	 
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
-			EnvFrame env = new EnvFrame( "Env_mindrobot", java.awt.Color.cyan  , java.awt.Color.black );
-			env.init();
-			env.setSize(800,430); 
-			IOutputEnvView newOutEnvView = ((EnvFrame) env).getOutputEnvView();
-			return newOutEnvView;
+			return outEnvView;
 		}
 		public AbstractMindrobot(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 			super(actorId, myCtx,  
 			"./srcMore/it/unibo/mindrobot/WorldTheory.pl",
 			setTheEnv( outEnvView )  , "init");
-			addInputPanel(80);
-			addCmdPanels();
 			this.planFilePath = "./srcMore/it/unibo/mindrobot/plans.txt";
 	  	}
-	protected void addInputPanel(int size){
-		((EnvFrame) env).addInputPanel(size);			
-	}
-	protected void addCmdPanels(){
-		((EnvFrame) env).addCmdPanel("input", new String[]{"INPUT"}, this);
-		((EnvFrame) env).addCmdPanel("alarm", new String[]{"FIRE"}, this);
-		((EnvFrame) env).addCmdPanel("help",  new String[]{"HELP"}, this);				
-	}
 		@Override
 		protected void doJob() throws Exception {
 			String name  = getName().replace("_ctrl", "");
@@ -77,6 +59,7 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	stateTab.put("afterInit",afterInit);
 	    	stateTab.put("waitPlan",waitPlan);
 	    	stateTab.put("handleEvent",handleEvent);
+	    	stateTab.put("handleChange",handleChange);
 	    	stateTab.put("handleMsg",handleMsg);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
@@ -140,8 +123,8 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	String myselfName = "waitPlan";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindrobot_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleMsg") }, 
-	          new String[]{"true","E","constraint", "true","M","moveRobot" },
+	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleMsg") }, 
+	          new String[]{"true","E","constraint", "true","E","resourceChange", "true","M","moveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitPlan){  
 	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
@@ -178,23 +161,41 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    					}else if( ! aar.getGoon() ) return ;
 	    				}
 	    	}
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkTemperature(hot)" )) != null ){
-	    	{//actionseq
-	    	//PublishMsgMove
-	    	parg = "usercmd(robotgui(h(low)))";
-	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    	//PublishMsgMove
-	    	parg = "usercmd(robotgui(h(low)))";
-	    	sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    	it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    	};//actionseq
-	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleEvent){  
 	    	 println( getName() + " plan=handleEvent WARNING:" + e_handleEvent.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//handleEvent
+	    
+	    StateFun handleChange = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleChange",-1);
+	    	String myselfName = "handleChange";  
+	    	printCurrentEvent(false);
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChange(sensor,temperature,cityTemperature,hot)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			//PublishMsgMove
+	    			parg = "usercmd(robotgui(h(low)))";
+	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    			//PublishMsgMove
+	    			parg = "usercmd(robotgui(h(low)))";
+	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    			};//actionseq
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
+	    }catch(Exception e_handleChange){  
+	    	 println( getName() + " plan=handleChange WARNING:" + e_handleChange.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//handleChange
 	    
 	    StateFun handleMsg = () -> {	
 	    try{	
@@ -337,57 +338,4 @@ public abstract class AbstractMindrobot extends QActor implements IActivity{
 	    	//doing nothing in a QActor
 	    }
 	
-		/* 
-		* ------------------------------------------------------------
-		* IACTIVITY (aactor with GUI)
-		* ------------------------------------------------------------
-		*/
-		private String[] actions = new String[]{
-		    	"println( STRING | TERM )", 
-		    	"play('./audio/music_interlude20.wav'),20000,'alarm,obstacle', 'handleAlarm,handleObstacle'",
-		"emit(EVID,EVCONTENT)  ",
-		"move(MOVE,DURATION,ANGLE)  with MOVE=mf|mb|ml|mr|ms",
-		"forward( DEST, MSGID, MSGCONTENTTERM)"
-		    };
-		    protected void doHelp(){
-				println("  GOAL ");
-				println("[ GUARD ], ACTION  ");
-				println("[ GUARD ], ACTION, DURATION ");
-				println("[ GUARD ], ACTION, DURATION, ENDEVENT");
-				println("[ GUARD ], ACTION, DURATION, EVENTS, PLANS");
-				println("Actions:");
-				for( int i=0; i<actions.length; i++){
-					println(" " + actions[i] );
-				}
-		    }
-		@Override
-		public void execAction(String cmd) {
-			if( cmd.equals("HELP") ){
-				doHelp();
-				return;
-			}
-			if( cmd.equals("FIRE") ){
-				emit("alarm", "alarm(fire)");
-				return;
-			}
-			String input = env.readln();
-			//input = "\""+input+"\"";
-			input = it.unibo.qactors.web.GuiUiKb.buildCorrectPrologString(input);
-			//println("input=" + input);
-			try {
-				Term.createTerm(input);
-	 			String eventMsg=it.unibo.qactors.web.QActorHttpServer.inputToEventMsg(input);
-				//println("QActor eventMsg " + eventMsg);
-				emit("local_"+it.unibo.qactors.web.GuiUiKb.inputCmd, eventMsg);
-	  		} catch (Exception e) {
-		 		println("QActor input error " + e.getMessage());
-			}
-		}
-	 	
-		@Override
-		public void execAction() {}
-		@Override
-		public void execAction(IIntent input) {}
-		@Override
-		public String execActionWithAnswer(String cmd) {return null;}
 	}
