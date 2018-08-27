@@ -220,7 +220,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(w(low)))";
@@ -243,7 +243,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(s(low)))";
@@ -266,7 +266,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
@@ -289,7 +289,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
@@ -312,7 +312,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?checkConstraints(X)" )) != null ){
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(h(low)))";

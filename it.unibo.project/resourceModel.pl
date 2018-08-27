@@ -3,8 +3,8 @@
 resourceModel.pl
 ===============================================================
 */
-model( type(actuator, virtualRobot), name(soffritti), value(false) ). 
-model( type(actuator, realRobot), name(fuffolo), value(false) ). 
+model( type(executor, virtualRobot), name(soffritti), value(true) ). 
+model( type(executor, realRobot), name(fuffolo), value(true) ). 
 model( type(actuator, leds),      name(ledHue), value(off) ).
 model( type(actuator, leds),      name(ledRobot), value(off) ).
 model( type(sensor, temperature), name(cityTemperature),   value(12)  ).
@@ -39,21 +39,26 @@ changedModelAction( temperature, cityTemperature, V  ):-
 	maxTemperature( MAX ),
 	eval( let, V , MAX ), !,   
 	%%output( getModelItem( sensor, temperature, cityTemperature, V)),
-	changeModelItem( virtualRobot, soffritti, true).
+	changeModelItem( virtualRobot, soffritti, true),
+	changeModelItem( realRobot, fuffolo, true).
 changedModelAction( temperature, cityTemperature, V  ):-	 
- 			changeModelItem( leds, ledHue, off),
-    		changeModelItem( virtualRobot, soffritti, false).
+ 			%%changeModelItem( leds, ledHue, off),
+    		changeModelItem( virtualRobot, soffritti, false),
+    		changeModelItem( realRobot, fuffolo, false),
+    		emitevent( resourceChange, resourceChange( sensor, temperature, cityTemperature, hot ) ).
 
 changedModelAction( leds, ledHue, V  ):-
  			emitevent( ctrlEvent, ctrlEvent( leds, ledHue, V) ).
 
-changedModelAction( virtualRobot, soffritti, CMD ):- 
-    		emitevent( execMoveRobot, usercmd(CMD)).
+changedModelAction( virtualRobot, soffritti, CMD ).
+    		
+changedModelAction( realRobot, fuffolo, CMD ).
 
 emitevent( EVID, EVCONTENT ) :- 
 	actorobj( Actor ), 
 	output( emit( Actor, EVID, EVCONTENT ) ),
 	Actor <- emit( EVID, EVCONTENT ).
+	
 %%%  initialize
 initResourceTheory :- output("initializing the initResourceTheory ...").
 :- initialization(initResourceTheory).
