@@ -97,11 +97,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("afterInit",-1);
 	    	String myselfName = "afterInit";  
-	    	it.unibo.utils.customDate.getHours( myself  );
-	    	parg = "currentTime(V)";
+	    	it.unibo.utils.customDate.getHoursRM( myself  );
+	    	parg = "getModelItem(sensor,clock,clock1,R)";
 	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    	solveGoal( parg ); //sept2017
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(currentTime(R))" )) != null ){
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
 	    	parg = "constraint(tempo,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
@@ -175,7 +175,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(sensor,temperature,cityTemperature,hot)");
+	    	curT = Term.createTerm("resourceChange(sensor,CATEG,NAME,off)");
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
@@ -201,11 +201,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleMsg",-1);
 	    	String myselfName = "handleMsg";  
-	    	it.unibo.utils.customDate.getHours( myself  );
-	    	parg = "currentTime(V)";
+	    	it.unibo.utils.customDate.getHoursRM( myself  );
+	    	parg = "getModelItem(sensor,clock,clock1,R)";
 	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    	solveGoal( parg ); //sept2017
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(currentTime(R))" )) != null ){
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
 	    	parg = "constraint(tempo,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
@@ -229,6 +229,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		parg = "usercmd(robotgui(w(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    		parg = "changeModelItem(led,ledHue,true)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -252,6 +255,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		parg = "usercmd(robotgui(s(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    		parg = "changeModelItem(led,ledHue,true)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -275,6 +281,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		parg = "usercmd(robotgui(a(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    		parg = "changeModelItem(led,ledHue,true)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -298,6 +307,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		parg = "usercmd(robotgui(d(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    		parg = "changeModelItem(led,ledHue,true)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -321,6 +333,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		parg = "usercmd(robotgui(h(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    		parg = "changeModelItem(led,ledHue,false)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";

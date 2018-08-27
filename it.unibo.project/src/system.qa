@@ -114,9 +114,9 @@ QActor mindrobot context ctxMindRobot -pubsub {
 	
 	Plan afterInit [
 		// Allo start della mind robot invio l'ora corrente su MQTT per la console
-		javaRun it.unibo.utils.customDate.getHours();
- 		demo currentTime(V); //recupero il tempo (Attualmente è 8 per provare che funzioni)
- 		[ ?? goalResult(currentTime(R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R)
+		javaRun it.unibo.utils.customDate.getHoursRM();
+ 		demo getModelItem( sensor, clock, clock1, R); //recupero il tempo (Attualmente è 8 per provare che funzioni)
+ 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R)
 	]
 	switchTo waitPlan
 	
@@ -139,7 +139,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  	
  	Plan handleChange resumeLastPlan [
  		printCurrentEvent;
- 		onEvent resourceChange : resourceChange( sensor, temperature, cityTemperature, hot ) -> {
+ 		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, off ) -> {
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink")	
@@ -150,18 +150,19 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		/* Ogni volta che si riceve un messaggio di movimento deve essere aggiornato il clock time
  		 * in modo tale da verificare se il movimento del robot è consentito o meno
  		 */
- 		javaRun it.unibo.utils.customDate.getHours();
+ 		javaRun it.unibo.utils.customDate.getHoursRM();
  		/* Pubblico un messaggio realativo al tempo:
  		 * Attenzione devo far capire che il messaggio è per la console*/
- 		demo currentTime(V); //recupero il tempo (Attualmente è 8 per provare che funzioni)
- 		[ ?? goalResult(currentTime(R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
+ 		demo getModelItem( sensor, clock, clock1, R); //recupero il tempo (Attualmente è 8 per provare che funzioni)
+ 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
  		
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")	
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink");
+ 				demo changeModelItem(led, ledHue, true)
  				}		
  			else
  				 println("Too hot to work or out of time")
@@ -170,7 +171,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink");
+ 				demo changeModelItem(led, ledHue, true)
  				}		
  			else
  				  println("Too hot to work or out of time")
@@ -179,7 +181,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ]{
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink");
+ 				demo changeModelItem(led, ledHue, true)
  				}	
  			else
  				  println("Too hot to work or out of time")
@@ -188,7 +191,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink");
+ 				demo changeModelItem(led, ledHue, true)
  				}
  			else
  				  println("Too hot to work or out of time")
@@ -197,7 +201,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink")	
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink");
+ 				demo changeModelItem(led, ledHue, false)	
  				
  				}	
  			else 

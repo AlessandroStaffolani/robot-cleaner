@@ -8,7 +8,7 @@ model( type(executor, realRobot), name(fuffolo), value(true) ).
 model( type(actuator, leds),      name(ledHue), value(off) ).
 model( type(actuator, leds),      name(ledRobot), value(off) ).
 model( type(sensor, temperature), name(cityTemperature),   value(12)  ).
-model( type(sensor, time), name(clock1),   value(8)  ).
+model( type(sensor, clock), name(clock1),   value(8)  ).
 model( type(sensor, sonarVirtual), name(sonar1), value(0)).
 model( type(sensor, sonarVirtual), name(sonar2), value(0)).
 model( type(sensor, sonarRobot), name(sonarVirtual), value(0)).
@@ -42,13 +42,26 @@ changedModelAction( temperature, cityTemperature, V  ):-
 	changeModelItem( virtualRobot, soffritti, true),
 	changeModelItem( realRobot, fuffolo, true).
 changedModelAction( temperature, cityTemperature, V  ):-	 
- 			%%changeModelItem( leds, ledHue, off),
+ 		changeModelItem( leds, ledHue, off),
     		changeModelItem( virtualRobot, soffritti, false),
     		changeModelItem( realRobot, fuffolo, false),
-    		emitevent( resourceChange, resourceChange( sensor, temperature, cityTemperature, hot ) ).
+    		emitevent( resourceChange, resourceChange( sensor, temperature, cityTemperature, off ) ).
+    		
+changedModelAction( clock, clock1, V):-
+	startTime( START ),
+	endTime( END ),
+	eval( get, V, START),
+	eval( let, V, END),
+	changeModelItem( virtualRobot, soffritti, true),
+	changeModelItem( realRobot, fuffolo, true),
+	getModelItem( sensor, TEMPCAT, TEMPNAME, TEMP ),
+	changedModelAction( TEMPCAT, TEMPNAME, TEMP).
+changedModelAction( clock, clock1, V):-
+	changeModelItem( virtualRobot, soffritti, false),
+    	changeModelItem( realRobot, fuffolo, false),
+    	emitevent( resourceChange, resourceChange( sensor, clock, clock1, off ) ).
 
-changedModelAction( leds, ledHue, V  ):-
- 			emitevent( ctrlEvent, ctrlEvent( leds, ledHue, V) ).
+changedModelAction( leds, ledHue, V  ):- output("ledHue is"), output(V).
 
 changedModelAction( virtualRobot, soffritti, CMD ).
     		
