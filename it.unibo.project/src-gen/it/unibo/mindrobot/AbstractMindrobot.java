@@ -198,10 +198,17 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    			};//actionseq
+	    			{/* JavaLikeMove */ 
+	    			String arg1 = "false" ;
+	    			//end arg1
+	    			String arg2 = "#00ff00" ;
+	    			//end arg2
+	    			String arg3 = "NAME" ;
+	    			arg3 =  updateVars( Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)"), Term.createTerm("resourceChange(actuator,leds,NAME,off)"), 
+	    				                Term.createTerm(currentEvent.getMsg()),  arg3 );	                
+	    			//end arg3
+	    			it.unibo.utils.clientRest.sendPutBlink(this,arg1,arg2,arg3 );
+	    			}
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
@@ -209,10 +216,17 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    			};//actionseq
+	    			{/* JavaLikeMove */ 
+	    			String arg1 = "true" ;
+	    			//end arg1
+	    			String arg2 = "#00ff00" ;
+	    			//end arg2
+	    			String arg3 = "NAME" ;
+	    			arg3 =  updateVars( Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)"), Term.createTerm("resourceChange(actuator,leds,NAME,on)"), 
+	    				                Term.createTerm(currentEvent.getMsg()),  arg3 );	                
+	    			//end arg3
+	    			it.unibo.utils.clientRest.sendPutBlink(this,arg1,arg2,arg3 );
+	    			}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleChange){  

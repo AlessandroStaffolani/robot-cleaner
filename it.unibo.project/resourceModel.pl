@@ -5,8 +5,8 @@ resourceModel.pl
 */
 model( type(executor, virtualRobot), name(soffritti), value(true) ). 
 model( type(executor, realRobot), name(fuffolo), value(true) ). 
-model( type(actuator, leds),      name(ledHue), value(off) ).
-model( type(actuator, leds),      name(ledRobot), value(off) ).
+model( type(actuator, leds),      name(1), value(off) ).
+model( type(actuator, leds),      name(2), value(off) ).
 model( type(sensor, temperature), name(cityTemperature),   value(12)  ).
 model( type(sensor, clock), name(clock1),   value(8)  ).
 model( type(sensor, sonarVirtual), name(sonar1), value(0)).
@@ -61,7 +61,7 @@ changedModelAction( clock, clock1, V):-
     	emitevent( resourceChange, resourceChange( sensor, clock, clock1, off ) ).
 
 changedModelAction( leds, NAME, V  ):- 
-	output(NAME), output(V),
+	%%output(NAME), output(V),
 	emitevent( resourceChange, resourceChange( actuator, leds, NAME, V ) ).
 
 changedModelAction( virtualRobot, soffritti, CMD ).

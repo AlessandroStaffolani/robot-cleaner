@@ -2,7 +2,7 @@ const socketServer = require('../utils/SocketServer');
 
 const Lamp = require('../model/lamp');
 
-let refreshIntervalId = 0;
+let refreshIntervalId = {};
 
 const add_lamp = (req, res, next) => {
     const lampData = req.body.lamp;
@@ -68,7 +68,11 @@ const blink_lamp = (req, res, next) => {
         .then(lamp => {
             if (lamp) {
                 const value = req.body.value;
+                const color = req.body.color;
                 lamp.value = value;
+                if (color) {
+                    lamp.color = color;
+                }
                 return lamp.save().then(lamp => lamp).catch(err => next(err));
             } else {
                 res.header('Content-Type', 'application/json');
@@ -79,22 +83,23 @@ const blink_lamp = (req, res, next) => {
             }
         });
     lampPromise.then(lamp => {
-    	socketServer.emitAll('value',lamp.value);
-    	if(lamp.value){
-        	if(refreshIntervalId == 0){
+    	//socketServer.emitToClient(codeLamp, 'value', lamp.value);
+        socketServer.emitToClient(codeLamp, 'color', lamp.color);
+    	if(lamp.value) {
+        	if(refreshIntervalId[codeLamp] === undefined){
         		/*Blinking (se già sta blinkando non viene chiamata)*/
-	        	refreshIntervalId = setInterval(()=>{
-	        		socketServer.emitAll('value', lamp.value);
+	        	refreshIntervalId[codeLamp] = setInterval(()=>{
+	        		socketServer.emitToClient(codeLamp, 'value', lamp.value);
 	        		lamp.value = !lamp.value;
 	        	}, 2000);
         	}
         }
-        else{
-        	if(refreshIntervalId != 0){
-        		clearInterval(refreshIntervalId);
-        		refreshIntervalId = 0;
+        else {
+        	if(refreshIntervalId[codeLamp] !== undefined){
+        		clearInterval(refreshIntervalId[codeLamp]);
+        		refreshIntervalId[codeLamp] = undefined;
         	}
-        	socketServer.emitAll('value', lamp.value)
+        	socketServer.emitToClient(codeLamp, 'value', lamp.value);
         }
         res.header('Content-Type', 'application/json');
         res.status(200);

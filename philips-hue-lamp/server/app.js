@@ -24,7 +24,7 @@ const app = express();
  *Module Variables
  */
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5005;
 const env = config.env;
 app.locals.errMsg = app.locals.errMsg || null;
 

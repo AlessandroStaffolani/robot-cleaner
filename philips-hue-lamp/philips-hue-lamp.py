@@ -10,12 +10,14 @@ port = 5005
 
 start_node = False
 led_gpio = False
+lamp_code = None
 
 
 def print_help():
     print('--- FuffaTeam ---', end='\n\n')
-    print('python3 philips-hue-lamp [options|None]', end='\n\n')
+    print('python3 philips-hue-lamp code [lamp_code] [options|None]', end='\n\n')
     print('-h | --help:\t to see this help message')
+    print('code [lamp_code]: code of lamp for the connection')
     print('--node-start:\t to automatically start node server '
           '(ATTENTION: will cause problem on stop application, need to force to quit')
     print('server-host [ip]:\t to set server host (default: localhost)')
@@ -28,6 +30,7 @@ def reed_arguments(argv):
     global host
     global start_node
     global led_gpio
+    global lamp_code
     error = False
     if argv_len > 1:
         if '-h' in argv or '--help' in argv:
@@ -45,6 +48,12 @@ def reed_arguments(argv):
                         host = argv[i]
                     else:
                         error = True
+                if 'code' == arg:
+                    if (argv_len-1) > i:
+                        i = i + 1
+                        lamp_code = argv[i]
+                    else:
+                        error = True
 
         return error
 
@@ -59,7 +68,8 @@ def start_node_action():
 def main(argv):
 
     arguments_result_error = reed_arguments(argv)
-    if arguments_result_error is True:
+    print(lamp_code)
+    if arguments_result_error is True or lamp_code is None:
         print_help()
     else:
         if start_node:
@@ -68,7 +78,7 @@ def main(argv):
             node_thread.start()
 
         print("Waiting to connect to: " + host + " port: " + str(port))
-        client_socket = ClientSocketIO(host, port)
+        client_socket = ClientSocketIO(host, port, lamp_code)
         client_socket.connect()
 
         # client_socket.emit('Ciao node')

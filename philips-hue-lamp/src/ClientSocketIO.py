@@ -3,14 +3,15 @@ from socketIO_client import SocketIO, LoggingNamespace # reference here: https:/
 
 class ClientSocketIO:
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, lamp_code):
         self.host = host
         self.port = port
+        self.lamp_code = lamp_code
         self.socket_client = None
 
     def connect(self):
         if self.socket_client is None:
-            self.socket_client = SocketIO(self.host, self.port, LoggingNamespace)
+            self.socket_client = SocketIO(self.host, self.port, LoggingNamespace, params={'code': self.lamp_code},)
             self.socket_client.on('connect', self.on_connect)
             self.socket_client.on('disconnect', self.on_disconnect)
             self.socket_client.on('reconnect', self.on_reconnect)
