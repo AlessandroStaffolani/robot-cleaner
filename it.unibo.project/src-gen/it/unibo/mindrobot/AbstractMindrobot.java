@@ -187,7 +187,31 @@ public abstract class AbstractMindrobot extends QActor {
 	    			//PublishMsgMove
 	    			parg = "usercmd(robotgui(h(low)))";
 	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    			parg = "changeModelItem(leds,NAME,off)";
+	    			//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    			solveGoal( parg ); //sept2017
+	    			};//actionseq
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChange(actuator,leds,NAME,off)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
 	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
+	    			};//actionseq
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChange(actuator,leds,NAME,on)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
 	    			};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
@@ -228,8 +252,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(w(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    		parg = "changeModelItem(led,ledHue,true)";
+	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
@@ -254,8 +277,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(s(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    		parg = "changeModelItem(led,ledHue,true)";
+	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
@@ -280,8 +302,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    		parg = "changeModelItem(led,ledHue,true)";
+	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
@@ -306,8 +327,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    		parg = "changeModelItem(led,ledHue,true)";
+	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
@@ -332,8 +352,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(h(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "http://localhost:5005/lamp/1/blink"  );
-	    		parg = "changeModelItem(led,ledHue,false)";
+	    		parg = "changeModelItem(leds,NAME,off)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq

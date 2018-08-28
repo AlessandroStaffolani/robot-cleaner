@@ -42,7 +42,6 @@ changedModelAction( temperature, cityTemperature, V  ):-
 	changeModelItem( virtualRobot, soffritti, true),
 	changeModelItem( realRobot, fuffolo, true).
 changedModelAction( temperature, cityTemperature, V  ):-	 
- 		changeModelItem( leds, ledHue, off),
     		changeModelItem( virtualRobot, soffritti, false),
     		changeModelItem( realRobot, fuffolo, false),
     		emitevent( resourceChange, resourceChange( sensor, temperature, cityTemperature, off ) ).
@@ -54,14 +53,16 @@ changedModelAction( clock, clock1, V):-
 	eval( let, V, END),
 	changeModelItem( virtualRobot, soffritti, true),
 	changeModelItem( realRobot, fuffolo, true),
-	getModelItem( sensor, TEMPCAT, TEMPNAME, TEMP ),
-	changedModelAction( TEMPCAT, TEMPNAME, TEMP).
+	getModelItem( sensor, temperature, TEMPNAME, TEMP ),
+	changedModelAction( temperature, TEMPNAME, TEMP).
 changedModelAction( clock, clock1, V):-
 	changeModelItem( virtualRobot, soffritti, false),
     	changeModelItem( realRobot, fuffolo, false),
     	emitevent( resourceChange, resourceChange( sensor, clock, clock1, off ) ).
 
-changedModelAction( leds, ledHue, V  ):- output("ledHue is"), output(V).
+changedModelAction( leds, NAME, V  ):- 
+	output(NAME), output(V),
+	emitevent( resourceChange, resourceChange( actuator, leds, NAME, V ) ).
 
 changedModelAction( virtualRobot, soffritti, CMD ).
     		
