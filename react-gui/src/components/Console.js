@@ -170,6 +170,7 @@ class Gui extends Component {
 
     render() {
         const { robotStatus } = this.state;
+        console.log(getToken());
         return (
             <div tabIndex={0} onKeyDown={this.handleKeyDown}>
                 <div className={'gui-wrapper'}>
