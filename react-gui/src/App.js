@@ -315,8 +315,9 @@ class App extends Component {
                     Object.keys(errors).map(errKey => {
                         const err = errors[errKey];
                         console.log(err);
-                        state[err.param].className = 'form-control is-invalid';
-                        state[err.param].errorMsg = err.command;
+                        let param = err.param.replace('user.', '');
+                        state[param].className = 'form-control is-invalid';
+                        state[param].errorMsg = err.command;
                         state.isLoading = false;
 
                         this.setState(state);
