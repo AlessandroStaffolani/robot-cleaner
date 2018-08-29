@@ -15,9 +15,11 @@
  * 
  * Sarà il server node a capire quale dei due led accendere in base al robot in movimento. Per capire quale robot sarà in movimento
  * si utilizzerà un RESOURCE MODEL.
- * TODO scrivere qui sotto quali sono le risorse modellate attraverso il resourse model
- * TODO tenere in considerazione che il robot è in movimento anche quando gira a destra e a sinistra (proprio per questo ci serve un resource
- * model)
+ * Le seguenti risorse sono state modellate nel resource model come segue:
+ *  - i robot sono stati modellati come executor ( si tengono in considerazione due modelli separati uno per il Real Robot uno per il Virtual Robot);
+ *  - i led sono stati modellati come attuatori (si tengono in considerazioni due modelli separati uno per la lampadina HUE e uno per il led reale);
+ * 	- il termometro e il clock sono stati modellati come sensori (come anche i vari sonar virtuali e reali)
+ * 
  * 
  * In questa fase verranno rimossi:
  *  - il contesto, in quanto mi permetteva di eseguire il led in un nodo separato, cosa che ora posso fare ugualmente attraverso il server node

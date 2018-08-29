@@ -26,3 +26,7 @@ philips-hue-lamp/\.project
 philips-hue-lamp/\.pydevproject
 
 philips-hue-lamp/\.settings/
+
+philips-hue-lamp/server/package-lock\.json
+
+virtual-robot/server/package-lock\.json

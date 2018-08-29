@@ -62,7 +62,8 @@ changedModelAction( clock, clock1, V):-
 
 changedModelAction( leds, NAME, V  ):- 
 	%%output(NAME), output(V),
-	emitevent( resourceChange, resourceChange( actuator, leds, NAME, V ) ).
+	emitevent( resourceChange, resourceChange( actuator, leds, 1, V ) ).
+	emitevent( resourceChange, resourceChange( actuator, leds, 2, V ) ).
 
 changedModelAction( virtualRobot, soffritti, CMD ).
     		
