@@ -118,7 +118,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		// Allo start della mind robot invio l'ora corrente su MQTT per la console
 		javaRun it.unibo.utils.customDate.getHoursRM();
  		demo getModelItem( sensor, clock, clock1, R); //recupero il tempo (Attualmente è 8 per provare che funzioni)
- 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R)
+ 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(clock1, R)
 	]
 	switchTo waitPlan
 	
@@ -131,6 +131,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
+ 		/*TODO cambiare nome del constraint cityTemperature */
  		onEvent constraint : constraint(temp, V) -> demo changeModelItem(temperature, cityTemperature, V) //ReplaceRule currentTemperature(X) with currentTemperature(V);
 // 		[ !? checkTemperature(hot)  ]{
 // 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
@@ -169,7 +170,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		/* Pubblico un messaggio realativo al tempo:
  		 * Attenzione devo far capire che il messaggio è per la console*/
  		demo getModelItem( sensor, clock, clock1, R); //recupero il tempo (Attualmente è 8 per provare che funzioni)
- 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(tempo, R);
+ 		[ ?? goalResult(getModelItem( sensor, clock, clock1, R)) ] publishEvent "unibo/qasys" -e constraint : constraint(clock1, R);
  		
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{

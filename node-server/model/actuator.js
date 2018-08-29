@@ -10,7 +10,7 @@ let ActuatorSchema = new Schema(
                 'leds'
             ]
         },
-        name: { type: String },
+        name: { type: String, unique: true, required: true },
         value: { type: Schema.Types.Mixed },
         code: { type: Number, unique: true, required: true }
     }

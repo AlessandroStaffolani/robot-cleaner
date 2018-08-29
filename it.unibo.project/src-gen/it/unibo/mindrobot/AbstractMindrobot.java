@@ -103,7 +103,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
-	    	parg = "constraint(tempo,R)";
+	    	parg = "constraint(clock1,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
 	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
 	    	}
@@ -233,7 +233,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
-	    	parg = "constraint(tempo,R)";
+	    	parg = "constraint(clock1,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
 	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
 	    	}

@@ -269,7 +269,7 @@ const getConstraintsValue = (message) => {
         return {
             temperature: value + '°'
         }
-    } else if (type === 'tempo') {
+    } else if (type === 'clock') {
         return {
             time: value
         }

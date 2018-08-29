@@ -11,7 +11,7 @@ let ExecutorSchema = new Schema(
                 'realRobot'
             ]
         },
-        name: { type: String },
+        name: { type: String, unique: true, required: true },
         state: { type: Schema.Types.Mixed },
         code: { type: Number, unique: true, required: true },
         actions: [{ type: Schema.Types.ObjectId, ref: 'ExecutorAction' }],

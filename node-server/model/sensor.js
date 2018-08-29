@@ -13,7 +13,7 @@ let SensorSchema = new Schema(
                 'sonarRobot'
             ]
         },
-        name: { type: String },
+        name: { type: String, unique: true, required: true },
         value: { type: Schema.Types.Mixed },
         unit: { type: String },
         code: { type: Number, unique: true, required: true },

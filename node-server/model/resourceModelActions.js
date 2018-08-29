@@ -16,9 +16,7 @@ const init = () => {
         executors: []
     };
 
-    return create_document_if_not_exist(ResourceModel, resourceModelData)
-        .then(resourceModel => resourceModel)
-        .catch(err => err);
+    return create_document_if_not_exist(ResourceModel, resourceModelData);
 };
 
 const get_resource_model = (populate = true) => {
@@ -34,6 +32,10 @@ const get_resource_model = (populate = true) => {
 
     }
     return resourceModel.then(resourceModel => resourceModel).catch(err => err);
+};
+
+const update_resource = (model, name, updatedData) => {
+    return model.findOneAndUpdate({name: name}, updatedData);
 };
 
 const populate_sensors = () => {
@@ -200,7 +202,7 @@ const generate_executor_actions = () => {
         aPromise,
         sPromise,
         hPromise
-    ]).then(actions => actions).catch(err => err);
+    ]);
 };
 
 const add_array_of_object = (arrayObjectPromise, field) => {
@@ -220,6 +222,7 @@ const add_array_of_object = (arrayObjectPromise, field) => {
 module.exports = {
     init: init,
     get_resource_model: get_resource_model,
+    update_resource: update_resource,
     populate_sensors: populate_sensors,
     populate_actuators: populate_actuators,
     populate_executors: populate_executors,
