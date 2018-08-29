@@ -83,7 +83,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://192.168.137.1:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
@@ -103,9 +103,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
-	    	parg = "constraint(clock1,R)";
+	    	parg = "resourceChangeEvent(sensor,clock1,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
-	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
+	    	sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
 	    	}
 	    	//switchTo waitPlan
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
@@ -124,7 +124,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindrobot_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleMsg") }, 
-	          new String[]{"true","E","constraint", "true","E","resourceChange", "true","M","moveRobot" },
+	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","M","moveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitPlan){  
 	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
@@ -139,14 +139,14 @@ public abstract class AbstractMindrobot extends QActor {
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("constraint(temp,V)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("constraint") && 
-	    		pengine.unify(curT, Term.createTerm("constraint(CONSTRAINT,VALUE)")) && 
+	    	curT = Term.createTerm("resourceChangeEvent(sensor,cityTemperature,V)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChangeEvent") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChangeEvent(TYPE,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="changeModelItem(temperature,cityTemperature,V)";
 	    			/* PHead */
-	    			parg =  updateVars( Term.createTerm("constraint(CONSTRAINT,VALUE)"), 
-	    			                    Term.createTerm("constraint(temp,V)"), 
+	    			parg =  updateVars( Term.createTerm("resourceChangeEvent(TYPE,NAME,VALUE)"), 
+	    			                    Term.createTerm("resourceChangeEvent(sensor,cityTemperature,V)"), 
 	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
 	    				if( parg != null ) {
 	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
@@ -233,9 +233,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??goalResult(getModelItem(sensor,clock,clock1,R))" )) != null ){
 	    	//PublisEventhMove
-	    	parg = "constraint(clock1,R)";
+	    	parg = "resourceChangeEvent(sensor,clock1,R)";
 	    	parg = QActorUtils.substituteVars(guardVars,parg);
-	    	sendMsgMqtt(  "unibo/qasys", "constraint", "none", parg );
+	    	sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
 	    	}
 	    	printCurrentMessage(false);
 	    	//onMsg 

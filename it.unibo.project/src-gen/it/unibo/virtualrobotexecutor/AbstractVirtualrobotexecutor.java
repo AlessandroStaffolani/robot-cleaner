@@ -84,7 +84,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 800 }"  );
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://192.168.137.1:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 

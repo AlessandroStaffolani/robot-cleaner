@@ -8,7 +8,7 @@ exports.get_city_temperature = (req, res, next) => {
     restClient.get_weather_temperature(queryString)
         .then(temperature => {
             console.log("Temperature of " + city + " = " + temperature);
-            let eventstr = 'msg(constraint,event,js,mindrobot,constraint(temp, ' + temperature + '),1)';
+            let eventstr = 'msg(resourceChangeEvent,event,js,mindrobot,resourceChangeEvent(sensor, cityTemperature, ' + temperature + '),1)';
             console.log("emit > " + eventstr);
             clientMqtt.publish(eventstr);
             res.header('Content-Type', 'application/json');

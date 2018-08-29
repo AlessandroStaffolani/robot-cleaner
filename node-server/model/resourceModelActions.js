@@ -34,8 +34,25 @@ const get_resource_model = (populate = true) => {
     return resourceModel.then(resourceModel => resourceModel).catch(err => err);
 };
 
-const update_resource = (model, name, updatedData) => {
-    return model.findOneAndUpdate({name: name}, updatedData);
+const update_resource = (type, name, updatedData) => {
+    let model = null;
+    switch (type) {
+        case 'sensor':
+            model = Sensor;
+            break;
+        case 'actuator':
+            model = Actuator;
+            break;
+        case 'executor':
+            model = Executor;
+            break;
+        default: break;
+    }
+    if (model !== null) {
+        return model.findOneAndUpdate({name: name}, updatedData, {new: true});
+    } else {
+        throw new Error('Model type error');
+    }
 };
 
 const populate_sensors = () => {
