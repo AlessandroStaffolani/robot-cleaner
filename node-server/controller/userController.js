@@ -249,7 +249,7 @@ const save_user = (req, res, next, user, requested_user, addToken=false) => {
                         "user.username": {
                             param: "username",
                             value: requested_user.username,
-                            command: err.command
+                            command: err.message
                         }
                     },
                     requestObject: requested_user
