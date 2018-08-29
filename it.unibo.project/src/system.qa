@@ -37,8 +37,8 @@ Event resourceChange : resourceChange( TYPE, CATEG, NAME, VALUE ) // Evento gene
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
-pubSubServer "ws://localhost:1884" //virtual robot
-//pubSubServer "ws://192.168.43.214:1884" //real robot
+//pubSubServer "ws://localhost:1884" //virtual robot
+pubSubServer "ws://192.168.137.1:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -147,9 +147,18 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			demo changeModelItem(leds, NAME, off)
  		};
  		onEvent resourceChange : resourceChange( actuator, leds, NAME, off ) 
- 			-> javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", NAME);
+ 			->{ 
+ 				/* Visto che l'emissione degli eventi di entrambi i led avviene quasi in contemporanea QActor non riesce a gestirli.
+ 				 * Quindi siamo costretti a fare a mano la chiamata rest al server per entrambi i led
+ 				 */
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "1");
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "2")
+ 			};
  		onEvent resourceChange : resourceChange( actuator, leds, NAME, on ) 
- 			-> javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", NAME)	
+ 			-> { 
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "1");
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2")
+ 			}
  	]
  	
  	Plan handleMsg resumeLastPlan [
@@ -167,7 +176,9 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
+ 				/* Unica soluzione per evitare problemi nell'accensione del led reale è cambiare lo stato di uno solo per volta */
  				demo changeModelItem(leds, NAME, on)
+ 				
  				}		
  			else
  				 println("Too hot to work or out of time")
@@ -177,6 +188,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				demo changeModelItem(leds, NAME, on)
+ 				
  				}		
  			else
  				  println("Too hot to work or out of time")
@@ -184,8 +196,11 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) ) ]{
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
- 				demo changeModelItem(leds, NAME, on)
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )
+ 				/*demo changeModelItem(leds, NAME, on)
+ 				delay 500;
+ 				demo changeModelItem(leds, NAME, off)*/
+ 				
  				}	
  			else
  				  println("Too hot to work or out of time")
@@ -193,8 +208,11 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
- 				demo changeModelItem(leds, NAME, on)
+ 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )
+ 				/*demo changeModelItem(leds, NAME, on)
+ 				delay 500;
+ 				demo changeModelItem(leds, NAME, off)*/
+ 				
  				}
  			else
  				  println("Too hot to work or out of time")
@@ -204,6 +222,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				demo changeModelItem(leds, NAME, off)
+ 				
  				}	
  			else 
  				 println("Too hot to work or out of time")

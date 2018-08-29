@@ -45,7 +45,7 @@ def stop():
     GPIO.output(FL,False)
     GPIO.output(BL,False)
     GPIO.output(BR,False)
-    
+    GPIO.cleanup()
 
 def calculate_distance():
     GPIO.output(TRIG,True)
@@ -109,5 +109,5 @@ elif sys.argv[1] == "P" or sys.argv[1] == "p":
 else:
     print("Not recognized command!")
 
-GPIO.cleanup()
+
 

@@ -83,7 +83,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.137.1:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
@@ -198,17 +198,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			{/* JavaLikeMove */ 
-	    			String arg1 = "false" ;
-	    			//end arg1
-	    			String arg2 = "#00ff00" ;
-	    			//end arg2
-	    			String arg3 = "NAME" ;
-	    			arg3 =  updateVars( Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)"), Term.createTerm("resourceChange(actuator,leds,NAME,off)"), 
-	    				                Term.createTerm(currentEvent.getMsg()),  arg3 );	                
-	    			//end arg3
-	    			it.unibo.utils.clientRest.sendPutBlink(this,arg1,arg2,arg3 );
-	    			}
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "1"  );
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "2"  );
+	    			};//actionseq
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
@@ -216,17 +210,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			{/* JavaLikeMove */ 
-	    			String arg1 = "true" ;
-	    			//end arg1
-	    			String arg2 = "#00ff00" ;
-	    			//end arg2
-	    			String arg3 = "NAME" ;
-	    			arg3 =  updateVars( Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)"), Term.createTerm("resourceChange(actuator,leds,NAME,on)"), 
-	    				                Term.createTerm(currentEvent.getMsg()),  arg3 );	                
-	    			//end arg3
-	    			it.unibo.utils.clientRest.sendPutBlink(this,arg1,arg2,arg3 );
-	    			}
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "1"  );
+	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "2"  );
+	    			};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleChange){  
@@ -316,9 +304,6 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(a(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		parg = "changeModelItem(leds,NAME,on)";
-	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -341,9 +326,6 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//PublishMsgMove
 	    		parg = "usercmd(robotgui(d(low)))";
 	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		parg = "changeModelItem(leds,NAME,on)";
-	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
