@@ -187,9 +187,33 @@ public abstract class AbstractMindrobot extends QActor {
 	    			//PublishMsgMove
 	    			parg = "usercmd(robotgui(h(low)))";
 	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(executor,soffritti,off)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(executor,fuffolo,off)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    			temporaryStr = "\"Mqtt emesso\"";
+	    			println( temporaryStr );  
 	    			parg = "changeModelItem(leds,NAME,off)";
 	    			//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    			solveGoal( parg ); //sept2017
+	    			};//actionseq
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChange(sensor,CATEG,NAME,on)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(executor,soffritti,on)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(executor,fuffolo,on)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
 	    			};//actionseq
 	    	}
 	    	//onEvent 
@@ -202,6 +226,12 @@ public abstract class AbstractMindrobot extends QActor {
 	    			{//actionseq
 	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "1"  );
 	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "2"  );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(actuator,ledHue,off)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(actuator,ledReal,off)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
 	    			};//actionseq
 	    	}
 	    	//onEvent 
@@ -214,6 +244,12 @@ public abstract class AbstractMindrobot extends QActor {
 	    			{//actionseq
 	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "1"  );
 	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "2"  );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(actuator,ledHue,on)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    			//PublisEventhMove
+	    			parg = "resourceChangeEvent(actuator,ledReal,on)";
+	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
 	    			};//actionseq
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);

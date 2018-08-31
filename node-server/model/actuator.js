@@ -12,7 +12,8 @@ let ActuatorSchema = new Schema(
         },
         name: { type: String, unique: true, required: true },
         value: { type: Schema.Types.Mixed },
-        code: { type: Number, unique: true, required: true }
+        code: { type: Number, unique: true, required: true },
+        description: { type: String }
     }
 );
 

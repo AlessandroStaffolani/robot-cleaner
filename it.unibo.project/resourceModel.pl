@@ -54,7 +54,8 @@ changedModelAction( clock, clock1, V):-
 	changeModelItem( virtualRobot, soffritti, true),
 	changeModelItem( realRobot, fuffolo, true),
 	getModelItem( sensor, temperature, TEMPNAME, TEMP ),
-	changedModelAction( temperature, TEMPNAME, TEMP).
+	changedModelAction( temperature, TEMPNAME, TEMP),
+	emitevent( resourceChange, resourceChange( sensor, clock, clock1, on ) ). %% aggiunto per il resource model node serve sapere quando il robot è abilitato
 changedModelAction( clock, clock1, V):-
 	changeModelItem( virtualRobot, soffritti, false),
     	changeModelItem( realRobot, fuffolo, false),

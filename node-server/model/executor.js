@@ -12,10 +12,13 @@ let ExecutorSchema = new Schema(
             ]
         },
         name: { type: String, unique: true, required: true },
-        state: { type: Schema.Types.Mixed },
+        state: { type: Boolean, default: true },
         code: { type: Number, unique: true, required: true },
         actions: [{ type: Schema.Types.ObjectId, ref: 'ExecutorAction' }],
-        last_action: { type: Schema.Types.ObjectId, ref: 'ExecutorAction'}
+        last_action: { type: Schema.Types.ObjectId, ref: 'ExecutorAction'},
+        description: { type: String },
+        actuators: [{ type: Schema.Types.ObjectId, ref: 'Actuator' }],
+        sensors: [{ type: Schema.Types.ObjectId, ref: 'Sensor' }]
     }
 );
 

@@ -18,7 +18,8 @@ let SensorSchema = new Schema(
         unit: { type: String },
         code: { type: Number, unique: true, required: true },
         minValue: { type: Number },
-        maxValue: { type: Number }
+        maxValue: { type: Number },
+        description: { type: String }
     }
 );
 

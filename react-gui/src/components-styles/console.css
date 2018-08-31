@@ -1,1 +1,45 @@
 
+.main-wrapper:focus {
+    outline: none;
+}
+
+.resource-model-wrapper {
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.headline {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.resource-model-wrapper .system .field-wrapper {
+    text-align: left;
+}
+
+.resource-model-wrapper .system .field-wrapper .title {
+    font-weight: bold;
+}
+
+.resource-model-wrapper .system .field-wrapper .title.executor {
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding-bottom: 2px;
+}
+
+.resource-model-wrapper .system .field-wrapper p {
+    margin-bottom: 0;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .headline-small {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding-bottom: 0;
+    font-size: 1rem;
+    display: inline-block;
+    font-weight: 400;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .title {
+    font-weight: 400;
+}

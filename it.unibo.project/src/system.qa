@@ -145,7 +145,16 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, off ) -> {
  			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot non si possono muovere
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, off);
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, off);
+ 			println("Mqtt emesso");
  			demo changeModelItem(leds, NAME, off)
+ 		};
+ 		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, on ) -> {
+ 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot si possono muovere
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, on);
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, on)
  		};
  		onEvent resourceChange : resourceChange( actuator, leds, NAME, off ) 
  			->{ 
@@ -153,12 +162,18 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				 * Quindi siamo costretti a fare a mano la chiamata rest al server per entrambi i led
  				 */
  				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "1");
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "2")
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "2");
+ 				// pubblico su mqtt che i led sono spenti per il resource model di node
+ 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, off);
+ 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, off)
  			};
  		onEvent resourceChange : resourceChange( actuator, leds, NAME, on ) 
  			-> { 
  				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "1");
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2")
+ 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2");
+ 				// pubblico su mqtt che i led sono accesi per il resource model di node
+ 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, on);
+ 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, on)
  			}
  	]
  	

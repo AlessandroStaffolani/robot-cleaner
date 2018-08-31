@@ -6,7 +6,7 @@ const ExecutorAction = require('../model/executorAction');
 
 const init = () => {
     let resourceModelData = {
-        name: 'Robot cleaner resource model',
+        name: 'Robot cleaner',
         description: 'Object with all the resources of the system',
         manufacturer: 'FuffaTeam',
         mqttHost: 'ws://localhost:1884',
@@ -28,6 +28,18 @@ const get_resource_model = (populate = true) => {
             .populate({
                 path: 'executors',
                 populate: { path: 'actions' }
+            })
+            .populate({
+                path: 'executors',
+                populate: { path: 'actuators' }
+            })
+            .populate({
+                path: 'executors',
+                populate: { path: 'sensors' }
+            })
+            .populate({
+                path: 'executors',
+                populate: { path: 'last_action' }
             })
 
     }
@@ -55,14 +67,32 @@ const update_resource = (type, name, updatedData) => {
     }
 };
 
+const update_executors_last_action = (command) => {
+    return ExecutorAction.findOne({command: command})
+        .then(action => {
+            return Executor.find({})
+                .then(executors => {
+                    executors.forEach(executor => {
+                        executor.last_action = action._id;
+                        return executor.save();
+                    })
+                })
+        })
+}
+
+const update_sensonr_value = (category, name, value) => {
+    return Sensor.findOneAndUpdate({category: category, name: name}, {value: value}, {new: true})
+}
+
 const populate_sensors = () => {
     let temperatureData = {
         category: 'temperature',
         name: 'cityTemperature',
         value: 12,
-        unit: 'celsius',
+        unit: 'gradi celsius',
         code: 1,
-        maxValue: 25
+        maxValue: 25,
+        description: 'Temperature of city: '
     };
     let tempPromise = create_document_if_not_exist(Sensor, temperatureData, {code: temperatureData.code});
     let clockData = {
@@ -73,93 +103,61 @@ const populate_sensors = () => {
         code: 2,
         minValue: 7,
         maxValue: 10,
+        description: 'Robot time ',
     };
     let clockPromise = create_document_if_not_exist(Sensor, clockData, {code: clockData.code});
-    let sonar1Data = {
-        category: 'sonarVirtual',
-        name: 'sonar1',
-        value: 0,
-        unit: 'point',
-        code: 3,
-    };
-    let sonar1Promise = create_document_if_not_exist(Sensor, sonar1Data, {code: sonar1Data.code});
-    let sonar2Data = {
-        category: 'sonarVirtual',
-        name: 'sonar2',
-        value: 0,
-        unit: 'point',
-        code: 4,
-    };
-    let sonar2Promise = create_document_if_not_exist(Sensor, sonar2Data, {code: sonar2Data.code});
-    let sonar3Data = {
-        category: 'sonarRobot',
-        name: 'sonarVirtual',
-        value: 0,
-        unit: 'point',
-        code: 5,
-    };
-    let sonar3Promise = create_document_if_not_exist(Sensor, sonar3Data, {code: sonar3Data.code});
-    let sonar4Data = {
-        category: 'sonarRobot',
-        name: 'sonarReal',
-        value: 0,
-        unit: 'point',
-        code: 6,
-    };
-    let sonar4Promise = create_document_if_not_exist(Sensor, sonar4Data, {code: sonar4Data.code});
 
     return add_array_of_object([
         tempPromise,
-        clockPromise,
-        sonar1Promise,
-        sonar2Promise,
-        sonar3Promise,
-        sonar4Promise,
+        clockPromise
     ], 'sensors');
 };
 
 const populate_actuators = () => {
-    let ledHueData = {
-        category: 'leds',
-        name: 'ledHue',
-        value: false,
-        code: 1,
-    };
-    let ledHuePromise = create_document_if_not_exist(Actuator, ledHueData, {code: ledHueData.code});
-    let ledRealData = {
-        category: 'leds',
-        name: 'ledReal',
-        value: false,
-        code: 2,
-    };
-    let ledRealPromise = create_document_if_not_exist(Actuator, ledRealData, {code: ledRealData.code});
-    return add_array_of_object([
-        ledHuePromise,
-        ledRealPromise
-    ], 'actuators')
+    
 };
 
 const populate_executors = () => {
     generate_executor_actions()
         .then(actions => {
-            let virtualRobot = {
-                category: 'virtualRobot',
-                name: 'soffritti',
-                state: 'enabled',
-                code: 1,
-                actions: actions,
-                last_action: null
-            };
-            let virtualRobotPromise = create_document_if_not_exist(Executor, virtualRobot, {code: virtualRobot.code});
-            let realRobot = {
-                category: 'realRobot',
-                name: 'fuffolo',
-                state: 'enabled',
-                code: 2,
-                actions: actions,
-                last_action: null
-            };
-            let realRobotPromise = create_document_if_not_exist(Executor, realRobot, {code: realRobot.code});
+            let sensorsPromise = generate_executors_virtual_sensors();
+            let actuatorsPromise = generate_executors_virtual_actuators();
+
+            let virtualRobotPromise = Promise.all([sensorsPromise, actuatorsPromise])
+                .then(results => {
+                    let virtualRobot = {
+                        category: 'virtualRobot',
+                        name: 'soffritti',
+                        state: 'enabled',
+                        code: 1,
+                        actions: actions,
+                        last_action: null,
+                        description: 'Virtual robot',
+                        sensors: results[0],
+                        actuators: results[1]
+                    };
+                    return create_document_if_not_exist(Executor, virtualRobot, {code: virtualRobot.code});
+                });
+            
+            sensorsPromise = generate_executors_real_sensors();
+            actuatorsPromise = generate_executors_real_actuators();
+
+            let realRobotPromise = Promise.all([sensorsPromise, actuatorsPromise])
+            .then(results => {
+                let realRobot = {
+                    category: 'realRobot',
+                    name: 'fuffolo',
+                    state: 'enabled',
+                    code: 2,
+                    actions: actions,
+                    last_action: null,
+                    description: 'Real robot',
+                    sensors: results[0],
+                    actuators: results[1]
+                };
+                return create_document_if_not_exist(Executor, realRobot, {code: realRobot.code});
+            });
+            
             return add_array_of_object([
                 virtualRobotPromise,
                 realRobotPromise
@@ -222,6 +220,74 @@ const generate_executor_actions = () => {
     ]);
 };
 
+const generate_executors_virtual_sensors = () => {
+    let sonar1Data = {
+        category: 'sonarVirtual',
+        name: 'sonar1',
+        value: 0,
+        unit: 'point',
+        code: 3,
+        description: 'Room sonar 1'
+    };
+    let sonar1Promise = create_document_if_not_exist(Sensor, sonar1Data, {code: sonar1Data.code});
+    let sonar2Data = {
+        category: 'sonarVirtual',
+        name: 'sonar2',
+        value: 0,
+        unit: 'point',
+        code: 4,
+        description: 'Room sonar 2'
+    };
+    let sonar2Promise = create_document_if_not_exist(Sensor, sonar2Data, {code: sonar2Data.code});
+    let sonar3Data = {
+        category: 'sonarRobot',
+        name: 'sonarVirtual',
+        value: 0,
+        unit: 'point',
+        code: 5,
+        description: 'Robot virtual sonar'
+    };
+    let sonar3Promise = create_document_if_not_exist(Sensor, sonar3Data, {code: sonar3Data.code});
+    return Promise.all([sonar1Promise, sonar2Promise, sonar3Promise]);
+};
+
+const generate_executors_virtual_actuators = () => {
+    let ledHueData = {
+        category: 'leds',
+        name: 'ledHue',
+        value: false,
+        code: 1,
+        description: 'Philips hue lamp mock'
+    };
+    let ledHuePromise = create_document_if_not_exist(Actuator, ledHueData, {code: ledHueData.code});
+    return Promise.all([ledHuePromise]);
+};
+
+const generate_executors_real_sensors = () => {
+    let sonar4Data = {
+        category: 'sonarRobot',
+        name: 'sonarReal',
+        value: 0,
+        unit: 'point',
+        code: 6,
+        description: 'Robot real sonar'
+    };
+    let sonar4Promise = create_document_if_not_exist(Sensor, sonar4Data, {code: sonar4Data.code});
+    return Promise.all([sonar4Promise]);
+};
+
+generate_executors_real_actuators = () => {
+    let ledRealData = {
+        category: 'leds',
+        name: 'ledReal',
+        value: false,
+        code: 2,
+        description: 'Real led on robot'
+    };
+    let ledRealPromise = create_document_if_not_exist(Actuator, ledRealData, {code: ledRealData.code});
+    return Promise.all([ledRealPromise])
+}
+
 const add_array_of_object = (arrayObjectPromise, field) => {
     arrayObjectPromise.push(get_resource_model(false));
     return Promise.all(arrayObjectPromise)
@@ -240,6 +306,8 @@ module.exports = {
     init: init,
     get_resource_model: get_resource_model,
     update_resource: update_resource,
+    update_executors_last_action: update_executors_last_action,
+    update_sensonr_value: update_sensonr_value,
     populate_sensors: populate_sensors,
     populate_actuators: populate_actuators,
     populate_executors: populate_executors,
