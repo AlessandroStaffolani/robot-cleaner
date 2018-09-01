@@ -32,7 +32,7 @@ export default class ResourceModel extends Component {
                                                 <span className="w-60">Value: </span> <span className="w-40">{sensor.value}</span>
                                             </p>
                                             <p className="unit d-flex justify-content-between">
-                                                <span className="w-60">Unità di misura:</span> <span className="w-40">{sensor.unit}</span>
+                                                <span className="w-60">Unit of measure:</span> <span className="w-40">{sensor.unit}</span>
                                             </p>
                                         </div>
                                     </div>

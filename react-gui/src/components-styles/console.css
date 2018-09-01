@@ -43,3 +43,16 @@
 .resource-model-wrapper .system .field-wrapper .sub-field .title {
     font-weight: 400;
 }
+
+.resource-model-wrapper .system .field-wrapper .sub-field .sub-field-title {
+    text-transform: capitalize;
+    font-weight: 400
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .sub-field-item {
+    font-size: 0.8rem;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .action-command {
+    padding-left: 1rem;
+}
