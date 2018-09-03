@@ -271,7 +271,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
 	    		pengine.unify(curT, Term.createTerm("sonar(NAME,ROBOT,DISTANCE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="changeModelItem(sensor,sonarVirtual,sonar1,DISTANCE)";
+	    			String parg="changeModelItem(sonarVirtual,sonar1,DISTANCE)";
 	    			/* PHead */
 	    			parg =  updateVars( Term.createTerm("sonar(NAME,ROBOT,DISTANCE)"), 
 	    			                    Term.createTerm("sonar(sonar1,soffritti,DISTANCE)"), 
@@ -295,7 +295,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
 	    		pengine.unify(curT, Term.createTerm("sonar(NAME,ROBOT,DISTANCE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="changeModelItem(sensor,sonarVirtual,sonar2,DISTANCE)";
+	    			String parg="changeModelItem(sonarVirtual,sonar2,DISTANCE)";
 	    			/* PHead */
 	    			parg =  updateVars( Term.createTerm("sonar(NAME,ROBOT,DISTANCE)"), 
 	    			                    Term.createTerm("sonar(sonar2,soffritti,DISTANCE)"), 
@@ -319,7 +319,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarDetect") && 
 	    		pengine.unify(curT, Term.createTerm("sonarDetect(TARGET,ROBOT)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="changeModelItem(sensor,sonarRobot,sonarVirtual,TARGET)";
+	    			String parg="changeModelItem(sonarRobot,sonarVirtual,TARGET)";
 	    			/* PHead */
 	    			parg =  updateVars( Term.createTerm("sonarDetect(TARGET,ROBOT)"), 
 	    			                    Term.createTerm("sonarDetect(TARGET,soffritti)"), 

@@ -183,9 +183,9 @@ QActor mindrobot context ctxMindRobot -pubsub {
  	
  	Plan handleSonarChange resumeLastPlan [
  		printCurrentEvent;
- 		onEvent sonar : sonar (sonar1, soffritti, DISTANCE) -> demo changeModelItem(sensor, sonarVirtual, sonar1, DISTANCE);
- 		onEvent sonar : sonar (sonar2, soffritti, DISTANCE) -> demo changeModelItem(sensor, sonarVirtual, sonar2, DISTANCE);
- 		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sensor, sonarRobot, sonarVirtual, TARGET)
+ 		onEvent sonar : sonar (sonar1, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar1, DISTANCE);
+ 		onEvent sonar : sonar (sonar2, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar2, DISTANCE);
+ 		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sonarRobot, sonarVirtual, TARGET)
  	]
  	
  	Plan handleMsg resumeLastPlan [
