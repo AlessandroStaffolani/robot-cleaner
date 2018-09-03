@@ -54,7 +54,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 							//System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
 							//System.out.println(qa.getName());
 							qa.emit("sonar", 
-								"sonar(NAME, robot, DISTANCE)".replace("NAME", sonarName.replace("-", "")).replace("DISTANCE", (""+distance) ));
+								"sonar(NAME, soffritti, DISTANCE)".replace("NAME", sonarName.replace("-", "")).replace("DISTANCE", (""+distance) ));
 							break;
 						}
 						case "collision" : {
@@ -63,7 +63,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 							String objectName   = jsonArg.getString("objectName");
 							//System.out.println( "collision objectName=" +  objectName  );
 							qa.emit("sonarDetect",
-									"sonarDetect(TARGET)".replace("TARGET", objectName.replace("-", "")));
+									"sonarDetect(TARGET, soffritti)".replace("TARGET", objectName.replace("-", "")));
 							break;
 						}
 						};

@@ -128,7 +128,7 @@ const populate_executors = () => {
                     let virtualRobot = {
                         category: 'virtualRobot',
                         name: 'soffritti',
-                        state: 'enabled',
+                        state: true,
                         code: 1,
                         actions: actions,
                         last_action: null,
@@ -147,7 +147,7 @@ const populate_executors = () => {
                 let realRobot = {
                     category: 'realRobot',
                     name: 'fuffolo',
-                    state: 'enabled',
+                    state: true,
                     code: 2,
                     actions: actions,
                     last_action: null,

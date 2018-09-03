@@ -110,7 +110,7 @@ passport.use(new LocalStrategy(User.authenticate()));*/
  * Testing
  */
 
-// const testResourceModel = require('./test/resourceModel');
+//const testResourceModel = require('./test/resourceModel');
 
 //==============================================================================
 

@@ -33,6 +33,8 @@
 System robotRoomba
 Event resourceChangeEvent   : resourceChangeEvent( TYPE, NAME, VALUE ) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
 Event resourceChange : resourceChange( TYPE, CATEG, NAME, VALUE ) // Evento generato dal resource model quando c'è un cambiamento di stato
+Event sonar : sonar (NAME, ROBOT, DISTANCE)
+Event sonarDetect : sonarDetect(TARGET, ROBOT)
 
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
@@ -126,6 +128,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
 	transition stopAfter 3600000   	//1h 
  		whenEvent resourceChangeEvent -> handleEvent,
  		whenEvent resourceChange -> handleChange,
+ 		whenEvent sonar -> handleSonarChange,
+ 		whenEvent sonarDetect -> handleSonarChange,
  		whenMsg moveRobot -> handleMsg
  	finally repeatPlan 
  	
@@ -177,6 +181,13 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			}
  	]
  	
+ 	Plan handleSonarChange resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent sonar : sonar (sonar1, soffritti, DISTANCE) -> demo changeModelItem(sensor, sonarVirtual, sonar1, DISTANCE);
+ 		onEvent sonar : sonar (sonar2, soffritti, DISTANCE) -> demo changeModelItem(sensor, sonarVirtual, sonar2, DISTANCE);
+ 		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sensor, sonarRobot, sonarVirtual, TARGET)
+ 	]
+ 	
  	Plan handleMsg resumeLastPlan [
  		/* Ogni volta che si riceve un messaggio di movimento deve essere aggiornato il clock time
  		 * in modo tale da verificare se il movimento del robot è consentito o meno
@@ -204,7 +215,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
  				demo changeModelItem(leds, NAME, on)
- 				
  				}		
  			else
  				  println("Too hot to work or out of time")
@@ -213,10 +223,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ]{
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )
- 				/*demo changeModelItem(leds, NAME, on)
- 				delay 500;
- 				demo changeModelItem(leds, NAME, off)*/
- 				
  				}	
  			else
  				  println("Too hot to work or out of time")
@@ -225,10 +231,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )
- 				/*demo changeModelItem(leds, NAME, on)
- 				delay 500;
- 				demo changeModelItem(leds, NAME, off)*/
- 				
  				}
  			else
  				  println("Too hot to work or out of time")
@@ -238,7 +240,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				demo changeModelItem(leds, NAME, off)
- 				
  				}	
  			else 
  				 println("Too hot to work or out of time")

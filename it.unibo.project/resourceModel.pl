@@ -69,6 +69,9 @@ changedModelAction( virtualRobot, soffritti, CMD ).
     		
 changedModelAction( realRobot, fuffolo, CMD ).
 
+changedModelAction( sonarVirtual, NAME, V):- output(sonarVirtual), output(NAME), output(V).
+changedModelAction( sonarRobot, NAME, V):- output(sonarRobot), output(NAME), output(V).
+
 emitevent( EVID, EVCONTENT ) :- 
 	actorobj( Actor ), 
 	output( emit( Actor, EVID, EVCONTENT ) ),

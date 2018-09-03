@@ -19,27 +19,36 @@ client.on('connect', function () {
 //The command usually arrives as buffer, so I had to convert it to string data type;
 client.on('message', function (topic, message) {
     const payloadString = message.toString();
+    let promise = null;
     if (payloadString.indexOf('resourceChangeEvent') !== -1) {
+
         // QA ci dice che cambia il resource model in particolare temperatura, ora e led
         let payloadData = handleResourceChangeEvent(payloadString);
-        resourceModelActions.update_resource(payloadData.type, payloadData.name, payloadData.objectData)
-            .then(() => publishResourceModelUpdated())
-            .catch(err => console.log(err));
+        promise = resourceModelActions.update_resource(payloadData.type, payloadData.name, payloadData.objectData)
+
     } else if (payloadString.indexOf('execMoveRobot') !== -1) {
+
         // QA ci dice che il robot si muove, aggiorno il resource model
         let command = handleExecMoveRobot(payloadString);
-        resourceModelActions.update_executors_last_action(command)
-            .then(() => publishResourceModelUpdated())
+        promise = resourceModelActions.update_executors_last_action(command)
+
     } else if (payloadString.indexOf('sonar(') !== -1) {
+
         // QA ci dice che i sonar virtuali della stanza emettono informazioni
         let payloadData = handleSonarVirtualRoom(payloadString);
-        resourceModelActions.update_sensonr_value(payloadData.category, payloadData.name, payloadData.value)
-            .then(() => publishResourceModelUpdated())
+        promise = resourceModelActions.update_sensonr_value(payloadData.category, payloadData.name, payloadData.value)
+
     } else if (payloadString.indexOf('sonarDetect') !== -1) {
+
         // QA ci dice che il sonar sul robot virtuale emette informazioni
         let payloadData = handleSonarVirtual(payloadString);
-        resourceModelActions.update_sensonr_value(payloadData.category, payloadData.name, payloadData.value)
-            .then(() => publishResourceModelUpdated())
+        promise = resourceModelActions.update_sensonr_value(payloadData.category, payloadData.name, payloadData.value)
+
+    }
+
+    if (promise !== null){
+        promise.then(() => publishResourceModelUpdated())
+            .catch(err => console.log(err));
     }
     console.log("mqtt RECEIVES:" + message.toString()); //if toString is not given, the command comes as buffer
 });
@@ -49,7 +58,7 @@ exports.publish = function (msg) {
     client.publish(topic, msg);
 };
 
-const publishResourceModelUpdated = (payload = '') => {
+const publishResourceModelUpdated = (payload = 'true') => {
     console.log('mqtt publish resource model update ' + payload);
     client.publish(topic, 'msg(resource_model_update,dispatch,js,react,resource_model_update(payload(' + payload + ')),1)');
 };

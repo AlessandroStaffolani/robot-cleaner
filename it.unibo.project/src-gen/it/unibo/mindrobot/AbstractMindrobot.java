@@ -60,6 +60,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	stateTab.put("waitPlan",waitPlan);
 	    	stateTab.put("handleEvent",handleEvent);
 	    	stateTab.put("handleChange",handleChange);
+	    	stateTab.put("handleSonarChange",handleSonarChange);
 	    	stateTab.put("handleMsg",handleMsg);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
@@ -123,8 +124,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    	String myselfName = "waitPlan";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindrobot_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleMsg") }, 
-	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","M","moveRobot" },
+	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleMsg") }, 
+	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","E","sonar", "true","E","sonarDetect", "true","M","moveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitPlan){  
 	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
@@ -258,6 +259,90 @@ public abstract class AbstractMindrobot extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//handleChange
+	    
+	    StateFun handleSonarChange = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleSonarChange",-1);
+	    	String myselfName = "handleSonarChange";  
+	    	printCurrentEvent(false);
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonar(sonar1,soffritti,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
+	    		pengine.unify(curT, Term.createTerm("sonar(NAME,ROBOT,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="changeModelItem(sensor,sonarVirtual,sonar1,DISTANCE)";
+	    			/* PHead */
+	    			parg =  updateVars( Term.createTerm("sonar(NAME,ROBOT,DISTANCE)"), 
+	    			                    Term.createTerm("sonar(sonar1,soffritti,DISTANCE)"), 
+	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
+	    				if( parg != null ) {
+	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    					//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    					if( aar.getInterrupted() ){
+	    						curPlanInExec   = "handleSonarChange";
+	    						if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    						if( ! aar.getGoon() ) return ;
+	    					} 			
+	    					if( aar.getResult().equals("failure")){
+	    						if( ! aar.getGoon() ) return ;
+	    					}else if( ! aar.getGoon() ) return ;
+	    				}
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonar(sonar2,soffritti,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonar") && 
+	    		pengine.unify(curT, Term.createTerm("sonar(NAME,ROBOT,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="changeModelItem(sensor,sonarVirtual,sonar2,DISTANCE)";
+	    			/* PHead */
+	    			parg =  updateVars( Term.createTerm("sonar(NAME,ROBOT,DISTANCE)"), 
+	    			                    Term.createTerm("sonar(sonar2,soffritti,DISTANCE)"), 
+	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
+	    				if( parg != null ) {
+	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    					//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    					if( aar.getInterrupted() ){
+	    						curPlanInExec   = "handleSonarChange";
+	    						if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    						if( ! aar.getGoon() ) return ;
+	    					} 			
+	    					if( aar.getResult().equals("failure")){
+	    						if( ! aar.getGoon() ) return ;
+	    					}else if( ! aar.getGoon() ) return ;
+	    				}
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("sonarDetect(TARGET,soffritti)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("sonarDetect") && 
+	    		pengine.unify(curT, Term.createTerm("sonarDetect(TARGET,ROBOT)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="changeModelItem(sensor,sonarRobot,sonarVirtual,TARGET)";
+	    			/* PHead */
+	    			parg =  updateVars( Term.createTerm("sonarDetect(TARGET,ROBOT)"), 
+	    			                    Term.createTerm("sonarDetect(TARGET,soffritti)"), 
+	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
+	    				if( parg != null ) {
+	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    					//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    					if( aar.getInterrupted() ){
+	    						curPlanInExec   = "handleSonarChange";
+	    						if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    						if( ! aar.getGoon() ) return ;
+	    					} 			
+	    					if( aar.getResult().equals("failure")){
+	    						if( ! aar.getGoon() ) return ;
+	    					}else if( ! aar.getGoon() ) return ;
+	    				}
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
+	    }catch(Exception e_handleSonarChange){  
+	    	 println( getName() + " plan=handleSonarChange WARNING:" + e_handleSonarChange.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//handleSonarChange
 	    
 	    StateFun handleMsg = () -> {	
 	    try{	
