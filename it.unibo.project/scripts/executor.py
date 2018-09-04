@@ -21,18 +21,34 @@ GPIO.setup(ECHO, GPIO.IN)
 
 
 def move_forward():
-    GPIO.output(FR,True)
     GPIO.output(FL,True)
+    GPIO.output(FR,True)
 
 def move_right():
+    channel_f_r = GPIO.input(FR)
+    channel_f_l = GPIO.input(FL)
+    
+    if channel_f_r == True or channel_f_l == True:
+        GPIO.output(FR,False)
+        GPIO.output(FL,False)
+    
+    time.sleep(0.3)    
     GPIO.output(FR,True)
-    time.sleep(0.5)
+    time.sleep(0.8)
     GPIO.output(FR,False)
     GPIO.cleanup()
 
 def move_left():
+    channel_f_r = GPIO.input(FR)
+    channel_f_l = GPIO.input(FL)
+
+    if channel_f_r == True or channel_f_l == True:
+        GPIO.output(FR,False)
+        GPIO.output(FL,False)
+
+    time.sleep(0.3)
     GPIO.output(FL,True)
-    time.sleep(0.5)
+    time.sleep(0.6)
     GPIO.output(FL,False)
     GPIO.cleanup()
 
