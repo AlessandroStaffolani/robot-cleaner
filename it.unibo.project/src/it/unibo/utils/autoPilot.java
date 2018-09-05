@@ -55,8 +55,11 @@ public class autoPilot {
 			
 			sleepMillseconds(2000);
 		}*/
+		boolean isTurning = false;
 		while (!stopAutoPilot && (startingPoint == null || endingPoint == null)) {
-			clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
+			if (!isTurning) {
+				clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
+			}
 			
 			System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
 			if (currentDistance != 0) {
@@ -72,11 +75,13 @@ public class autoPilot {
 			
 			System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 			
-			if (currentSonar != null) {
+			if (currentSonar != null && !isTurning) {
+				isTurning = true;
 				clientTcp.sendMsg(qa, STOP_MOVE);
 				sleepMillseconds(300);
-				setCurrentSonar(null);
 				turnVirtualRobot(qa);
+				setCurrentSonar(null);
+				isTurning = false;
 			}
 			
 			sleepMillseconds(150);
@@ -96,6 +101,8 @@ public class autoPilot {
 		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
 		sleepMillseconds(300);
 		clientTcp.sendMsg(qa, msg);
+		sleepMillseconds(300);
+		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
 		sleepMillseconds(300);
 	}
 	
