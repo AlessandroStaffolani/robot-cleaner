@@ -131,7 +131,7 @@ public class customGui {
 	    			this.setLedGui(on);
 	    		else
 	    			this.setLedGui(!on);
-	    		/*Da aggiustare perché un po' una porcata*/
+	    		
 	    		try {
 					TimeUnit.SECONDS.sleep(1);
 				} catch (InterruptedException e) {

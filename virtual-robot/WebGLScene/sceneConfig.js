@@ -11,7 +11,7 @@ const config = {
     sonars: [
         {
             name: "sonar1",
-            position: {x: 0.05, y: 0.06},
+            position: {x: 0.06, y: 0.09},
             senseAxis: {x: true, y: true}
         },
         {
@@ -42,11 +42,11 @@ const config = {
             centerPosition: {x: 0.5, y: 0.5},
             size: {x: 0.98, y: 0.01}
         },*/
-        {
+        /*{
             name: "table",
             centerPosition: {x: 0.4, y: 0.4},
             size: {x: 0.2, y: 0.2}
-        },
+        },*/
         {
             name: "wallUp",
             centerPosition: {x: 0.5, y: 0.98},

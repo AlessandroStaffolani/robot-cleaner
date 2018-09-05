@@ -44,6 +44,9 @@ public static void initClientConn(QActor qa ) throws Exception {
 						//System.out.println( "reads: " + jsonMsgStr + " qa=" + qa.getName() );
 						JSONObject jsonObject = new JSONObject(jsonMsgStr);
 						//System.out.println( "type: " + jsonObject.getString("type"));
+						
+						System.out.println("\n\nJSON OBJECT = " + jsonObject.toString() + "\n\n");
+						
 						switch (jsonObject.getString("type") ) {
 						case "webpage-ready" : System.out.println( "webpage-ready "   );break;
 						case "sonar-activated" : {
@@ -53,6 +56,18 @@ public static void initClientConn(QActor qa ) throws Exception {
 							int distance       = jsonArg.getInt( "distance" );
 							//System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
 							//System.out.println(qa.getName());
+							
+							String axis 	   = autoPilot.getAxisValue(jsonArg.getString("axis"), sonarName);
+							if (axis != autoPilot.robotAxis || autoPilot.robotAxis == null) {
+								autoPilot.setCurrentSonar(sonarName);
+								autoPilot.setRobotAxis(axis);
+							} else {
+								autoPilot.setCurrentSonar(null);
+							}
+							autoPilot.setCurrentDistance(distance);
+							
+							System.out.println( "sonarName = " +  sonarName + " distance = " + distance + " axis = " + axis );
+							
 							qa.emit("sonar", 
 								"sonar(NAME, soffritti, DISTANCE)".replace("NAME", sonarName.replace("-", "")).replace("DISTANCE", (""+distance) ));
 							break;
