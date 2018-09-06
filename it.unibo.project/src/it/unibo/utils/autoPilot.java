@@ -32,6 +32,7 @@ public class autoPilot {
 	
 	public static String currentSonar = null;
 	public static int currentDistance = 0;
+	public static int lastDistance = 0;
 	public static String robotAxis = null;
 	
 	public static void stopAutoPilot(QActor qa) {
@@ -41,7 +42,7 @@ public class autoPilot {
 	
 	public static void startAutoPilot(QActor qa) throws Exception {
 		stopAutoPilot = false;
-		//startTheReader();
+		//startTheReader(qa);
 		moveRobot(qa);
 	}
 	
@@ -55,33 +56,48 @@ public class autoPilot {
 			
 			sleepMillseconds(2000);
 		}*/
-		boolean isTurning = false;
+		//boolean isTurning = false;
 		while (!stopAutoPilot && (startingPoint == null || endingPoint == null)) {
-			if (!isTurning) {
+			//if (!isTurning) {
 				clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
-			}
+			//}
 			
 			System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
-			if (currentDistance != 0) {
-				if (Math.abs(currentDistance) <= 3) {
+			System.out.println("Current distance: " + currentDistance + ", Last Distance: " + lastDistance + ", Loop: " + clientTcp.counter_repeat_distance);
+			
+				
+
+			if(currentSonar != null && currentDistance != 0)
+				if (Math.abs(currentDistance) <= 5) {
 					if (startingPoint == null) {
+						System.out.println("#=================================================================#");
 						startingPoint = currentSonar;
+						System.out.println("Ho acquisito lo StartingPoint:" + startingPoint);
+						System.out.println("#=================================================================#");
+						setCurrentSonar(null); /*Permette al robot di fare meglio gli angoli*/
+						changeDirection(qa);
 					} else if (!startingPoint.equals(currentSonar)) {
+						System.out.println("#=================================================================#");
+						System.out.println("Ho terminato la pulizia!");
 						endingPoint = currentSonar;
+						System.out.println("Il nuovo ending point è il seguente: " + endingPoint);
 						stopAutoPilot = true;
+						System.out.println("#=================================================================#");
 					}
 				} 
-			}
+
 			
 			System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 			
-			if (currentSonar != null && !isTurning) {
-				isTurning = true;
+			if (currentSonar != null /*&& !isTurning*/) {
+				//isTurning = true;
+				System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
 				clientTcp.sendMsg(qa, STOP_MOVE);
 				sleepMillseconds(300);
 				turnVirtualRobot(qa);
 				setCurrentSonar(null);
-				isTurning = false;
+				System.out.println("Giro Terminato!\n\n");
+				//isTurning = false;
 			}
 			
 			sleepMillseconds(150);
@@ -96,16 +112,37 @@ public class autoPilot {
 			msg = MOVE_LEFT;
 		}
 		lastTurn += 1;
+		
+		/*Gira*/
 		clientTcp.sendMsg(qa, msg);
 		sleepMillseconds(300);
+		
+		/*Vai avanti per 200 ms*/
 		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
 		sleepMillseconds(300);
+		
+		/*Gira*/
 		clientTcp.sendMsg(qa, msg);
 		sleepMillseconds(300);
+		
+		/*Vai avanti per 200 ms*/
 		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
+		//sleepMillseconds(300);
+	}
+	
+
+	protected static void changeDirection(QActor qa) throws Exception {
+		/*Gira*/
+		clientTcp.sendMsg(qa, MOVE_LEFT);
+		sleepMillseconds(300);
+		
+		/*Gira*/
+		clientTcp.sendMsg(qa, MOVE_LEFT);
 		sleepMillseconds(300);
 	}
 	
+	
+	/*
 	protected static void startTheReader() {		
 		new Thread() {
 			public void run() {
@@ -126,7 +163,7 @@ public class autoPilot {
 							int distance       = jsonArg.getInt( "distance" );
 
 							String axis 	   = getAxisValue(jsonArg.getString("axis"), sonarName);
-							if (axis != robotAxis || robotAxis == null) {
+							/*if (axis != robotAxis || robotAxis == null) {
 								setCurrentSonar(sonarName);
 								setRobotAxis(axis);
 							}
@@ -142,7 +179,7 @@ public class autoPilot {
 			}
 		}.start();
 	}
-	
+	*/
 	protected static synchronized void setCurrentSonar(String value)  {
 		currentSonar = value;
 	}
@@ -155,6 +192,17 @@ public class autoPilot {
 		if (value != robotAxis) {
 			robotAxis = value;
 		}
+	}
+	
+	protected static synchronized void setLastDistance(int value) {
+		lastDistance = value;
+	}
+	protected static void setTurn(int value) {
+		lastTurn = value;
+	}
+	
+	protected static int getTurn() {
+		return lastTurn;
 	}
 
 	protected static String getAxisValue(String axis, String sonar) {

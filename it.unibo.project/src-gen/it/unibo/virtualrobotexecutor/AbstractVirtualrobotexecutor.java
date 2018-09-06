@@ -80,12 +80,6 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 300 }"  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 300 }"  );
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
 	    	//delay  ( no more reactive within a plan)
