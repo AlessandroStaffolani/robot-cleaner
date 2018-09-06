@@ -69,23 +69,24 @@ public static void initClientConn(QActor qa ) throws Exception {
 //							}
 							autoPilot.setCurrentDistance(distance);
 							//LOOP 
-							/*TODO Se il robot è fermo deve smettere di controllare la distanza*/
-//							if(autoPilot.currentDistance != autoPilot.lastDistance) {
-//								autoPilot.setLastDistance(autoPilot.currentDistance);
-//								counter_repeat_distance = 0;
-//							}else
-//								counter_repeat_distance = counter_repeat_distance + 1;
-//							
-//							System.out.println("\n\nLOOP: " + counter_repeat_distance + "\n\n");
-//							if(counter_repeat_distance > 2) {
-//								System.out.println("Sono entrato in loop: Cambio direzione!");
-//								counter_repeat_distance = 0;
-//								int lastTurn = autoPilot.getTurn();
-//								System.out.println("Last Turn: " + lastTurn);
-//								lastTurn ++;
-//								//autoPilot.setCurrentSonar(sonarName);
-//								autoPilot.setTurn(lastTurn);
-//							}
+							if(autoPilot.getStatus()) {
+								if(autoPilot.currentDistance != autoPilot.lastDistance) {
+									autoPilot.setLastDistance(autoPilot.currentDistance);
+									counter_repeat_distance = 0;
+								}else
+									counter_repeat_distance = counter_repeat_distance + 1;
+								
+								System.out.println("\n\nLOOP: " + counter_repeat_distance + "\n\n");
+								if(counter_repeat_distance > 2) {
+									System.out.println("Sono entrato in loop: Cambio direzione!");
+									counter_repeat_distance = 0;
+									int lastTurn = autoPilot.getTurn();
+									System.out.println("Last Turn: " + lastTurn);
+									lastTurn ++;
+									//autoPilot.setCurrentSonar(sonarName);
+									autoPilot.setTurn(lastTurn);
+								}
+							}
 							System.out.println( "sonarName = " +  sonarName + " distance = " + distance + " axis = " + axis );
 							
 							qa.emit("sonar", 

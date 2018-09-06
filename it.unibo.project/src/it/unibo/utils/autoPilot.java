@@ -28,7 +28,7 @@ public class autoPilot {
 	private static int lastTurn = 1; 
 	private static String startingPoint = null;
 	private static String endingPoint = null;
-	private static boolean isStarted = false;
+	
 	
 	public static String currentSonar = null;
 	public static int currentDistance = 0;
@@ -56,7 +56,7 @@ public class autoPilot {
 			
 			sleepMillseconds(2000);
 		}*/
-		//boolean isTurning = false;
+		
 		while (!stopAutoPilot && (startingPoint == null || endingPoint == null)) {
 			//if (!isTurning) {
 				clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
@@ -67,7 +67,7 @@ public class autoPilot {
 			
 				
 
-			if(currentSonar != null && currentDistance != 0)
+			if(currentSonar != null) {
 				if (Math.abs(currentDistance) <= 5) {
 					if (startingPoint == null) {
 						System.out.println("#=================================================================#");
@@ -85,19 +85,20 @@ public class autoPilot {
 						System.out.println("#=================================================================#");
 					}
 				} 
+			}
 
 			
 			System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 			
-			if (currentSonar != null /*&& !isTurning*/) {
-				//isTurning = true;
+			if (currentSonar != null) {
+				
 				System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
 				clientTcp.sendMsg(qa, STOP_MOVE);
 				sleepMillseconds(300);
 				turnVirtualRobot(qa);
 				setCurrentSonar(null);
 				System.out.println("Giro Terminato!\n\n");
-				//isTurning = false;
+				
 			}
 			
 			sleepMillseconds(150);
@@ -203,6 +204,13 @@ public class autoPilot {
 	
 	protected static int getTurn() {
 		return lastTurn;
+	}
+	
+	protected static boolean getStatus() {
+		if(stopAutoPilot)
+			return false;
+		else
+			return true;
 	}
 
 	protected static String getAxisValue(String axis, String sonar) {
