@@ -52,7 +52,7 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 		delay 1000;
 		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
 		//delay 500;
-		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
+		//sjavaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
 		println("Robot ready");
 		delay 500;
 		javaRun it.unibo.utils.autoPilot.startAutoPilot();

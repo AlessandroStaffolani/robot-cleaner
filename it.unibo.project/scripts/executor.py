@@ -80,29 +80,6 @@ def calculate_distance():
 
     return distance
     
-# DA DEFINIRE!!
-# Ogni qualvolta verrà trovato un ostacolo dovrà inviare un messaggio su mqtt
-# in modo tale che la mind possa gestire l'occcorrenza di quest'ultimo e stabilire
-# cosa il real robot debba fare (fare nell'ultima fase).
-# def autopilot(seconds):
-	# Inizializzazione del sensore
-#	GPIO.output(TRIG, False)
-#	print("Waiting For Sensor To Settle..")
-#	time.sleep(2)
-#	print("Sensor ready!")
-	# --------------------------
-	
-#    start_time = time.time()
-#    move_forward()
-#    end_time = 0
-#    while (end_time - start_time) < seconds:
-#        distance = calculate_distance()
-#        if distance <= 10:
-#            print("Obstacle detected")
-#            stop()
-#        end_time = time.time()
-#    stop()
-#    GPIO.cleanup()
 
 
 if sys.argv[1] == "W" or sys.argv[1] == "w":

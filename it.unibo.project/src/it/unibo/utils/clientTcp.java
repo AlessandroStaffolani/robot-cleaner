@@ -63,6 +63,8 @@ public static void initClientConn(QActor qa ) throws Exception {
 								autoPilot.setCurrentSonar(sonarName);
 								autoPilot.setRobotAxis(axis);
 							}
+							if(distance == 0)
+								autoPilot.setCurrentSonar(sonarName);
 //							else {
 //								/*Con questo riesce a stare sull'asse y del sonar1*/
 //								autoPilot.setCurrentSonar(null);
