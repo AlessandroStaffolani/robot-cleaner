@@ -102,8 +102,11 @@ public static void initClientConn(QActor qa ) throws Exception {
 							JSONObject jsonArg  = jsonObject.getJSONObject("arg");
 							String objectName   = jsonArg.getString("objectName");
 							//System.out.println( "collision objectName=" +  objectName  );
+							if(!objectName.contains("wall"))
+								avoidObstacle.setObstacleDetected(true);
 							qa.emit("sonarDetect",
 									"sonarDetect(TARGET, soffritti)".replace("TARGET", objectName.replace("-", "")));
+							//System.out.println("Var: " + avoidObstacle.isObstacleDetected());
 							break;
 						}
 						};

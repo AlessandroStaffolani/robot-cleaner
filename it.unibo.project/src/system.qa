@@ -49,6 +49,10 @@ Context ctxRealRobot ip [ host="localhost" port=8031]
 QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
+		println("clientTcp Ready");
+		delay 500;
+		javaRun it.unibo.utils.avoidObstacle.init();
+		
 		//delay 1000;
 		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
 		//delay 500;

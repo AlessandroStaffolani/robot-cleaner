@@ -1,9 +1,6 @@
 package it.unibo.utils;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import org.json.JSONObject;
 
 import it.unibo.qactors.akka.QActor;
 
@@ -17,16 +14,16 @@ public class autoPilot {
 	public static final int S1_Y = -16;
 	public static final int S2_X = 21;
 	public static final int S2_Y = 15;
-	
+
 	public static final String MOVE_LEFT = "{ \"type\": \"turnLeft\", \"arg\": 300 }";
 	public static final String MOVE_RIGHT = "{ \"type\": \"turnRight\", \"arg\": 300 }";
 	public static final String MOVE_FORWARD = "{ \"type\": \"moveForward\", \"arg\": " + FORWARD_STEP + " }";
 	public static final String MOVE_BACKWARD = "{ \"type\": \"moveBackward\", \"arg\": " + FORWARD_STEP + " }";
 	public static final String STOP_MOVE = "{ \"type\": \"alarm\" }";
-	
+
 	private static boolean stopAutoPilot = false;
-	
-	private static int lastTurn = 1; 
+
+	private static int lastTurn = 1;
 	private static String startingPoint = null;
 	private static String endingPoint = null;
 
@@ -35,7 +32,7 @@ public class autoPilot {
 	public static int lastDistance = 0;
 	public static String robotAxis = null;
 	public static String realAxis = null;
-	
+
 	public static void init() {
 		lastTurn = 1;
 		startingPoint = null;
@@ -46,100 +43,90 @@ public class autoPilot {
 		robotAxis = null;
 		realAxis = null;
 	}
-	
+
 	public static void stopAutoPilot(QActor qa) {
 		stopAutoPilot = true;
 		System.out.println("\n\n\nStop auto pilot, value = " + stopAutoPilot);
 	}
-	
+
 	public static void startAutoPilot(QActor qa) throws Exception {
-		//init();
+		// init();
 		stopAutoPilot = false;
-		if (isStartingPoint(qa)) {
-			// Siamo nella posizione iniziale possiamo far partire la serpentina
-			init();
-			startingPoint = "sonar1";
-		} else {
-			// Non siamo nella posizione iniziale facciamo partire il metodo per metterci in posizione iniziale
-			init();
-			System.out.println("Is NOT starting point");
-			goToStartingPoint(qa);
-		}
-		startingPoint = "sonar1";
-		//startTheReader(qa);
+//		if (isStartingPoint(qa)) {
+//			// Siamo nella posizione iniziale possiamo far partire la serpentina
+//			init();
+//			startingPoint = "sonar1";
+//		} else {
+//			// Non siamo nella posizione iniziale facciamo partire il metodo per metterci in
+//			// posizione iniziale
+//			init();
+//			goToStartingPoint(qa);
+//		}
+//		startingPoint = "sonar1";
+//		// startTheReader(qa);
 		moveRobot(qa);
 	}
-	
+
 	protected static void moveRobot(QActor qa) throws Exception {
-		/*while (true) {
-			System.out.println("StartPoint = " + startingPoint + "\n");
-			System.out.println("EndPoint = " + endingPoint + "\n");
-			System.out.println("CurrentSonar = " + currentSonar + "\n");
-			System.out.println("CurrentDistance = " + currentDistance + "\n");
-			System.out.println("RobotAxis = " + robotAxis + "\n");
-			
-			sleepMillseconds(2000);
-		}*/
-		
+
 		new Thread() {
 			public void run() {
-				while (!stopAutoPilot && (startingPoint == null || endingPoint == null)) {
+				while (!stopAutoPilot && (startingPoint == null || endingPoint == null)
+						&& !avoidObstacle.isObstacleDetected()) {
 					try {
-						
-						//if (!isTurning) {
+
+						// if (!isTurning) {
 						clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
-					//}
-					
-					System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
-					System.out.println("Current distance: " + currentDistance + ", Last Distance: " + lastDistance + ", Loop: " + clientTcp.counter_repeat_distance);
-					
-						
+						// }
 
-					if(currentSonar != null) {
-						if (Math.abs(currentDistance) <= 5) {
-							if (startingPoint == null) {
-								System.out.println("#=================================================================#");
-								startingPoint = currentSonar;
-								System.out.println("Ho acquisito lo StartingPoint:" + startingPoint);
-								System.out.println("#=================================================================#");
-								setCurrentSonar(null); /*Permette al robot di fare meglio gli angoli*/
-								/*TODO se non cambiamo la modalità di movimento rimette la posizione iniziale del robot verso il sonar e non viceversa*/
-								changeDirection(qa);
-							} else if (!startingPoint.equals(currentSonar)) {
-								System.out.println("#=================================================================#");
-								System.out.println("Ho terminato la pulizia!");
-								endingPoint = currentSonar;
-								System.out.println("Il nuovo ending point è il seguente: " + endingPoint);
-								stopAutoPilot = true;
-								System.out.println("#=================================================================#");
+						if (currentSonar != null) {
+							if (Math.abs(currentDistance) <= 5) {
+								if (startingPoint == null) {
+									System.out.println(
+											"#=================================================================#");
+									startingPoint = currentSonar;
+									System.out.println("Ho acquisito lo StartingPoint:" + startingPoint);
+									System.out.println(
+											"#=================================================================#");
+									setCurrentSonar(null); /* Permette al robot di fare meglio gli angoli */
+									/*
+									 * TODO se non cambiamo la modalità di movimento rimette la posizione iniziale
+									 * del robot verso il sonar e non viceversa
+									 */
+									changeDirection(qa);
+								} else if (!startingPoint.equals(currentSonar)) {
+									System.out.println(
+											"#=================================================================#");
+									System.out.println("Ho terminato la pulizia!");
+									endingPoint = currentSonar;
+									System.out.println("Il nuovo ending point è il seguente: " + endingPoint);
+									stopAutoPilot = true;
+									System.out.println(
+											"#=================================================================#");
+								}
 							}
-						} 
-					}
+						}
 
-					
-					System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
-					
-					if (currentSonar != null) {
 						
-						System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
-						clientTcp.sendMsg(qa, STOP_MOVE);
-						sleepMillseconds(300);
-						turnVirtualRobot(qa);
-						setCurrentSonar(null);
-						System.out.println("Giro Terminato!\n\n");
-						
-					}
-					
-					sleepMillseconds(150);
-						
+						if (currentSonar != null) {
+
+							clientTcp.sendMsg(qa, STOP_MOVE);
+							sleepMillseconds(300);
+							turnVirtualRobot(qa);
+							setCurrentSonar(null);
+
+						}
+
+						sleepMillseconds(150);
+
 					} catch (Exception e) {
- 						e.printStackTrace();
+						e.printStackTrace();
 					}
 				}
 			}
 		}.start();
 	}
-	
+
 	protected static void turnVirtualRobot(QActor qa) throws Exception {
 		String msg = "";
 		if (lastTurn % 2 == 0) {
@@ -148,35 +135,34 @@ public class autoPilot {
 			msg = MOVE_LEFT;
 		}
 		lastTurn += 1;
-		
-		/*Gira*/
+
+		/* Gira */
 		clientTcp.sendMsg(qa, msg);
 		sleepMillseconds(300);
-		
-		/*Vai avanti per 200 ms*/
+
+		/* Vai avanti per 200 ms */
 		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
 		sleepMillseconds(300);
-		
-		/*Gira*/
+
+		/* Gira */
 		clientTcp.sendMsg(qa, msg);
 		sleepMillseconds(300);
-		
-		/*Vai avanti per 200 ms*/
+
+		/* Vai avanti per 200 ms */
 		clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 200 }");
 		sleepMillseconds(300);
 	}
-	
 
 	protected static void changeDirection(QActor qa) throws Exception {
-		/*Gira*/
+		/* Gira */
 		clientTcp.sendMsg(qa, MOVE_LEFT);
 		sleepMillseconds(300);
-		
-		/*Gira*/
+
+		/* Gira */
 		clientTcp.sendMsg(qa, MOVE_LEFT);
 		sleepMillseconds(300);
 	}
-	
+
 	protected static boolean isStartingPoint(QActor qa) throws Exception {
 		if (currentSonar != null && currentDistance != 0 && realAxis != null) {
 			if (currentSonar.equals("sonar1") && currentDistance == -4 && realAxis.equals("y1")) {
@@ -196,8 +182,8 @@ public class autoPilot {
 				} else {
 					return false;
 				}
-			} 
-		} 
+			}
+		}
 		return false;
 	}
 
@@ -206,7 +192,7 @@ public class autoPilot {
 			clientTcp.sendMsg(qa, MOVE_FORWARD);
 			sleepMillseconds(350);
 		}
-		switch(realAxis) {
+		switch (realAxis) {
 		case "x1":
 			fromX1ToStart(qa);
 			break;
@@ -219,59 +205,59 @@ public class autoPilot {
 		case "y2":
 			fromY2ToStart(qa);
 			break;
-		default: 
+		default:
 			System.out.println("RealAxis value not allowed, current value = " + realAxis);
 		}
 	}
-	
-	protected static synchronized void setCurrentSonar(String value)  {
+
+	protected static synchronized void setCurrentSonar(String value) {
 		currentSonar = value;
 	}
-	
+
 	protected static synchronized void setCurrentDistance(int value) {
 		currentDistance = value;
 	}
-	
+
 	protected static synchronized void setRobotAxis(String value) {
 		if (value != robotAxis) {
 			robotAxis = value;
 		}
 	}
-	
+
 	protected static synchronized void setRealAxis(String value) {
 		realAxis = value;
 	}
-	
+
 	protected static synchronized void setLastDistance(int value) {
 		lastDistance = value;
 	}
+
 	protected static void setTurn(int value) {
 		lastTurn = value;
 	}
-	
+
 	protected static int getTurn() {
 		return lastTurn;
 	}
-	
+
 	protected static boolean getStatus() {
-		if(stopAutoPilot)
+		if (stopAutoPilot)
 			return false;
 		else
 			return true;
 	}
 
-
 	protected static String getAxisValue(String axis, String sonar) {
 		if (sonar.equals("sonar1") && axis.equals("y")) {
 			return "x";
-			//return axis + "1";
+			// return axis + "1";
 		} else if (sonar.equals("sonar1") && axis.equals("x")) {
 			return "y";
 		} else {
 			return axis;
 		}
 	}
-	
+
 	public static String getRealAxisValue(String axis, String sonar) {
 		if (sonar.equals("sonar1")) {
 			return axis + "1";
@@ -279,7 +265,7 @@ public class autoPilot {
 			return axis + "2";
 		}
 	}
-	
+
 	protected static void sleepMillseconds(int value) {
 		try {
 			TimeUnit.MILLISECONDS.sleep(value);
@@ -288,7 +274,7 @@ public class autoPilot {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected static void fromX1ToStart(QActor qa) throws Exception {
 		clientTcp.sendMsg(qa, MOVE_LEFT);
 		sleepMillseconds(310);
@@ -301,7 +287,7 @@ public class autoPilot {
 		clientTcp.sendMsg(qa, MOVE_FORWARD);
 		sleepMillseconds(310);
 	}
-	
+
 	protected static void fromY1ToStart(QActor qa) throws Exception {
 		clientTcp.sendMsg(qa, MOVE_RIGHT);
 		sleepMillseconds(310);
@@ -313,7 +299,7 @@ public class autoPilot {
 		clientTcp.sendMsg(qa, MOVE_FORWARD);
 		sleepMillseconds(310);
 	}
-	
+
 	protected static void fromX2ToStart(QActor qa) throws Exception {
 		changeDirection(qa);
 		while (!realAxis.equals("x1") && !stopAutoPilot) {
@@ -322,7 +308,7 @@ public class autoPilot {
 		}
 		fromX1ToStart(qa);
 	}
-	
+
 	protected static void fromY2ToStart(QActor qa) throws Exception {
 		changeDirection(qa);
 		while (!realAxis.equals("y1") && !stopAutoPilot) {
