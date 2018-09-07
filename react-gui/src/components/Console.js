@@ -271,7 +271,7 @@ class Gui extends Component {
                                         type="button"
                                         name="x"
                                         className="btn btn-outline-info btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "x")}
+                                        onClick={event => this.handleButtonClicked(event, "auto")}
                                     >
                                         Allow autopilot
                                     </button>

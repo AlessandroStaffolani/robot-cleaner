@@ -58,7 +58,9 @@ public static void initClientConn(QActor qa ) throws Exception {
 							//System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
 							//System.out.println(qa.getName());
 							
-							String axis 	   = autoPilot.getAxisValue(jsonArg.getString("axis"), sonarName);
+							String axis 	   = jsonArg.getString("axis");
+							autoPilot.setRealAxis(autoPilot.getRealAxisValue(axis, sonarName));
+							axis = autoPilot.getAxisValue(axis, sonarName);
 							if (axis != autoPilot.robotAxis || autoPilot.robotAxis == null) {
 								autoPilot.setCurrentSonar(sonarName);
 								autoPilot.setRobotAxis(axis);

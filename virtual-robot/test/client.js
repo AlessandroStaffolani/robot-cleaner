@@ -8,8 +8,8 @@ const msgForward = `{ "type": "moveForward", "arg": 300 }`
 const msgLeft = `{ "type": "turnLeft", "arg": 300 }`
 console.log('Send ' + msgForward);
 client.send( msgForward )
-client.send( msgLeft )
-client.send( msgForward )
+/* client.send( msgLeft )
+client.send( msgForward ) */
 
 function Client({ port, ip }) {
     const self = this

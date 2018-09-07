@@ -478,6 +478,28 @@ public abstract class AbstractMindrobot extends QActor {
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("usercmd(robotgui(auto(X)))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
+	    		{//actionseq
+	    		//PublishMsgMove
+	    		parg = "usercmd(robotgui(auto(low)))";
+	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		parg = "changeModelItem(leds,NAME,on)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
+	    		};//actionseq
+	    		}
+	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
+	    		println( temporaryStr );  
+	    		}};//actionseq
+	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleMsg){  
 	    	 println( getName() + " plan=handleMsg WARNING:" + e_handleMsg.getMessage() );
