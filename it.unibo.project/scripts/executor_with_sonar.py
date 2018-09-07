@@ -20,31 +20,31 @@ GPIO.setup(BR, GPIO.OUT)
 GPIO.setup(TRIG, GPIO.OUT)
 GPIO.setup(ECHO, GPIO.IN)
 
-GPIO.output(TRIG, False)
-print("Waiting For Sensor To Settle..")
-time.sleep(2)
-print("Sensor ready!")
+topic = "unibo/qasys"
 
 
 def print_help():
     print('--- FuffaTeam ---', end='\n\n')
     print('IMPORTANT: All params must be specified!')
-    print('python3 executor_with_sonar.py [move] [mqttserver]', end='\n\n')
+    print('python3 executor_with_sonar.py [move] [mqttbroker]', end='\n\n')
     print('-h | --help:\t to see this help message\n')
     print('[move]: W[w], A[a], S[s], D[d], H[h]\n')
-    print('[mqttserver]:\t ip address mqtt server\n')
+    print('[mqttbroker]:\t ip address mqtt broker\n')
   
     exit(1)
 
 def move_forward(client):
     distance = calculate_distance()
+    
     if distance <= 10:
         # emettere messaggio su mqtt
         # Avviso la mind che non posso andare avanti
-
+        client.publish(topic, 'msg(realSonarDetect,event,js,pi,realSonarDetect(distance('+ str(distance)+ ')),1)')
     else:
         GPIO.output(FL,True)
         GPIO.output(FR,True)
+    
+    client.loop_stop()
 
 def move_right(client):
     channel_f_r = GPIO.input(FR)
@@ -64,8 +64,10 @@ def move_right(client):
     if distance <= 10:
         # emettere messaggio su mqtt
         # Avviso la mind che da questo lato non c'è spazio per muoversi
+       client.publish(topic, 'msg(realSonarDetect,event,js,pi,realSonarDetect(distance('+ str(distance)+ ')),1)')
     
     GPIO.cleanup()
+    client.loop_stop()
 
 def move_left(client):
     channel_f_r = GPIO.input(FR)
@@ -81,13 +83,16 @@ def move_left(client):
     time.sleep(0.6)
     GPIO.output(FL,False)
 
+    time.sleep(0.5)
     #Verifico la distanza dall'ostacolo
     distance = calculate_distance()
     if distance <= 10:
         # emettere messaggio su mqtt
         # Avviso la mind che da questo lato non c'è spazio per muoversi
-
+        client.publish(topic, 'msg(realSonarDetect,event,js,pi,realSonarDetect(distance('+ str(distance)+ ')),1)')
+        
     GPIO.cleanup()
+    client.loop_stop()
 
 def move_backward():
     GPIO.output(BL,True)
@@ -119,11 +124,12 @@ def calculate_distance():
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-
+    print("Connected successufully")
+    # topic = "unibo/qasys"
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("$SYS/#")
+    print("Subscribing to the topic: " + topic)
+    client.subscribe(topic)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -157,23 +163,37 @@ def on_message(client, userdata, msg):
 
 def main(argv):
 
-    if argv.length < 3:
+    if len(argv) < 3:
         print_help()
         exit(-1)
-    server_address = argv[2]
-    print("Try to connect to " + server_address)
-    connect(server_address)
+    
+    if sys.argv[1] == "-h":
+        print_help()
+    
+    # Settaggio sonar del robot
+    GPIO.output(TRIG, False)
+    print("Waiting For Sensor To Settle..")
+    time.sleep(2)
+    print("Sensor ready!")
 
-    client = mqtt.Client()
+    # Recupero dell'address del broker
+    broker_address = argv[2]
+    print("Try to connect to the broker:  " + broker_address)
+    
+    # Inizializzazione del client
+    client = mqtt.Client(client_id="pi",transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
 
-    client.connect(server_address, 1884, 60)
-    client.subscribe('unibo/qasys')
-    client.loop_forever()
+    # Connessione al broker
+    client.connect(broker_address, 1884)
+
+    # Per poter accedere alle callback il client deve entrare in
+    # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
+    client.loop_start()
 
     if argv[1] == "W" or argv[1] == "w":
-    move_forward(client)
+        move_forward(client)
 
     elif sys.argv[1] == "S" or sys.argv[1] == "s":
         move_backward()
@@ -189,9 +209,7 @@ def main(argv):
 
     # elif sys.argv[1] == "P" or sys.argv[1] == "p":
     #     autopilot(30)
-    elif sys.argv[1] == "-h":
-        print_help()
-
+    
     else:
         print_help()
 
