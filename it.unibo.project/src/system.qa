@@ -50,17 +50,17 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		println("clientTcp Ready");
-		delay 500;
+		//delay 500;
 		//javaRun it.unibo.utils.avoidObstacle.init();
 		
 		//delay 1000;
 		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
 		//delay 500;
 		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
-		println("Robot ready");
-		delay 2000;
-		javaRun it.unibo.utils.autoPilot.startAutoPilot();
-		delay 1000000
+		println("Robot ready")
+//		delay 2000;
+//		javaRun it.unibo.utils.autoPilot.startAutoPilot();
+//		delay 1000000
 		//javaRun it.unibo.utils.autoPilot.stopAutoPilot() */
 	]
 	switchTo waitForCmd            

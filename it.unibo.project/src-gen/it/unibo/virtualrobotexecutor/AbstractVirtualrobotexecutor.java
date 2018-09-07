@@ -78,21 +78,8 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
 	    	temporaryStr = "\"clientTcp Ready\"";
 	    	println( temporaryStr );  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.autoPilot.startAutoPilot( myself  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 
