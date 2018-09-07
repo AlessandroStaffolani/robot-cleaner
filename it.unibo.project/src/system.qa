@@ -49,15 +49,15 @@ Context ctxRealRobot ip [ host="localhost" port=8031]
 QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
-		delay 1000;
+		//delay 1000;
 		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
 		//delay 500;
-		//sjavaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
-		println("Robot ready");
-		delay 500;
+		//javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 300 }"); // necessario per non farlo andare contro il sonar appena parte
+		println("Robot ready")
+		/*delay 2000;
 		javaRun it.unibo.utils.autoPilot.startAutoPilot();
 		delay 1000000;
-		javaRun it.unibo.utils.autoPilot.stopAutoPilot() 
+		javaRun it.unibo.utils.autoPilot.stopAutoPilot() */
 	]
 	switchTo waitForCmd            
 		 
@@ -68,8 +68,11 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
  	
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
- 		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
+ 		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> {
+ 			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
+ 			println("****** Stop autopilot ******");
+ 			javaRun it.unibo.utils.autoPilot.stopAutoPilot() 
+ 		};
     	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
     		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
      	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
@@ -77,7 +80,9 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
    		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
     	onMsg execMoveRobot : usercmd( robotgui(d(X)) )    -> 
-   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }")
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");
+		onMsg execMoveRobot : usercmd( robotgui(auto(X)) )    -> 
+    		javaRun it.unibo.utils.autoPilot.startAutoPilot()
  	] 
 }
 
@@ -245,6 +250,15 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
  				demo changeModelItem(leds, NAME, off)
+ 				}	
+ 			else 
+ 				 println("Too hot to work or out of time")
+		};
+		onMsg moveRobot : usercmd( robotgui(auto(X)) ) -> {
+ 			[ !? model( type(executor, X), name(Y), value(true) ) ] {
+ 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
+ 				//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
+ 				demo changeModelItem(leds, NAME, on)
  				}	
  			else 
  				 println("Too hot to work or out of time")

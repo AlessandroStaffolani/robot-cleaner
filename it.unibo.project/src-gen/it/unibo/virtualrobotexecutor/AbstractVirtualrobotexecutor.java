@@ -76,22 +76,8 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.autoPilot.startAutoPilot( myself  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.autoPilot.stopAutoPilot( myself  );
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 
@@ -129,11 +115,13 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'alarm' }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'alarm' }"  );
+	    		temporaryStr = "\"****** Stop autopilot ******\"";
+	    		println( temporaryStr );  
+	    		it.unibo.utils.autoPilot.stopAutoPilot( myself  );
+	    		};//actionseq
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -181,6 +169,16 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		String arg1 = "{ 'type': 'turnRight', 'arg': 800 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
+	    		}
+	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("usercmd(robotgui(auto(X)))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("execMoveRobot") && 
+	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		it.unibo.utils.autoPilot.startAutoPilot(this );
 	    		}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"virtualrobotexecutor_"+myselfName,false,true);
