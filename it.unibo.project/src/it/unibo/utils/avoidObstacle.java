@@ -27,8 +27,11 @@ public class avoidObstacle {
 							if (isStatic(qa)) {
 								System.out.println("L'ostacolo è statico");
 								/*Riparte la serpentina dal punto in cui mi trovo*/
-								autoPilot.changeDirection(qa);
-								autoPilot.startAutoPilot(qa);
+								//autoPilot.changeDirection(qa);
+								//autoPilot.setTurn(autoPilot.getTurn()+1);
+								autoPilot.setRobotAxis(null);
+								autoPilot.turnVirtualRobot(qa);
+								autoPilot.moveRobot(qa);
 							} else {
 								System.out.println("L'ostacolo è dinamico");
 								/*Riparte la serpentina da dove siamo arrivati con l'esecuzione del move forward*/

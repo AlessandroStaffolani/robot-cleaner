@@ -52,6 +52,7 @@ public class autoPilot {
 	public static void startAutoPilot(QActor qa) throws Exception {
 		// init();
 		stopAutoPilot = false;
+		avoidObstacle.init(qa);
 //		if (isStartingPoint(qa)) {
 //			// Siamo nella posizione iniziale possiamo far partire la serpentina
 //			init();
@@ -63,7 +64,7 @@ public class autoPilot {
 //			goToStartingPoint(qa);
 //		}
 //		startingPoint = "sonar1";
-//		// startTheReader(qa);
+		// startTheReader(qa);
 		moveRobot(qa);
 	}
 
@@ -78,7 +79,10 @@ public class autoPilot {
 						// if (!isTurning) {
 						clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
 						// }
-
+						System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
+						
+						
+						System.out.println("Current distance: " + currentDistance + ", Last Distance: " + lastDistance + ", Loop: " + clientTcp.counter_repeat_distance);
 						if (currentSonar != null) {
 							if (Math.abs(currentDistance) <= 5) {
 								if (startingPoint == null) {
@@ -106,14 +110,15 @@ public class autoPilot {
 								}
 							}
 						}
-
+						System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 						
 						if (currentSonar != null) {
-
+							System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
 							clientTcp.sendMsg(qa, STOP_MOVE);
 							sleepMillseconds(300);
 							turnVirtualRobot(qa);
 							setCurrentSonar(null);
+							System.out.println("Giro Terminato!\n\n");
 
 						}
 
