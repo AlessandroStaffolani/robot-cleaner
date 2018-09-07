@@ -61,6 +61,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 							String axis 	   = jsonArg.getString("axis");
 							autoPilot.setRealAxis(autoPilot.getRealAxisValue(axis, sonarName));
 							axis = autoPilot.getAxisValue(axis, sonarName);
+							System.out.println("\n\n\nAxis on clientTCP = " + axis + "\n\n\n");
 							if (axis != autoPilot.robotAxis || autoPilot.robotAxis == null) {
 								autoPilot.setCurrentSonar(sonarName);
 								autoPilot.setRobotAxis(axis);

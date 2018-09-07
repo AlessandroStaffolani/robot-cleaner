@@ -21,27 +21,27 @@ const config = {
         }
     ],
     movingObstacles: [
-        /*{
+        /* {
             name: "moving-obstacle-1",
             position: {x: .5, y: .5},
             directionAxis: {x: true, y: false},
             speed: 1,
             range: 8
-        },*/
-        /*{
+        }, */
+        /* {
             name: "moving-obstacle-2",
-            position: {x: .5, y: .3},
+            position: {x: .4, y: .6},
             directionAxis: {x: true, y: true},
-            speed: 2,
-            range: 4
-        }*/
+            speed: 1,
+            range: 5
+        } */
     ],
     staticObstacles: [
-        /*{
-            name: "wall",
-            centerPosition: {x: 0.5, y: 0.5},
+        /* {
+            name: "divider",
+            centerPosition: {x: 0.5, y: 0.3},
             size: {x: 0.98, y: 0.01}
-        },*/
+        }, */
         {
             name: "table",
             centerPosition: {x: 0.4, y: 0.4},

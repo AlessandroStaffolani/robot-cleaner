@@ -65,6 +65,8 @@ public class autoPilot {
 //		}
 //		startingPoint = "sonar1";
 		// startTheReader(qa);
+		init();
+		changeDirection(qa);
 		moveRobot(qa);
 	}
 
@@ -76,11 +78,9 @@ public class autoPilot {
 						&& !avoidObstacle.isObstacleDetected()) {
 					try {
 
-						// if (!isTurning) {
 						clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
-						// }
+
 						System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
-						
 						
 						System.out.println("Current distance: " + currentDistance + ", Last Distance: " + lastDistance + ", Loop: " + clientTcp.counter_repeat_distance);
 						if (currentSonar != null) {
@@ -95,9 +95,10 @@ public class autoPilot {
 									setCurrentSonar(null); /* Permette al robot di fare meglio gli angoli */
 									/*
 									 * TODO se non cambiamo la modalità di movimento rimette la posizione iniziale
-									 * del robot verso il sonar e non viceversa
+									 * del robot verso il sonar e non viceversa 
+									 * TODO L'ho commentato perchè per il caso standard dei requisiti non è necessario in quanto mi giro direttamente prima di cominciare
 									 */
-									changeDirection(qa);
+									//changeDirection(qa);
 								} else if (!startingPoint.equals(currentSonar)) {
 									System.out.println(
 											"#=================================================================#");
@@ -113,13 +114,13 @@ public class autoPilot {
 						System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 						
 						if (currentSonar != null) {
-							System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
+							//System.out.println("\n\nInizio giro: " + lastTurn + " perché ho incontrato un sonar...");
 							clientTcp.sendMsg(qa, STOP_MOVE);
 							sleepMillseconds(300);
 							turnVirtualRobot(qa);
 							setCurrentSonar(null);
 							System.out.println("Giro Terminato!\n\n");
-
+		
 						}
 
 						sleepMillseconds(150);
@@ -140,6 +141,8 @@ public class autoPilot {
 			msg = MOVE_LEFT;
 		}
 		lastTurn += 1;
+		
+		System.out.println("\n\nCurrent sonar = " + currentSonar + "\n\nAxis = " + robotAxis + "\n\n\n");
 
 		/* Gira */
 		clientTcp.sendMsg(qa, msg);
