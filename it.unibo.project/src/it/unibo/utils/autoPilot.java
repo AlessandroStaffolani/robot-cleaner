@@ -47,6 +47,7 @@ public class autoPilot {
 	public static void stopAutoPilot(QActor qa) {
 		stopAutoPilot = true;
 		System.out.println("\n\n\nStop auto pilot, value = " + stopAutoPilot);
+		init();
 	}
 
 	public static void startAutoPilot(QActor qa) throws Exception {
@@ -65,8 +66,8 @@ public class autoPilot {
 //		}
 //		startingPoint = "sonar1";
 		// startTheReader(qa);
-		init();
-		changeDirection(qa);
+		//init();
+		//changeDirection(qa);
 		moveRobot(qa);
 	}
 
@@ -77,8 +78,6 @@ public class autoPilot {
 				while (!stopAutoPilot && (startingPoint == null || endingPoint == null)
 						&& !avoidObstacle.isObstacleDetected()) {
 					try {
-
-						clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
 
 						System.out.println("\n\n\nStarting Point = " + startingPoint + "\n\nEndpoint = " + endingPoint + "\n\n");
 						
@@ -95,10 +94,9 @@ public class autoPilot {
 									setCurrentSonar(null); /* Permette al robot di fare meglio gli angoli */
 									/*
 									 * TODO se non cambiamo la modalità di movimento rimette la posizione iniziale
-									 * del robot verso il sonar e non viceversa 
-									 * TODO L'ho commentato perchè per il caso standard dei requisiti non è necessario in quanto mi giro direttamente prima di cominciare
+									 * del robot verso il sonar e non viceversa 									
 									 */
-									//changeDirection(qa);
+									changeDirection(qa);
 								} else if (!startingPoint.equals(currentSonar)) {
 									System.out.println(
 											"#=================================================================#");
@@ -122,8 +120,9 @@ public class autoPilot {
 							System.out.println("Giro Terminato!\n\n");
 		
 						}
-
-						sleepMillseconds(150);
+						
+						clientTcp.sendMsg(qa, "{ \"type\": \"moveForward\", \"arg\": 100 }");
+						sleepMillseconds(110);
 
 					} catch (Exception e) {
 						e.printStackTrace();

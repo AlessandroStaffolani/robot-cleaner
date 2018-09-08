@@ -31,6 +31,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 	public static void sendMsg(QActor qa, String jsonString) throws Exception {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		String msg = sep+jsonObject.toString()+sep;
+		System.out.println(msg);
 		outToServer.println(msg);
 		outToServer.flush();
 	}
@@ -82,7 +83,7 @@ public static void initClientConn(QActor qa ) throws Exception {
 									counter_repeat_distance = counter_repeat_distance + 1;
 								
 								System.out.println("\n\nLOOP: " + counter_repeat_distance + "\n\n");
-								if(counter_repeat_distance > 2) {
+								if(counter_repeat_distance > 4) {
 									System.out.println("Sono entrato in loop: Cambio direzione!");
 									counter_repeat_distance = 0;
 									int lastTurn = autoPilot.getTurn();
