@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import sys
+from mqtt.MqttClientConnection import MqttClientConnection
 import paho.mqtt.client as mqtt
 
 GPIO.setmode(GPIO.BCM)
@@ -39,6 +40,7 @@ def move_forward(client):
     if distance <= 10:
         # emettere messaggio su mqtt
         # Avviso la mind che non posso andare avanti
+        print("Pubblico il messaggio")
         client.publish(topic, 'msg(realSonarDetect,event,js,pi,realSonarDetect(distance('+ str(distance)+ ')),1)')
     else:
         GPIO.output(FL,True)
@@ -67,7 +69,7 @@ def move_right(client):
        client.publish(topic, 'msg(realSonarDetect,event,js,pi,realSonarDetect(distance('+ str(distance)+ ')),1)')
     
     GPIO.cleanup()
-    client.loop_stop()
+    # client.loop_stop()
 
 def move_left(client):
     channel_f_r = GPIO.input(FR)
@@ -135,8 +137,14 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
+def on_publish(client,userdata,result):
+    print("data published \n")
 
-    
+def on_disconnect(client, userdata, flags):
+    print("Disconnected succefully from broker...")
+    client_mqtt.loop_stop()
+
+
 # DA DEFINIRE!!
 # Ogni qualvolta verrà trovato un ostacolo dovrà inviare un messaggio su mqtt
 # in modo tale che la mind possa gestire l'occcorrenza di quest'ultimo e stabilire
@@ -171,26 +179,36 @@ def main(argv):
         print_help()
     
     # Settaggio sonar del robot
+    print("Sensor settle...")
     GPIO.output(TRIG, False)
-    print("Waiting For Sensor To Settle..")
-    time.sleep(2)
     print("Sensor ready!")
+    # print("Waiting For Sensor To Settle..")
+    # time.sleep(2)
+    # print("Sensor ready!")
 
     # Recupero dell'address del broker
     broker_address = argv[2]
     print("Try to connect to the broker:  " + broker_address)
     
+    
     # Inizializzazione del client
     client = mqtt.Client(client_id="pi",transport="websockets")
     client.on_connect = on_connect
     client.on_message = on_message
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
 
-    # Connessione al broker
     client.connect(broker_address, 1884)
 
     # Per poter accedere alle callback il client deve entrare in
     # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
     client.loop_start()
+
+    #Codice da cancellare se non FUNZIONA
+    # client = MqttClientConnection("pi",broker_address, 1884, topic)
+    # client.connect()
+
+    # client.loop_start()
 
     if argv[1] == "W" or argv[1] == "w":
         move_forward(client)

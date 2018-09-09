@@ -35,12 +35,13 @@ Event resourceChangeEvent   : resourceChangeEvent( TYPE, NAME, VALUE ) // CONSTR
 Event resourceChange : resourceChange( TYPE, CATEG, NAME, VALUE ) // Evento generato dal resource model quando c'è un cambiamento di stato
 Event sonar : sonar (NAME, ROBOT, DISTANCE)
 Event sonarDetect : sonarDetect(TARGET, ROBOT)
+Event realSonarDetect : realSonarDetect(NAME, DISTANCE) // Diverso rispetto al sonarDetect virtuale in quanto in questo caso viene inviata la distanza
 
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
-pubSubServer "ws://localhost:1884" //virtual robot
-//pubSubServer "ws://192.168.43.214:1884" //real robot
+//pubSubServer "ws://localhost:1884" //virtual robot
+pubSubServer "ws://192.168.43.214:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -81,11 +82,14 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 
 QActor realrobotexecutor context ctxRealRobot -pubsub {
 	Plan init normal [
+		/* Verificare che la chiamata sia asincrona*/
+		/* 
 		javaOp "customExecute(\"python3 executor.py d\")";
 		delay 5000;
-		javaOp "customExecute(\"python3 executor.py a\")";
+		javaOp "customExecute(\"python3 executor.py a\")";*/ 
+		//javaOp "customExecute(\"python3 obstacle_detector.py 192.168.43.214 &\")"; //indirizzo Ip da cambiare in base all'address del broker
 		delay 1000;
-		println("Robot ready!")
+		println("Real Robot ready!")
 	]
 	switchTo waitForCmd
 	
@@ -133,6 +137,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		whenEvent resourceChange -> handleChange,
  		whenEvent sonar -> handleSonarChange,
  		whenEvent sonarDetect -> handleSonarChange,
+ 		whenEvent realSonarDetect -> handleSonarChange,
  		whenMsg moveRobot -> handleMsg
  	finally repeatPlan 
  	
@@ -182,13 +187,27 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, on);
  				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, on)
  			}
+ 		/*onEvent resourceChange : resourceChange( executor, realRobot, fuffolo, false ) 
+ 		-> {
+ 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
+ 			//println("Mqtt emesso");
+ 			//demo changeModelItem(leds, NAME, off)
+ 			
+ 			}*/
  	]
  	
  	Plan handleSonarChange resumeLastPlan [
  		printCurrentEvent;
  		onEvent sonar : sonar (sonar1, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar1, DISTANCE);
  		onEvent sonar : sonar (sonar2, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar2, DISTANCE);
- 		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sonarRobot, sonarVirtual, TARGET)
+ 		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sonarRobot, sonarVirtual, TARGET);
+ 		/* In questo caso dovrebbe anche essere aggiornato il resource model oltre che a fermare il robot reale
+ 		 * Visto le parentesi delle parentesi graffe dobbiamo scegliere solo una delle due operazioni */
+ 		onEvent realSonarDetect : realSonarDetect(sonarReal, DISTANCE) -> publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
+ 		//demo changeModelItem(sonarRobot, sonarReal, DISTANCE)//{
+ 			//demo changeModelItem(sonarRobot, sonarReal, DISTANCE); //println(DISTANCE)
+ 					//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
+ 		//}
  	]
  	
  	Plan handleMsg resumeLastPlan [
@@ -208,7 +227,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
  				/* Unica soluzione per evitare problemi nell'accensione del led reale è cambiare lo stato di uno solo per volta */
  				demo changeModelItem(leds, NAME, on)
- 				
  				}		
  			else
  				 println("Too hot to work or out of time")

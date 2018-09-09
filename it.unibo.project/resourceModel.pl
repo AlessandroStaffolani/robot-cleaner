@@ -34,6 +34,7 @@ eval( get, X, V ):- eval( gt, X , V ) .
 maxTemperature(25).
 startTime(7).
 endTime(10).
+minDistance(15).
 	
 changedModelAction( temperature, cityTemperature, V  ):-
 	maxTemperature( MAX ),
@@ -67,11 +68,24 @@ changedModelAction( leds, NAME, V  ):-
 
 changedModelAction( virtualRobot, soffritti, CMD ).
     		
-changedModelAction( realRobot, fuffolo, CMD ).
+changedModelAction( realRobot, fuffolo, VAL ) . %% output(modelChanged(realRobot, fuffolo, VAL)).
+	%%emitevent( resourceChange, resourceChange( executor, realRobot, fuffolo, VAL ) ).
+	%%emitevent( resourceChange, resourceChange( sensor, clock, clock1, off ) ).
+
 
 changedModelAction( sonarVirtual, NAME, V):- output(modelChanged(sonarVirtual, name(NAME), value(V))).
 
-changedModelAction( sonarRobot, NAME, V):- output(modelChanged(sonarRobot, name(NAME), value(V))).
+changedModelAction( sonarRobot, sonarVirtual, V):- output(modelChanged(sonarRobot, sonarVirtual, value(V))).
+
+changedModelAction( sonarRobot, sonarReal, V).
+	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
+	%%minDistance( MIN ),
+	%%eval( let, V, MIN),
+	%%changeModelItem( realRobot, fuffolo, false).
+
+%%changedModelAction( sonarRobot, sonarReal, V):- 
+	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
+	%%changeModelItem( realRobot, fuffolo, true).
 
 emitevent( EVID, EVCONTENT ) :- 
 	actorobj( Actor ), 

@@ -14,6 +14,11 @@ GPIO.setmode(GPIO.BCM)
 
 TRIG = 24
 ECHO = 25
+LED = 8
+
+GPIO.setup(TRIG, GPIO.OUT)
+GPIO.setup(ECHO, GPIO.IN)
+GPIO.setup(LED, GPIO.OUT)
 
 topic = "unibo/qasys"
 
@@ -27,6 +32,8 @@ def print_help():
   
     exit(1)
 
+
+# ====================CALLBACK mqtt=============================
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -45,6 +52,11 @@ def on_message(client, userdata, msg):
 
 def on_disconnect(client, userdata, flags):
     print("Disconnected succefully from broker...")
+
+def on_publish(client,userdata,result):
+    print("data published \n")
+
+# ==============================================================
 
 def calculate_distance():
     GPIO.output(TRIG,True)
@@ -72,25 +84,9 @@ def main(argv):
         print_help()
         exit(-1)
 
-     if sys.argv[1] == "-h":
+    if sys.argv[1] == "-h":
         print_help()
     
-    # Recupero dell'address del broker
-    broker_address = argv[2]
-    print("Try to connect to the broker:  " + broker_address)
-    
-    # Inizializzazione del client
-    client = mqtt.Client(client_id="pi",transport="websockets")
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.on_disconnect = on_disconnect
-
-    # Connessione al broker
-    client.connect(broker_address, 1884)
-
-    # Per poter accedere alle callback il client deve entrare in
-    # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
-    client.loop_forever()
 
     # Settaggio sonar del robot
     GPIO.output(TRIG, False)
@@ -98,8 +94,36 @@ def main(argv):
     time.sleep(2)
     print("Sensor ready!")
 
+    # Recupero dell'address del broker
+    broker_address = argv[1]
+    print("Try to connect to the broker:  " + broker_address)
+    
+    # Inizializzazione del client
+    client = mqtt.Client(client_id="pi",transport="websockets")
+    client.on_connect = on_connect
+    # client.on_message = on_message
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+
+    # Connessione al broker
+    client.connect(broker_address, 1884)
+
+    # Per poter accedere alle callback il client deve entrare in
+    # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
+    client.loop_start()
+
+
     # Da implementare 
-    #while(true):
+    while(True):
+        GPIO.output(LED,True)
+        distance = calculate_distance()
+        if distance <= 30:
+            #msg = msg(sonarDetect,event,mindrobot_ctrl,none,sonarDetect(wallRight,soffritti),267)
+            client.publish(topic, 'msg(realSonarDetect,event,mindrobot_ctrl,none,realSonarDetect(sonarReal,'+ str(distance)+'),1)')
+        
+        # La distanza viene calcolata ogni secondo e inviata alla mind solo se necessario
+        time.sleep(0.5)
+        GPIO.output(LED, False)
 
 if __name__ == '__main__':
     main(sys.argv)

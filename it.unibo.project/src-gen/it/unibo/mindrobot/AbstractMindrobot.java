@@ -84,7 +84,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.43.214:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
@@ -124,8 +124,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    	String myselfName = "waitPlan";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindrobot_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleMsg") }, 
-	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","E","sonar", "true","E","sonarDetect", "true","M","moveRobot" },
+	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleMsg") }, 
+	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","E","sonar", "true","E","sonarDetect", "true","E","realSonarDetect", "true","M","moveRobot" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitPlan){  
 	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
@@ -336,6 +336,19 @@ public abstract class AbstractMindrobot extends QActor {
 	    						if( ! aar.getGoon() ) return ;
 	    					}else if( ! aar.getGoon() ) return ;
 	    				}
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("realSonarDetect(sonarReal,DISTANCE)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("realSonarDetect") && 
+	    		pengine.unify(curT, Term.createTerm("realSonarDetect(NAME,DISTANCE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg = "usercmd(robotgui(h(low)))";
+	    			/* PublishMsgMove */
+	    			parg =  updateVars( Term.createTerm("realSonarDetect(NAME,DISTANCE)"), 
+	    			                    Term.createTerm("realSonarDetect(sonarReal,DISTANCE)"), 
+	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleSonarChange){  

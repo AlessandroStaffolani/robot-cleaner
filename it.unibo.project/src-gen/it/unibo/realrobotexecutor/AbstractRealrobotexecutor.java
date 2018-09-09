@@ -75,19 +75,13 @@ public abstract class AbstractRealrobotexecutor extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	customExecute("python3 executor.py d");
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(5000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	customExecute("python3 executor.py a");
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = "\"Robot ready!\"";
+	    	temporaryStr = "\"Real Robot ready!\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.43.214:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "realrobotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 

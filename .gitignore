@@ -30,3 +30,5 @@ philips-hue-lamp/\.settings/
 philips-hue-lamp/server/package-lock\.json
 
 virtual-robot/server/package-lock\.json
+
+it\.unibo\.project/scripts/\.DS_Store
