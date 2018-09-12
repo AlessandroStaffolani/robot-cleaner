@@ -18,6 +18,6 @@ while true; do
 		echo $msg
 		python3 mqtt_sender.py $ip $port $topic "$msg"
 	fi
-	sleep 1
+	sleep 0.2
 
 done

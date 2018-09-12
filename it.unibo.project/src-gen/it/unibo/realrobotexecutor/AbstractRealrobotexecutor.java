@@ -75,6 +75,7 @@ public abstract class AbstractRealrobotexecutor extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	customExecute("./send_mqtt.sh 192.168.43.214 1884 unibo/qasys");
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(1000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";

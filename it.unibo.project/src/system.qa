@@ -88,6 +88,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
 		delay 5000;
 		javaOp "customExecute(\"python3 executor.py a\")";*/ 
 		//javaOp "customExecute(\"python3 obstacle_detector.py 192.168.43.214 &\")"; //indirizzo Ip da cambiare in base all'address del broker
+		javaOp "customExecute(\"./send_mqtt.sh 192.168.43.214 1884 unibo/qasys\")";
 		delay 1000;
 		println("Real Robot ready!")
 	]
