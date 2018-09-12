@@ -1,26 +1,22 @@
-# Questo script ha il compito di segnalare alla mind, tramite mqtt, ogni qual volta 
-# il robot si trova vicino ad un ostacolo, in modo tale che la mind possa bloccare il robot
-# in movimento.
-# Verrà lanciato all'inizializzazione del qactor relativo al real robot
-# Appena il robot sarà attivo verrà eseguito come ciclo infinito
-# Importante che questo script venga lanciato in background
-
-import RPi.GPIO as GPIO
 import time
 import sys
 import paho.mqtt.client as mqtt
+from threading import Thread
+import RPi.GPIO as GPIO
+import random
 
 GPIO.setmode(GPIO.BCM)
 
 TRIG = 24
 ECHO = 25
-LED = 8
 
 GPIO.setup(TRIG, GPIO.OUT)
 GPIO.setup(ECHO, GPIO.IN)
-GPIO.setup(LED, GPIO.OUT)
 
 topic = "unibo/qasys"
+
+global_distance = 100
+stop_distance_calculation = False
 
 
 def print_help():
@@ -29,39 +25,16 @@ def print_help():
     print('python3 obstacle_detector.py [mqttbroker]', end='\n\n')
     print('-h | --help:\t to see this help message\n')
     print('[mqttbroker]:\t ip address mqtt broker\n')
-  
+
     exit(1)
 
 
-# ====================CALLBACK mqtt=============================
-
-# The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, rc):
-    print("Connected successufully")
-    # topic = "unibo/qasys"
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-    print("Subscribing to the topic: " + topic)
-    client.subscribe(topic)
-
-
-# The callback for when a PUBLISH message is received from the server.
-def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload))
-
-
-def on_disconnect(client, userdata, flags):
-    print("Disconnected succefully from broker...")
-
-def on_publish(client,userdata,result):
-    print("data published \n")
-
-# ==============================================================
-
 def calculate_distance():
-    GPIO.output(TRIG,True)
+    GPIO.output(TRIG, True)
     time.sleep(0.00001)
-    GPIO.output(TRIG,False)
+    GPIO.output(TRIG, False)
+    pulse_start = 0
+    pulse_end = 0
     while GPIO.input(ECHO) == 0:
         pulse_start = time.time()
 
@@ -70,12 +43,41 @@ def calculate_distance():
 
     pulse_duration = pulse_end - pulse_start
     distance = pulse_duration * 17150
-    distance = round(distance,2)
-    print("Distance: ", distance, "cm")
+    distance = round(distance, 2)
+    int_distance = int(round(distance))
+    print("Distance: ", int_distance, "cm")
 
+    return int_distance
+
+def random_distance():
+    distance = random.randint(5, 150)
+    print("Random distance: ", distance, "cm")
     return distance
 
 
+def external_distance():
+    global distance_global
+    distance_global = 100
+    while stop_distance_calculation is False:
+        distance_global = random_distance()
+        time.sleep(0.5)
+
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected")
+    # client.subscribe(topic)
+
+
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+
+
+def on_disconnect(client, userdata, flags):
+    print("Disconnected succefully from broker...")
+
+
+def on_publish(client,userdata,result):
+    print("data published \n")
 
 
 def main(argv):
@@ -86,7 +88,6 @@ def main(argv):
 
     if sys.argv[1] == "-h":
         print_help()
-    
 
     # Settaggio sonar del robot
     GPIO.output(TRIG, False)
@@ -94,36 +95,45 @@ def main(argv):
     time.sleep(2)
     print("Sensor ready!")
 
-    # Recupero dell'address del broker
     broker_address = argv[1]
     print("Try to connect to the broker:  " + broker_address)
     
-    # Inizializzazione del client
-    client = mqtt.Client(client_id="pi",transport="websockets")
+    # connecting to mqtt
+    client = mqtt.Client(client_id="pi", transport="websockets")
+    client.max_inflight_messages_set(200)
     client.on_connect = on_connect
-    # client.on_message = on_message
+    client.on_message = on_message
     client.on_publish = on_publish
     client.on_disconnect = on_disconnect
 
-    # Connessione al broker
     client.connect(broker_address, 1884)
 
-    # Per poter accedere alle callback il client deve entrare in
-    # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
-    client.loop_start()
+    mqtt_thread = Thread(target=client.loop_forever)
+    mqtt_thread.start()
 
+    try:
+        while True:
+            distance = calculate_distance()
+            if distance <= 30:
+                msg = 'msg(realSonarDetect,event,real_robot,mindrobot,realSonarDetect(sonarReal,' + str(distance) + '),1)'
+                Thread(target=(lambda topic, msg: client.publish(topic, msg)), args=(topic, msg)).start()
+                # Thread(target=test, kwargs=({'topic': topic, 'payload': msg})).start()
+                # client.publish(topic, 'msg(realSonarDetect,event,real_robot,mindrobot,realSonarDetect(sonarReal,' + str(distance) + '),1)')
+                # GPIO.cleanup()
+                # GPIO.setmode(GPIO.BCM)
+                # GPIO.setup(TRIG, GPIO.OUT)
+                # GPIO.setup(ECHO, GPIO.IN)
+                # GPIO.output(TRIG, False)
 
-    # Da implementare 
-    while(True):
-        GPIO.output(LED,True)
-        distance = calculate_distance()
-        if distance <= 30:
-            #msg = msg(sonarDetect,event,mindrobot_ctrl,none,sonarDetect(wallRight,soffritti),267)
-            client.publish(topic, 'msg(realSonarDetect,event,mindrobot_ctrl,none,realSonarDetect(sonarReal,'+ str(distance)+'),1)')
-        
-        # La distanza viene calcolata ogni secondo e inviata alla mind solo se necessario
-        time.sleep(0.5)
-        GPIO.output(LED, False)
+            time.sleep(0.5)
+
+    except KeyboardInterrupt:
+        print('\n\rkeyboard interrupt')
+        client.disconnect()
+        GPIO.cleanup()
+        exit(0)
+
 
 if __name__ == '__main__':
     main(sys.argv)
+

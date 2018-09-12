@@ -41,7 +41,7 @@ Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 
 //pubSubServer "ws://localhost:1884" //virtual robot
-pubSubServer "ws://192.168.43.214:1884" //real robot
+pubSubServer "ws://192.168.1.103:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
