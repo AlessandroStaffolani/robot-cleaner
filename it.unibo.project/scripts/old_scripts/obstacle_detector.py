@@ -8,9 +8,9 @@
 import RPi.GPIO as GPIO
 import time
 import sys
+import paho.mqtt.client as mqtt
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
 
 TRIG = 24
 ECHO = 25
@@ -19,6 +19,8 @@ LED = 8
 GPIO.setup(TRIG, GPIO.OUT)
 GPIO.setup(ECHO, GPIO.IN)
 GPIO.setup(LED, GPIO.OUT)
+
+topic = "unibo/qasys"
 
 
 def print_help():
@@ -68,15 +70,60 @@ def calculate_distance():
 
     pulse_duration = pulse_end - pulse_start
     distance = pulse_duration * 17150
-    distance = round(distance, 2)
-    # print("Distance: ", distance, "cm")
+    distance = round(distance,2)
+    print("Distance: ", distance, "cm")
 
-    return int(round(distance))
+    return distance
+
+
 
 
 def main(argv):
-    print(calculate_distance())
 
+    if len(argv) < 2:
+        print_help()
+        exit(-1)
+
+    if sys.argv[1] == "-h":
+        print_help()
+    
+
+    # Settaggio sonar del robot
+    GPIO.output(TRIG, False)
+    print("Waiting For Sensor To Settle..")
+    time.sleep(2)
+    print("Sensor ready!")
+
+    # Recupero dell'address del broker
+    broker_address = argv[1]
+    print("Try to connect to the broker:  " + broker_address)
+    
+    # Inizializzazione del client
+    client = mqtt.Client(client_id="pi",transport="websockets")
+    client.on_connect = on_connect
+    # client.on_message = on_message
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+
+    # Connessione al broker
+    client.connect(broker_address, 1884)
+
+    # Per poter accedere alle callback il client deve entrare in
+    # un loop di attesa. Esce dal loop quando ha terminato (guarda funzioni).
+    client.loop_start()
+
+
+    # Da implementare 
+    while(True):
+        GPIO.output(LED,True)
+        distance = calculate_distance()
+        if distance <= 30:
+            #msg = msg(sonarDetect,event,mindrobot_ctrl,none,sonarDetect(wallRight,soffritti),267)
+            client.publish(topic, 'msg(realSonarDetect,event,mindrobot_ctrl,none,realSonarDetect(sonarReal,'+ str(distance)+'),1)')
+        
+        # La distanza viene calcolata ogni secondo e inviata alla mind solo se necessario
+        time.sleep(0.5)
+        GPIO.output(LED, False)
 
 if __name__ == '__main__':
     main(sys.argv)
