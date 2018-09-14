@@ -1,0 +1,6 @@
+# Nei file gradle aggiungere la dipendenza a COAP incollando la seguente stringa:
+/*
+COAP
+*/
+ 	// https://mvnrepository.com/artifact/org.eclipse.californium/californium-core
+	compile group: 'org.eclipse.californium', name: 'californium-core', version: '2.0.0-M11'
