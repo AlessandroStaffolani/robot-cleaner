@@ -80,6 +80,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	println( temporaryStr );  
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
+	    	it.unibo.exploremap.program.autoPilot.start( myself  );
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 

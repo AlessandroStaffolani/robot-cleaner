@@ -1,6 +1,7 @@
 plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(2,init, sentence(true,move(print("clientTcp Ready")),'','' ))
 plan(3,init, sentence(true,move(print("Robot ready")),'','' ))
+plan(4,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(1,execMove, sentence(true,printCurrentMessage(''),'','' ))
 plan(2,execMove, sentence(true,msgswitch(execMoveRobot, usercmd( robotgui( h( X))) , not here StateMoveNormal),'','' ))
 plan(3,execMove, sentence(true,msgswitch(execMoveRobot, usercmd( robotgui( w( X))) , not here StateMoveNormal),'','' ))

@@ -51,7 +51,8 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		println("clientTcp Ready");
-		println("Robot ready")
+		println("Robot ready");
+		javaRun it.unibo.exploremap.program.autoPilot.start()
 	]
 	switchTo waitForCmd            
 		 

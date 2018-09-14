@@ -13,6 +13,7 @@ model( type(sensor, sonarVirtual), name(sonar1), value(0)).
 model( type(sensor, sonarVirtual), name(sonar2), value(0)).
 model( type(sensor, sonarRobot), name(sonarVirtual), value(0)).
 model( type(sensor, sonarRobot), name(sonarReal), value(0)).
+model( type(sensor, obstacle), name(sonar), value(no)).
  
 getModelItem( TYPE, CATEG, NAME, VALUE ) :-
 		model( type(TYPE, CATEG), name(NAME), value(VALUE) ).
