@@ -50,6 +50,11 @@ private static RobotState initialState;
 	}
 	
 	// Method added by fuffaTeam
+	public static RoomMap getRoomMap() {
+		return RoomMap.getRoomMap();
+	}
+	
+	// Method added by fuffaTeam
 	public static Direction getCurrentDirection() {
 		return initialState.getDirection();
 	}

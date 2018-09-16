@@ -91,7 +91,7 @@ const handleResourceChangeEvent = (message) => {
 
 const handleExecMoveRobot = (message) => {
     let splitValues = message.split(',');
-    let command = splitValues[4].replace('usercmd(robotgui(', '').replace('(low)))','');
+    let command = splitValues[4].replace('usercmd(robotgui(', '').split('(')[0];
     return command.trim();
 };
 

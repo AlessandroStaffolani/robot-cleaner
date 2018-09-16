@@ -44,13 +44,14 @@ public class autoPilot {
 			aiutil.showMap();
 			
 			// Static moves
-			forwardToObstacle(qa);
-			traceMap(qa);
+//			forwardToObstacle(qa);
+//			traceMap(qa);
 			
 			// AI moves
 			cleanRoom(qa);
+			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList());
 			
-			System.out.println("===== map after five moves");
+			System.out.println("===== map after clean");
 			aiutil.showMap();
 			
 		} catch (Exception e) {
@@ -164,7 +165,7 @@ public class autoPilot {
 			if (doMove) aiutil.doMove("s");
 			break;
 		}
-		sleepMillseconds(500);
+		sleepMillseconds(250);
 	}
 	
 	protected static String getObstacleType(Direction currentDirection) {

@@ -15,6 +15,11 @@ public class RoomMap {
 	
 	private List<ArrayList<Box>> roomMap = new ArrayList<ArrayList<Box>>();
 	
+	// Method added by fuffaTeam
+	public List<ArrayList<Box>> getRoomMapAsArrayList() {
+		return roomMap;
+	}
+	
 	private RoomMap() {
 		super();
 		for (int i=0; i<1; i++) {

@@ -21,7 +21,7 @@ export default class Executor extends Component {
                     </p>
                     <p className="value d-flex justify-content-between">
                         <span className="w-60">Last action requested: </span>
-                        <span className="w-40">{executor.last_action ? executor.last_action.command : ""}</span>
+                        <span className="w-40">{executor.last_action ? executor.last_action.name : ""}</span>
                     </p>
                     <div className="sub-field my-2">
                         <span className="headline-small">Robot actuators: </span>{" "}
