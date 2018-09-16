@@ -1,5 +1,6 @@
 plan(1,init, sentence(true,move(solve,consult( "./resourceModel.pl"),0,""),'','' ))
 plan(2,init, sentence(true,move(print("Mind robot ready")),'','' ))
+plan(3,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(1,afterInit, sentence(true,not here StateMoveNormal,'','' ))
 plan(2,afterInit, sentence(true,move(solve,getModelItem( sensor,clock,clock1,R),0,""),'','' ))
 plan(3,afterInit, sentence(-  goalResult( getModelItem( sensor,clock,clock1,R)) ,not here StateMoveNormal,'','' ))

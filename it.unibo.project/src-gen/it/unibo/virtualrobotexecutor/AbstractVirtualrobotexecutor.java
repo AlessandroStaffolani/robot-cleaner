@@ -78,12 +78,6 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
 	    	temporaryStr = "\"clientTcp Ready\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnLeft', 'arg': 800 }"  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnLeft', 'arg': 800 }"  );
 	    	temporaryStr = "\"Virtual Robot ready\"";
 	    	println( temporaryStr );  
 	     connectToMqttServer("ws://localhost:1884");
@@ -135,7 +129,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveForward', 'arg': 250 }" ;
+	    		String arg1 = "{ 'type': 'moveForward', 'arg': 200 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}
@@ -147,7 +141,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveBackward', 'arg': 250 }" ;
+	    		String arg1 = "{ 'type': 'moveBackward', 'arg': 200 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}
@@ -159,7 +153,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnLeft', 'arg': 800 }" ;
+	    		String arg1 = "{ 'type': 'turnLeft', 'arg': 200 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}
@@ -171,7 +165,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnRight', 'arg': 800 }" ;
+	    		String arg1 = "{ 'type': 'turnRight', 'arg': 200 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}

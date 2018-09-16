@@ -76,7 +76,9 @@ changedModelAction( realRobot, fuffolo, VAL ) . %% output(modelChanged(realRobot
 
 changedModelAction( sonarVirtual, NAME, V):- output(modelChanged(sonarVirtual, name(NAME), value(V))).
 
-changedModelAction( sonarRobot, sonarVirtual, V):- output(modelChanged(sonarRobot, sonarVirtual, value(V))).
+changedModelAction( sonarRobot, sonarVirtual, V):- changeModelItem(obstacle, sonar, yes).
+
+changedModelAction( obstacle, sonar, V).
 
 changedModelAction( sonarRobot, sonarReal, V).
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).

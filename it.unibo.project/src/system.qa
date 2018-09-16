@@ -32,6 +32,9 @@
  * N.B.: Nell'invio di un comando si usano sempre dei valori costanti (come 250 o 800 vedi virtualrobotexecutor), questo è dovuto al fatto che
  * nel qactor ancora non esiste un'implementazione dell'invio dei valori tramite variabili e questo ha un po' limitato le capacità della nostra console
  * 
+ * N.B.: Siamo costretti a creare un terzo attore nel contesto della mind in quanto l'avvio di un applicativo java mediante il costrutto javaRun esso risulta bloccante
+ * ergo non è possibile eseguire altre azioni. Questo nuovo attore si occuperà soltanto di avviare l'auto pilot
+ * 
  */
 System robotRoomba
 Event resourceChangeEvent   : resourceChangeEvent( TYPE, NAME, VALUE ) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -55,9 +58,9 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		println("clientTcp Ready");
-		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
-		delay 1000;
-		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+//		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 250 }");
+//		delay 1500;
+//		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 250 }");
 		println("Virtual Robot ready")
 		//javaRun it.unibo.exploremap.program.autoPilot.start()
 	]
@@ -74,13 +77,13 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
  			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }")
  		};
     	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 250 }");
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 200 }");
      	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': 250 }");
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': 200 }");
    		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
-  			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+  			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 200 }");
     	onMsg execMoveRobot : usercmd( robotgui(d(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 800 }");
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnRight', 'arg': 200 }");
 		onMsg execMoveRobot : usercmd( robotgui(auto(X)) )    -> 
     		javaRun it.unibo.utils.autoPilot.startAutoPilot()
  	] 
@@ -121,11 +124,10 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
  	
 }
 QActor mindrobot context ctxMindRobot -pubsub {	
-	
-	
 	Plan init normal [
 		demo consult("./resourceModel.pl");  //contains the models and related rules
-		println("Mind robot ready")
+		println("Mind robot ready");
+		javaRun it.unibo.exploremap.program.autoPilot.setMindQa()
 		//javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "http://localhost:5005/lamp/1/blink")
 	]
 	switchTo afterInit
@@ -260,10 +262,10 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		};
  		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
- 				forward delegateexecutor -m exec : mindcmd( h(low) );
  				println("****** Stop autopilot ******");
  				javaRun it.unibo.exploremap.program.autoPilot.stopAutoPilot(); 
- 				demo changeModelItem(leds, NAME, off)
+ 				demo changeModelItem(leds, NAME, off);
+ 				forward delegateexecutor -m exec : mindcmd( h(low) )
  				}	
  			else 
  				 println("Too hot to work or out of time")
@@ -272,8 +274,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				//publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
  				//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
- 				println("====================>Ho ricevuto il comando di autopilot!<====================");
- 				javaRun it.unibo.exploremap.program.autoPilot.start();
+ 				forward autopilot -m exec : mindcmd( auto(low) );
  				demo changeModelItem(leds, NAME, on)
  				}	
  			else 
@@ -316,6 +317,26 @@ QActor delegateexecutor context ctxMindRobot {
     	onMsg exec : mindcmd( d(X) )    -> {
     		publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(X)) );
 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(X)) )
+    	}
+ 	] 
+}
+
+QActor autopilot context ctxMindRobot {
+	Plan init normal [
+		println("Autopilot ready")
+	]
+	switchTo waitForCmd
+	
+	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg exec -> handleExecMsg
+ 	finally repeatPlan
+ 	
+ 	Plan handleExecMsg resumeLastPlan [
+ 		printCurrentMessage;
+    	onMsg exec : mindcmd( auto(X) )    -> {
+    		println("====================>Ho ricevuto il comando di autopilot!<====================");
+			javaRun it.unibo.exploremap.program.autoPilot.start()
     	}
  	] 
 }

@@ -44,8 +44,14 @@ private static RobotState initialState;
 		RoomMap.getRoomMap().put(0, 0, new Box(false, true, false));
 	}
 	
+	// Method added by fuffaTeam
 	public static boolean roomIsCleaned() {
 		return RoomMap.getRoomMap().isClean();
+	}
+	
+	// Method added by fuffaTeam
+	public static Direction getCurrentDirection() {
+		return initialState.getDirection();
 	}
 	
 	public static GoalTest goalTest;
@@ -64,11 +70,12 @@ private static RobotState initialState;
 			if (!RoomMap.getRoomMap().isClean()) RoomMap.getRoomMap().setObstacles();
 			actions = new ArrayList<Action>();
 //			qa.addRule("cleanFinished"); //by AN
-			return null;
+			return actions;
 		}else if(actions.get(0).isNoOp() ) {
 			System.out.println("aiutil doPlan NoOp" );	
 //			qa.addRule("endOfWork"); //by AN (optimized target)
-			return null;
+			actions = new ArrayList<Action>();
+			return actions;
 		}
 		System.out.println("aiutil doPlan actions=" + actions);	
 //		if( actions.size() > 2  ) qa.solveGoal("logMove( plan(" + actions + "))");

@@ -13,6 +13,8 @@ qactor( mindrobot , ctxmindrobot, "it.unibo.mindrobot.MsgHandle_Mindrobot"   ). 
 qactor( mindrobot_ctrl , ctxmindrobot, "it.unibo.mindrobot.Mindrobot"   ). %%control-driven 
 qactor( delegateexecutor , ctxmindrobot, "it.unibo.delegateexecutor.MsgHandle_Delegateexecutor"   ). %%store msgs 
 qactor( delegateexecutor_ctrl , ctxmindrobot, "it.unibo.delegateexecutor.Delegateexecutor"   ). %%control-driven 
+qactor( autopilot , ctxmindrobot, "it.unibo.autopilot.MsgHandle_Autopilot"   ). %%store msgs 
+qactor( autopilot_ctrl , ctxmindrobot, "it.unibo.autopilot.Autopilot"   ). %%control-driven 
 %%% -------------------------------------------
 %%% -------------------------------------------
 

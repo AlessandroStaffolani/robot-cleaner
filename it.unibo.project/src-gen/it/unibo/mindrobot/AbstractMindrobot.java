@@ -84,6 +84,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	solveGoal( parg ); //sept2017
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
+	    	it.unibo.exploremap.program.autoPilot.setMindQa( myself  );
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
@@ -458,14 +459,14 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
-	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		temporaryStr = "\"****** Stop autopilot ******\"";
 	    		println( temporaryStr );  
 	    		it.unibo.exploremap.program.autoPilot.stopAutoPilot( myself  );
 	    		parg = "changeModelItem(leds,NAME,off)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
@@ -482,9 +483,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		temporaryStr = "\"====================>Ho ricevuto il comando di autopilot!<====================\"";
-	    		println( temporaryStr );  
-	    		it.unibo.exploremap.program.autoPilot.start( myself  );
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(auto(low))", guardVars ).toString();
+	    		sendMsg("exec","autopilot", QActorContext.dispatch, temporaryStr ); 
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017

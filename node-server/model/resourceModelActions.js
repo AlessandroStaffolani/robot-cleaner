@@ -210,13 +210,20 @@ const generate_executor_actions = () => {
         description: 'Stop executor'
     };
     let hPromise = create_document_if_not_exist(ExecutorAction, stop, {command: stop.command});
+    let auto = {
+        command: 'auto',
+        name: 'Autopilot',
+        description: 'Autopilot'
+    };
+    let autoPromise = create_document_if_not_exist(ExecutorAction, auto, {command: auto.command});
 
     return Promise.all([
         wPromise,
         dPromise,
         aPromise,
         sPromise,
-        hPromise
+        hPromise,
+        autoPromise
     ]);
 };
 
