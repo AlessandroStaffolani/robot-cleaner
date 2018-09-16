@@ -11,6 +11,8 @@ qactor( realrobotexecutor , ctxrealrobot, "it.unibo.realrobotexecutor.MsgHandle_
 qactor( realrobotexecutor_ctrl , ctxrealrobot, "it.unibo.realrobotexecutor.Realrobotexecutor"   ). %%control-driven 
 qactor( mindrobot , ctxmindrobot, "it.unibo.mindrobot.MsgHandle_Mindrobot"   ). %%store msgs 
 qactor( mindrobot_ctrl , ctxmindrobot, "it.unibo.mindrobot.Mindrobot"   ). %%control-driven 
+qactor( delegateexecutor , ctxmindrobot, "it.unibo.delegateexecutor.MsgHandle_Delegateexecutor"   ). %%store msgs 
+qactor( delegateexecutor_ctrl , ctxmindrobot, "it.unibo.delegateexecutor.Delegateexecutor"   ). %%control-driven 
 %%% -------------------------------------------
 %%% -------------------------------------------
 

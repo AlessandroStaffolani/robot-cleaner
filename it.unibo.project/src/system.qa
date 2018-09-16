@@ -29,6 +29,9 @@
  * - Resource model in maniera tale da avere un modello di tutte le risorse ( sensori e attuatori )
  * - Aggiornate le rules attraverso l'utilizzo del resource model
  * 
+ * N.B.: Nell'invio di un comando si usano sempre dei valori costanti (come 250 o 800 vedi virtualrobotexecutor), questo è dovuto al fatto che
+ * nel qactor ancora non esiste un'implementazione dell'invio dei valori tramite variabili e questo ha un po' limitato le capacità della nostra console
+ * 
  */
 System robotRoomba
 Event resourceChangeEvent   : resourceChangeEvent( TYPE, NAME, VALUE ) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
@@ -39,6 +42,7 @@ Event realSonarDetect : realSonarDetect(NAME, DISTANCE) // Diverso rispetto al s
 
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
+Dispatch exec : mindcmd(CMD)
 
 pubSubServer "ws://localhost:1884" //virtual robot
 //pubSubServer "ws://192.168.1.123:1884" //real robot
@@ -51,8 +55,11 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
 	Plan init normal [
 		javaRun it.unibo.utils.clientTcp.initClientConn("localhost","8999");
 		println("clientTcp Ready");
-		println("Robot ready");
-		javaRun it.unibo.exploremap.program.autoPilot.start()
+		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+		delay 1000;
+		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
+		println("Virtual Robot ready")
+		//javaRun it.unibo.exploremap.program.autoPilot.start()
 	]
 	switchTo waitForCmd            
 		 
@@ -64,14 +71,12 @@ QActor virtualrobotexecutor context ctxVirtualRobot -pubsub {
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
  		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> {
- 			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }");
- 			println("****** Stop autopilot ******");
- 			javaRun it.unibo.utils.autoPilot.stopAutoPilot() 
+ 			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'alarm' }")
  		};
     	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': -1 }");
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveForward', 'arg': 250 }");
      	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
-    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': -1 }");
+    		javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'moveBackward', 'arg': 250 }");
    		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
   			javaRun it.unibo.utils.clientTcp.sendMsg("{ 'type': 'turnLeft', 'arg': 800 }");
     	onMsg execMoveRobot : usercmd( robotgui(d(X)) )    -> 
@@ -90,7 +95,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
 		javaOp "customExecute(\"python3 executor.py a\")";*/ 
 		//javaOp "customExecute(\"python3 obstacle_detector.py 192.168.43.214 &\")"; //indirizzo Ip da cambiare in base all'address del broker
 		javaOp "customExecute(\"./send_mqtt.sh 192.168.1.123 unibo/qasys\")";
-		delay 1000;
+		delay 1500;
 		println("Real Robot ready!")
 	]
 	switchTo waitForCmd
@@ -212,6 +217,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		//}
  	]
  	
+ 	/* Messaggi provenienti dalla console*/
  	Plan handleMsg resumeLastPlan [
  		/* Ogni volta che si riceve un messaggio di movimento deve essere aggiornato il clock time
  		 * in modo tale da verificare se il movimento del robot è consentito o meno
@@ -225,8 +231,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		printCurrentMessage;
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(low)) );
+ 				forward delegateexecutor -m exec : mindcmd( w(low) );
  				/* Unica soluzione per evitare problemi nell'accensione del led reale è cambiare lo stato di uno solo per volta */
  				demo changeModelItem(leds, NAME, on)
  				}		
@@ -235,33 +240,29 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		};
 		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(low)) );
+ 				forward delegateexecutor -m exec : mindcmd( s(low) );
  				demo changeModelItem(leds, NAME, on)
  				}		
  			else
  				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
- 			[ !? model( type(executor, X), name(Y), value(true) ) ]{
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(low)) )
- 				}	
+ 			[ !? model( type(executor, X), name(Y), value(true) ) ]
+ 				forward delegateexecutor -m exec : mindcmd( a(low) )
  			else
  				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
- 			[ !? model( type(executor, X), name(Y), value(true) ) ] {
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(low)) )
- 				}
+ 			[ !? model( type(executor, X), name(Y), value(true) ) ] 
+ 				forward delegateexecutor -m exec : mindcmd( d(low) )
  			else
  				  println("Too hot to work or out of time")
 		};
  		onMsg moveRobot : usercmd( robotgui(h(X)) ) -> {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
- 				publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 				forward delegateexecutor -m exec : mindcmd( h(low) );
+ 				println("****** Stop autopilot ******");
+ 				javaRun it.unibo.exploremap.program.autoPilot.stopAutoPilot(); 
  				demo changeModelItem(leds, NAME, off)
  				}	
  			else 
@@ -269,12 +270,52 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		};
 		onMsg moveRobot : usercmd( robotgui(auto(X)) ) -> {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
- 				publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
+ 				//publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
  				//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(auto(low)) );
+ 				println("====================>Ho ricevuto il comando di autopilot!<====================");
+ 				javaRun it.unibo.exploremap.program.autoPilot.start();
  				demo changeModelItem(leds, NAME, on)
  				}	
  			else 
  				 println("Too hot to work or out of time")
 		}
  	]
+}
+
+/* Gestore dei movimenti di entrambi i robot: delegato della mind */
+QActor delegateexecutor context ctxMindRobot {
+	Plan init normal [
+		delay 3000;
+		println("Executor ready")
+	] 
+	switchTo waitForCmd
+	
+	Plan waitForCmd[  ]  
+  	transition stopAfter 3600000   	//1h 
+ 		whenMsg exec -> handleExecMsg
+ 	finally repeatPlan
+ 	
+ 	Plan handleExecMsg resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg exec : mindcmd( h(X) )    -> {
+ 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(X)) );
+			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(X)) )
+ 		};
+    	onMsg exec : mindcmd( w(X) )    ->{
+    		publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(X)) );
+			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(w(X)) )
+    	};
+     	onMsg exec : mindcmd( s(X) )    ->{
+     		publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(X)) );
+			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(s(X)) )
+     	};
+   		onMsg exec : mindcmd( a(X) )    -> {
+   			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(X)) );
+			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(a(X)) )
+   		};
+    	onMsg exec : mindcmd( d(X) )    -> {
+    		publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(X)) );
+			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(d(X)) )
+    	}
+ 	] 
 }

@@ -382,12 +382,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(w(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(w(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(w(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
@@ -407,12 +403,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(s(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(s(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(s(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
@@ -431,16 +423,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
-	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(a(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(a(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		};//actionseq
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(a(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
+	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -453,16 +440,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
-	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(d(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(d(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
-	    		};//actionseq
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(d(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
+	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -476,12 +458,11 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(h(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(h(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		temporaryStr = "\"****** Stop autopilot ******\"";
+	    		println( temporaryStr );  
+	    		it.unibo.exploremap.program.autoPilot.stopAutoPilot( myself  );
 	    		parg = "changeModelItem(leds,NAME,off)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
@@ -501,9 +482,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
 	    		{//actionseq
-	    		//PublishMsgMove
-	    		parg = "usercmd(robotgui(auto(low)))";
-	    		sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
+	    		temporaryStr = "\"====================>Ho ricevuto il comando di autopilot!<====================\"";
+	    		println( temporaryStr );  
+	    		it.unibo.exploremap.program.autoPilot.start( myself  );
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017

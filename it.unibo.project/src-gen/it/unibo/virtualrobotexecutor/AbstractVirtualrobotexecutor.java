@@ -78,9 +78,14 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
 	    	temporaryStr = "\"clientTcp Ready\"";
 	    	println( temporaryStr );  
-	    	temporaryStr = "\"Robot ready\"";
+	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnLeft', 'arg': 800 }"  );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(1000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
+	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnLeft', 'arg': 800 }"  );
+	    	temporaryStr = "\"Virtual Robot ready\"";
 	    	println( temporaryStr );  
-	    	it.unibo.exploremap.program.autoPilot.start( myself  );
 	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 
@@ -121,9 +126,6 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'alarm' }"  );
-	    		temporaryStr = "\"****** Stop autopilot ******\"";
-	    		println( temporaryStr );  
-	    		it.unibo.utils.autoPilot.stopAutoPilot( myself  );
 	    		};//actionseq
 	    	}
 	    	//onMsg 
@@ -133,7 +135,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveForward', 'arg': -1 }" ;
+	    		String arg1 = "{ 'type': 'moveForward', 'arg': 250 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}
@@ -145,7 +147,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveBackward', 'arg': -1 }" ;
+	    		String arg1 = "{ 'type': 'moveBackward', 'arg': 250 }" ;
 	    		//end arg1
 	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
 	    		}

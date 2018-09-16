@@ -35,6 +35,22 @@ public static void initClientConn(QActor qa ) throws Exception {
 		outToServer.println(msg);
 		outToServer.flush();
 	}
+	
+	/**Metodo in cui è possibile specificare per quanti secondi il robot deve combiere un movimento:
+	 * Importante l'argomento "arg" non deve essere specificato basta solo la distanza**/
+	public static void sendMsgWithDistance(QActor qa, String jsonString, String distance)throws Exception{
+		JSONObject jsonObject = new JSONObject(jsonString);
+		if(distance.equals("low")) {
+			jsonObject.put("arg", "-1");
+		}else
+			jsonObject.put("arg", distance);
+	
+		String msg = sep+jsonObject.toString()+sep;
+		System.out.println("\n\n\n\nQuesto è il messaggio inviato: \n" + msg+"\n");
+		outToServer.println(msg);
+		outToServer.flush();
+	}
+	
  	protected static void startTheReader(final QActor qa) {		
 		new Thread() {
 			public void run() {
@@ -60,39 +76,40 @@ public static void initClientConn(QActor qa ) throws Exception {
 							//System.out.println(qa.getName());
 							
 							String axis 	   = jsonArg.getString("axis");
-							autoPilot.setRealAxis(autoPilot.getRealAxisValue(axis, sonarName));
-							axis = autoPilot.getAxisValue(axis, sonarName);
-							System.out.println("\n\n\nAxis on clientTCP = " + axis + "\n\n\n");
-							if (axis != autoPilot.robotAxis || autoPilot.robotAxis == null) {
-								autoPilot.setCurrentSonar(sonarName);
-								autoPilot.setRobotAxis(axis);
-							}
-							if(distance == 0)
-								autoPilot.setCurrentSonar(sonarName);
-//							else {
-//								/*Con questo riesce a stare sull'asse y del sonar1*/
-//								autoPilot.setCurrentSonar(null);
+							/*Per far funzionare il primo autopilot bisogna decommentare tutto quello che c'è sotto*/
+//							autoPilot.setRealAxis(autoPilot.getRealAxisValue(axis, sonarName));
+//							axis = autoPilot.getAxisValue(axis, sonarName);
+//							System.out.println("\n\n\nAxis on clientTCP = " + axis + "\n\n\n");
+//							if (axis != autoPilot.robotAxis || autoPilot.robotAxis == null) {
+//								autoPilot.setCurrentSonar(sonarName);
+//								autoPilot.setRobotAxis(axis);
 //							}
-							autoPilot.setCurrentDistance(distance);
-							//LOOP 
-							if(autoPilot.getStatus()) {
-								if(autoPilot.currentDistance != autoPilot.lastDistance) {
-									autoPilot.setLastDistance(autoPilot.currentDistance);
-									counter_repeat_distance = 0;
-								}else
-									counter_repeat_distance = counter_repeat_distance + 1;
-								
-								System.out.println("\n\nLOOP: " + counter_repeat_distance + "\n\n");
-								if(counter_repeat_distance > 4) {
-									System.out.println("Sono entrato in loop: Cambio direzione!");
-									counter_repeat_distance = 0;
-									int lastTurn = autoPilot.getTurn();
-									System.out.println("Last Turn: " + lastTurn);
-									lastTurn ++;
-									//autoPilot.setCurrentSonar(sonarName);
-									autoPilot.setTurn(lastTurn);
-								}
-							}
+//							if(distance == 0)
+//								autoPilot.setCurrentSonar(sonarName);
+////							else {
+////								/*Con questo riesce a stare sull'asse y del sonar1*/
+////								autoPilot.setCurrentSonar(null);
+////							}
+//							autoPilot.setCurrentDistance(distance);
+//							//LOOP 
+//							if(autoPilot.getStatus()) {
+//								if(autoPilot.currentDistance != autoPilot.lastDistance) {
+//									autoPilot.setLastDistance(autoPilot.currentDistance);
+//									counter_repeat_distance = 0;
+//								}else
+//									counter_repeat_distance = counter_repeat_distance + 1;
+//								
+//								System.out.println("\n\nLOOP: " + counter_repeat_distance + "\n\n");
+//								if(counter_repeat_distance > 4) {
+//									System.out.println("Sono entrato in loop: Cambio direzione!");
+//									counter_repeat_distance = 0;
+//									int lastTurn = autoPilot.getTurn();
+//									System.out.println("Last Turn: " + lastTurn);
+//									lastTurn ++;
+//									//autoPilot.setCurrentSonar(sonarName);
+//									autoPilot.setTurn(lastTurn);
+//								}
+//							}
 							System.out.println( "sonarName = " +  sonarName + " distance = " + distance + " axis = " + axis );
 							
 							qa.emit("sonar", 
