@@ -1,11 +1,12 @@
-import React, { Component } from "react";
-import "../components-styles/console.css";
-import mqtt from "mqtt";
-import { getToken } from "../utils/localStorageUtils";
-import config from "../config/config";
-import Alert from "./Alert";
-import Loading from "./Loading";
-import ResourceModel from "./ResourceModel";
+import React, { Component } from 'react';
+import '../components-styles/console.css';
+import mqtt from 'mqtt';
+import { getToken } from '../utils/localStorageUtils';
+import config from '../config/config';
+import Alert from './Alert';
+import Loading from './Loading';
+import ResourceModel from './ResourceModel';
+import Map from './Map';
 
 const API_PATH = config.serverHost;
 
@@ -13,19 +14,19 @@ const MQTT_HOST = config.mqttUrl;
 const MQTT_TOPIC = config.mqttTopic;
 
 const KEY_BIND = {
-    87: "w",
-    65: "a",
-    68: "d",
-    83: "s",
-    72: "h"
+    87: 'w',
+    65: 'a',
+    68: 'd',
+    83: 's',
+    72: 'h'
 };
 
 const COMMAND_MAPPING = {
-    w: "Forward",
-    a: "Left",
-    d: "Right",
-    s: "Backward",
-    h: "Stop"
+    w: 'Forward',
+    a: 'Left',
+    d: 'Right',
+    s: 'Backward',
+    h: 'Stop'
 };
 
 const useMqtt = false;
@@ -37,17 +38,18 @@ class Gui extends Component {
             isLoading: true,
             resourceModel: null,
             message: {
-                value: "",
-                type: "success",
+                value: '',
+                type: 'success',
                 show: false
             },
             temperature: null,
             time: null,
-            command: false
+            command: false,
+            map: null
         };
 
         this.clientMqtt = mqtt.connect(MQTT_HOST);
-        this.clientMqtt.on("connect", () => {
+        this.clientMqtt.on('connect', () => {
             this.clientMqtt.subscribe(MQTT_TOPIC);
         });
 
@@ -59,17 +61,22 @@ class Gui extends Component {
 
     componentDidMount() {
         this.updateResourceModel();
-        this.clientMqtt.on("message", (topic, payload, packet) => {
+
+        this.getMapFromServer();
+
+        this.clientMqtt.on('message', (topic, payload, packet) => {
             const payloadString = payload.toString();
-            if (payloadString.indexOf("react") !== -1 && payloadString.indexOf("resource_model_update") !== -1) {
+            if (payloadString.indexOf('react') !== -1 && payloadString.indexOf('resource_model_update') !== -1) {
                 this.updateResourceModel();
+            } else if (payloadString.indexOf('react') !== -1 && payloadString.indexOf('map_ready') !== -1) {
+                this.getMapFromServer();
             }
         });
     }
 
     handleButtonClicked = (event, command) => {
         event.preventDefault();
-        let path = API_PATH + "/robot/command/" + command;
+        let path = API_PATH + '/robot/command/' + command;
 
         if (useMqtt) {
             this.executeCommandMqtt(command);
@@ -84,7 +91,7 @@ class Gui extends Component {
         let command = KEY_BIND[event.keyCode];
 
         if (command) {
-            let path = API_PATH + "/robot/command/" + command;
+            let path = API_PATH + '/robot/command/' + command;
 
             if (useMqtt) {
                 this.executeCommandMqtt(command);
@@ -95,21 +102,13 @@ class Gui extends Component {
     };
 
     executeCommandHttp = (path, command) => {
-        /* this.setState({
-            resourceModel: {
-                obstacle: "",
-                sonar1: false,
-                sonar2: false
-            }
-        }); */
-
         const headers = new Headers();
-        headers.append("Accept", "application/json");
-        headers.append("Content-Type", "application/json");
-        headers.append("Authorization", `Bearer ${getToken()}`);
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${getToken()}`);
 
         fetch(path, {
-            method: "GET",
+            method: 'GET',
             headers: headers
         })
             .then(result => result.json())
@@ -126,46 +125,24 @@ class Gui extends Component {
     };
 
     executeCommandMqtt = command => {
-        let cmd = command + "(low)";
-        let eventstr = "msg(moveRobot,dispatch,js,robotexecutor,usercmd(robotgui( " + cmd + ")),1)";
-        console.log("emits> " + eventstr);
+        let cmd = command + '(low)';
+        let eventstr = 'msg(moveRobot,dispatch,js,robotexecutor,usercmd(robotgui( ' + cmd + ')),1)';
+        console.log('emits> ' + eventstr);
         this.clientMqtt.publish(MQTT_TOPIC, eventstr);
         /* this.setState({
             command: COMMAND_MAPPING[command]
         }); */
     };
 
-    /* temperatureCheck = () => {
-        const path = API_PATH + "/weather/temperature/" + this.props.userData.city;
-        const headers = new Headers();
-        headers.append("Accept", "application/json");
-        headers.append("Content-Type", "application/json");
-        headers.append("Authorization", `Bearer ${getToken()}`);
-
-        fetch(path, {
-            method: "GET",
-            headers: headers
-        })
-            .then(result => result.json())
-            .then(result => {
-                this.setState({
-                    temperature: result.temperature + "°"
-                });
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    }; */
-
     updateResourceModel = () => {
-        const path = API_PATH + "/resource/model";
+        const path = API_PATH + '/resource/model';
         const headers = new Headers();
-        headers.append("Accept", "application/json");
-        headers.append("Content-Type", "application/json");
-        headers.append("Authorization", `Bearer ${getToken()}`);
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${getToken()}`);
 
         fetch(path, {
-            method: "GET",
+            method: 'GET',
             headers: headers
         })
             .then(result => {
@@ -175,8 +152,8 @@ class Gui extends Component {
                     this.setState({
                         message: {
                             isLoading: false,
-                            value: "Error on loading resource model",
-                            type: "danger",
+                            value: 'Error on loading resource model',
+                            type: 'danger',
                             show: true
                         }
                     });
@@ -187,8 +164,8 @@ class Gui extends Component {
                     isLoading: false,
                     resourceModel: result.resourceModel,
                     message: {
-                        value: "",
-                        type: "success",
+                        value: '',
+                        type: 'success',
                         show: false
                     }
                 });
@@ -198,17 +175,45 @@ class Gui extends Component {
             });
     };
 
+    getMapFromServer = () => {
+        const path = API_PATH + '/map';
+        const headers = new Headers();
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', `Bearer ${getToken()}`);
+
+        fetch(path, {
+            method: 'GET',
+            headers: headers
+        })
+            .then(result => {
+                if (result.status === 200) {
+                    return result.json();
+                } else {
+                    return {
+                        error: true,
+                        errorPromise: result.json()
+                    }
+                }
+            })
+            .then(result => {
+                this.setState({map: result.map});
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+
     render() {
-        const { isLoading, resourceModel, message } = this.state;
-        console.log(resourceModel);
+        const { isLoading, resourceModel, message, map } = this.state;
         return (
             <div className="main-wrapper" tabIndex={0} onKeyDown={this.handleKeyDown}>
-                <div className={"gui-wrapper"}>
+                <div className={'gui-wrapper'}>
                     <h2>
                         Welcome back <span className="uc-first">{this.props.userData.username}</span>
                     </h2>
                     <hr />
-                    {message.show ? <Alert type={message.type} value={message.value} dismissable={true} /> : ""}
+                    {message.show ? <Alert type={message.type} value={message.value} dismissable={true} /> : ''}
 
                     {isLoading ? (
                         <Loading />
@@ -220,7 +225,7 @@ class Gui extends Component {
                                         type="button"
                                         name="w"
                                         className="btn btn-success btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "w")}
+                                        onClick={event => this.handleButtonClicked(event, 'w')}
                                     >
                                         Forward
                                     </button>
@@ -232,13 +237,13 @@ class Gui extends Component {
                                         type="button"
                                         name="a"
                                         className="btn btn-success btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "a")}
+                                        onClick={event => this.handleButtonClicked(event, 'a')}
                                     >
                                         Left
                                     </button>
                                 </div>
                                 <div className="col-4">
-                                    <button type="button" name="h" className="btn btn-danger btn-block" onClick={event => this.handleButtonClicked(event, "h")}>
+                                    <button type="button" name="h" className="btn btn-danger btn-block" onClick={event => this.handleButtonClicked(event, 'h')}>
                                         Stop
                                     </button>
                                 </div>
@@ -247,7 +252,7 @@ class Gui extends Component {
                                         type="button"
                                         name="d"
                                         className="btn btn-success btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "d")}
+                                        onClick={event => this.handleButtonClicked(event, 'd')}
                                     >
                                         Right
                                     </button>
@@ -259,7 +264,7 @@ class Gui extends Component {
                                         type="button"
                                         name="s"
                                         className="btn btn-success btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "s")}
+                                        onClick={event => this.handleButtonClicked(event, 's')}
                                     >
                                         Backward
                                     </button>
@@ -271,12 +276,13 @@ class Gui extends Component {
                                         type="button"
                                         name="x"
                                         className="btn btn-outline-info btn-block"
-                                        onClick={event => this.handleButtonClicked(event, "auto")}
+                                        onClick={event => this.handleButtonClicked(event, 'auto')}
                                     >
                                         Allow autopilot
                                     </button>
                                 </div>
                             </div>
+                            {map ? <Map map={map} /> : ''}
                             <ResourceModel resourceModel={resourceModel} userCity={this.props.userData.city} />
                         </div>
                     )}

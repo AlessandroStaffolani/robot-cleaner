@@ -56,3 +56,78 @@
 .resource-model-wrapper .system .field-wrapper .sub-field .action-command {
     padding-left: 1rem;
 }
+
+.map-wrapper {
+    border: 4px solid #212121;
+    background-color: #424242;
+    padding: 5px;
+    display: inline-block;
+    position: relative;
+}
+
+.map-date {
+    font-size: 1rem;
+}
+
+.map-wrapper .box {
+    border-radius: 2px;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+}
+
+.map-wrapper .box .dirty {
+    background-color: #f44336;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.map-wrapper .box .clean {
+    background-color: #76ff03;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.map-wrapper .box .obstacle {
+    background-color: #9e9e9e;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.map-wrapper .box .robot {
+    background-image: url('./robot.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.map-container {
+    position: relative;
+}
+
+.button-collapse {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 1.5rem;
+}
+
+.button-collapse:hover {
+    background-color: #e3e3e3;
+    border: 1px solid #212121;
+    border-radius: 5px;
+}

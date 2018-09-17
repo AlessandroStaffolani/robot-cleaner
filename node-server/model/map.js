@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const Schema = mongoose.Schema;
 
@@ -17,5 +18,11 @@ let MapSchema = new Schema(
         ]
     }
 );
+
+MapSchema
+    .virtual('date_formatted')
+    .get(function () {
+        return this.date ? moment(this.date).format('DD-MM-YYYY') : '';
+    });
 
 module.exports = mongoose.model("map", MapSchema);
