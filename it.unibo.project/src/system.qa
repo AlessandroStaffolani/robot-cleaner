@@ -48,7 +48,7 @@ Dispatch execMoveRobot : usercmd(CMD)
 Dispatch exec : mindcmd(CMD)
 
 pubSubServer "ws://localhost:1884" //virtual robot
-//pubSubServer "ws://192.168.1.123:1884" //real robot
+//pubSubServer "ws://192.168.137.1:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -97,7 +97,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
 		delay 5000;
 		javaOp "customExecute(\"python3 executor.py a\")";*/ 
 		//javaOp "customExecute(\"python3 obstacle_detector.py 192.168.43.214 &\")"; //indirizzo Ip da cambiare in base all'address del broker
-		javaOp "customExecute(\"./send_mqtt.sh 192.168.1.123 unibo/qasys\")";
+		javaOp "customExecute(\"./send_mqtt.sh 192.168.137.1 unibo/qasys\")";
 		delay 1500;
 		println("Real Robot ready!")
 	]
@@ -113,7 +113,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
  		onMsg execMoveRobot : usercmd( robotgui(h(X)) )    -> 
     		javaOp "customExecute(\"python3 executor.py h\")";
     	onMsg execMoveRobot : usercmd( robotgui(w(X)) )    -> 
-    		javaOp "customExecute(\"python3 executor.py w\")";
+    		javaOp "customExecute(\"python3 executor.py w 200\")";
      	onMsg execMoveRobot : usercmd( robotgui(s(X)) )    -> 
     		javaOp "customExecute(\"python3 executor.py s\")";
    		onMsg execMoveRobot : usercmd( robotgui(a(X)) )    -> 
@@ -152,20 +152,20 @@ QActor mindrobot context ctxMindRobot -pubsub {
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
- 		/*TODO cambiare nome del constraint cityTemperature */
  		onEvent resourceChangeEvent : resourceChangeEvent(sensor, cityTemperature, V) -> demo changeModelItem(temperature, cityTemperature, V) //ReplaceRule currentTemperature(X) with currentTemperature(V);
-// 		[ !? checkTemperature(hot)  ]{
-// 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
-// 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
-// 			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "http://localhost:5005/lamp/1/blink")	
-// 		}
+
  	]
  	
  	Plan handleChange resumeLastPlan [
  		printCurrentEvent;
+ 		onEvent resourceChange : resourceChange( sensor, sonarRobot, sonarReal, V )
+ 		-> {
+ 			println("Qui ci siamo!");
+ 			forward delegateexecutor -m exec : mindcmd( h(low) );
+ 			demo changeModelItem(leds, NAME, off)
+ 		};
  		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, off ) -> {
- 			publishMsg "unibo/qasys" for "virtualrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
- 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) );
+ 			forward delegateexecutor -m exec : mindcmd( h(low) );
  			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot non si possono muovere
  			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, off);
  			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, off);
@@ -196,13 +196,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, on);
  				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, on)
  			}
- 		/*onEvent resourceChange : resourceChange( executor, realRobot, fuffolo, false ) 
- 		-> {
- 			publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
- 			//println("Mqtt emesso");
- 			//demo changeModelItem(leds, NAME, off)
- 			
- 			}*/
  	]
  	
  	Plan handleSonarChange resumeLastPlan [

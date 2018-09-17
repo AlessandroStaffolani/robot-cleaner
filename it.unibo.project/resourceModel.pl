@@ -84,11 +84,12 @@ changedModelAction( sonarRobot, sonarReal, V):-
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
 	minDistance( MIN ),
 	eval( let, V, MIN),
+	emitevent( resourceChange, resourceChange( sensor, sonarRobot, sonarReal, V ) ),
 	changeModelItem(obstacle, sonar, yes).
 
 changedModelAction( sonarRobot, sonarReal, V):- 
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
-	changeModelItem( realRobot, fuffolo, no).
+	changeModelItem( obstacle, sonar, no).
 
 emitevent( EVID, EVCONTENT ) :- 
 	actorobj( Actor ), 

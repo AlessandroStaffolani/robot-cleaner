@@ -177,18 +177,31 @@ public abstract class AbstractMindrobot extends QActor {
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChange(sensor,sonarRobot,sonarReal,V)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			//println("WARNING: variable substitution not yet fully implemented " ); 
+	    			{//actionseq
+	    			temporaryStr = "\"Qui ci siamo!\"";
+	    			println( temporaryStr );  
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
+	    			sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    			parg = "changeModelItem(leds,NAME,off)";
+	    			//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    			solveGoal( parg ); //sept2017
+	    			};//actionseq
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("resourceChange(sensor,CATEG,NAME,off)");
 	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
 	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			//println("WARNING: variable substitution not yet fully implemented " ); 
 	    			{//actionseq
-	    			//PublishMsgMove
-	    			parg = "usercmd(robotgui(h(low)))";
-	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "virtualrobotexecutor", parg );
-	    			//PublishMsgMove
-	    			parg = "usercmd(robotgui(h(low)))";
-	    			sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    			temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
+	    			sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    			//PublisEventhMove
 	    			parg = "resourceChangeEvent(executor,soffritti,off)";
 	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
