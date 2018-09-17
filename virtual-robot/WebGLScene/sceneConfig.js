@@ -37,11 +37,11 @@ const config = {
         } */
     ],
     staticObstacles: [
-        {
+        /*{
             name: "divider",
             centerPosition: {x: 0.5, y: 0.35},
             size: {x: 0.98, y: 0.01}
-        },
+        },*/
         /* {
             name: "table",
             centerPosition: {x: 0.4, y: 0.4},

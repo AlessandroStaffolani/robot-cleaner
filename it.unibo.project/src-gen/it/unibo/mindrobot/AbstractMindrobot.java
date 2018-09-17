@@ -344,12 +344,23 @@ public abstract class AbstractMindrobot extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("realSonarDetect") && 
 	    		pengine.unify(curT, Term.createTerm("realSonarDetect(NAME,DISTANCE)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg = "usercmd(robotgui(h(low)))";
-	    			/* PublishMsgMove */
+	    			String parg="changeModelItem(sonarRobot,sonarReal,DISTANCE)";
+	    			/* PHead */
 	    			parg =  updateVars( Term.createTerm("realSonarDetect(NAME,DISTANCE)"), 
 	    			                    Term.createTerm("realSonarDetect(sonarReal,DISTANCE)"), 
 	    				    		  	Term.createTerm(currentEvent.getMsg()), parg);
-	    			if( parg != null ) sendMsgMqtt(  "unibo/qasys", "execMoveRobot", "realrobotexecutor", parg );
+	    				if( parg != null ) {
+	    				    aar = QActorUtils.solveGoal(this,myCtx,pengine,parg,"",outEnvView,86400000);
+	    					//println(getName() + " plan " + curPlanInExec  +  " interrupted=" + aar.getInterrupted() + " action goon="+aar.getGoon());
+	    					if( aar.getInterrupted() ){
+	    						curPlanInExec   = "handleSonarChange";
+	    						if( aar.getTimeRemained() <= 0 ) addRule("tout(demo,"+getName()+")");
+	    						if( ! aar.getGoon() ) return ;
+	    					} 			
+	    					if( aar.getResult().equals("failure")){
+	    						if( ! aar.getGoon() ) return ;
+	    					}else if( ! aar.getGoon() ) return ;
+	    				}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
 	    }catch(Exception e_handleSonarChange){  

@@ -31,7 +31,7 @@ public class autoPilot {
 	
 	public static void init(QActor qa) {
 		autoPilot.stopAutoPilot = false;
-		mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
+		clearObstacle(qa);
 	}
 	
 	public static void start(QActor qa) {
@@ -69,12 +69,9 @@ public class autoPilot {
 		while (!obstacleDetected && !stopAutoPilot) {
 			System.out.println("Value of Autopilot: " + autoPilot.stopAutoPilot);
 			moveRobot(qa, "w", true);
-//			sendMoveCmd(qa, MOVE_FORWARD);
-//			aiutil.doMove("w");
-//			sleepMillseconds(1000);
 			obstacleDetected = isObstacleDetected(qa);
 			if (obstacleDetected) {
-				mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
+				clearObstacle(qa);
 				String obstacleType = getObstacleType(aiutil.getCurrentDirection());
 				aiutil.doMove(obstacleType);
 			}
@@ -91,7 +88,7 @@ public class autoPilot {
 			moveRobot(qa, "w", false);
 			obstacleDetected = isObstacleDetected(qa);
 			if (obstacleDetected) {
-				mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
+				clearObstacle(qa);
 				obstacleType = getObstacleType(aiutil.getCurrentDirection());
 				aiutil.doMove(obstacleType);
 			} else {
@@ -100,7 +97,7 @@ public class autoPilot {
 				moveRobot(qa, "w", false);
 				obstacleDetected = isObstacleDetected(qa);
 				if (obstacleDetected) {
-					mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
+					clearObstacle(qa);
 					obstacleType = getObstacleType(aiutil.getCurrentDirection());
 					aiutil.doMove(obstacleType);
 					moveRobot(qa, "a", true);
@@ -117,9 +114,13 @@ public class autoPilot {
 			moveRobot(qa, actions.get(0).toString(), false);
 			obstacleDetected = isObstacleDetected(qa);
 			if (obstacleDetected) {
-				mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
-				String obstacleType = getObstacleType(aiutil.getCurrentDirection());
-				aiutil.doMove(obstacleType);
+				clearObstacle(qa);
+				/*Verifica della tipologia di ostacolo*/
+				if(it.unibo.utils.avoidObstacle.isStatic(qa)) {
+					String obstacleType = getObstacleType(aiutil.getCurrentDirection());
+					aiutil.doMove(obstacleType);
+				}else
+					aiutil.doMove(actions.get(0).toString());
 			} else {
 				aiutil.doMove(actions.get(0).toString());
 			}
@@ -134,13 +135,17 @@ public class autoPilot {
 		return stringResult.equals("yes");
 	}
 	
+	public static void clearObstacle(QActor qa) {
+		mindQa.replaceRule("model( type(sensor, obstacle), name(sonar), value(OBSTACLE))", "model( type(sensor, obstacle), name(sonar), value(no))");
+	}
+	
 	protected static void sendMoveCmd(QActor qa, String payload) throws Exception {
 		String temporaryStr = QActorUtils.unifyMsgContent(qa.getPrologEngine(),"mindcmd(CMD)",payload, null ).toString();
 		System.out.println("Message to send: " + temporaryStr);
 		qa.sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr );
 	}
 	
-	protected static void sleepMillseconds(int value) {
+	public static void sleepMillseconds(int value) {
 		try {
 			TimeUnit.MILLISECONDS.sleep(value);
 		} catch (InterruptedException e) {
@@ -149,7 +154,7 @@ public class autoPilot {
 		}
 	}
 	
-	protected static void moveRobot(QActor qa, String direction, boolean doMove) throws Exception {
+	public static void moveRobot(QActor qa, String direction, boolean doMove) throws Exception {
 		switch (direction) {
 		case "w": 
 			sendMoveCmd(qa, MOVE_FORWARD);
@@ -180,6 +185,17 @@ public class autoPilot {
 		case LEFT: obstacleType = "obstacleOnLeft"; break;
 		}
 		return obstacleType;
+	}
+	
+	public static String directionToString(Direction currentDirection) {
+		String direction = "";
+		switch (currentDirection) {
+		case UP: direction = "w"; break;
+		case RIGHT: direction = "d"; break;
+		case DOWN: direction = "s"; break;
+		case LEFT: direction = "a"; break;
+		}
+		return direction;
 	}
 
 }

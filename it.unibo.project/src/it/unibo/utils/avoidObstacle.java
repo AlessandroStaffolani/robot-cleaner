@@ -4,7 +4,7 @@ import it.unibo.qactors.akka.QActor;
 
 public class avoidObstacle {
 
-	private static boolean obstacleDetected;
+	private static boolean obstacleDetected = false;
 
 	public static void init(QActor qa) {
 		/* Parametri statici */
@@ -56,25 +56,27 @@ public class avoidObstacle {
 //		return false;
 //	}
 
-	protected static boolean isStatic(QActor qa) throws Exception {
+	public static boolean isStatic(QActor qa) throws Exception {
 		boolean end = false;
 		int counter = 0;
 		System.out.println("Verifica dell'ostacolo");
+		String direction = "";
 		while (!end && counter < 3) {
 			
-			clientTcp.sendMsg(qa, autoPilot.MOVE_FORWARD);
-			autoPilot.sleepMillseconds(350);
+			direction = it.unibo.exploremap.program.autoPilot.directionToString(it.unibo.exploremap.program.aiutil.getCurrentDirection());
+			//System.out.println("##################\tDirection:" + direction + "\t##################");
+			it.unibo.exploremap.program.autoPilot.moveRobot(qa, "w", false);
 			
-			/*Verifico se l'ostacolo non è più presente*/
-			if(!isObstacleDetected())
-				end = true;
-			else
-				/*L'ostacolo è ancora presente quindi faccio un altro tentativo (massimo 3)*/
-				setObstacleDetected(false);
-			
-			counter++;
-			autoPilot.sleepMillseconds(1000);
+			it.unibo.exploremap.program.autoPilot.sleepMillseconds(300);
 
+			/*Verifico se l'ostacolo non è più presente*/
+			if(!it.unibo.exploremap.program.autoPilot.isObstacleDetected(qa))
+				end = true;
+			else {
+				/*L'ostacolo è ancora presente quindi faccio un altro tentativo (massimo 3)*/
+				it.unibo.exploremap.program.autoPilot.clearObstacle(qa);
+				counter ++;
+			}
 		}
 		System.out.println("Counter obstacle: " + counter);
 		if (counter == 3)

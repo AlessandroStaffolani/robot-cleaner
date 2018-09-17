@@ -61,7 +61,7 @@ class Gui extends Component {
 
     componentDidMount() {
         this.updateResourceModel();
-        this.getMapFromServer();
+        //this.getMapFromServer();
         this.clientMqtt.on('message', (topic, payload, packet) => {
             const payloadString = payload.toString();
             if (payloadString.indexOf('react') !== -1 && payloadString.indexOf('resource_model_update') !== -1) {

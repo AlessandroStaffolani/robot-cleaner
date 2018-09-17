@@ -35,7 +35,7 @@ eval( get, X, V ):- eval( gt, X , V ) .
 maxTemperature(25).
 startTime(7).
 endTime(10).
-minDistance(15).
+minDistance(30).
 	
 changedModelAction( temperature, cityTemperature, V  ):-
 	maxTemperature( MAX ),
@@ -80,15 +80,15 @@ changedModelAction( sonarRobot, sonarVirtual, V):- changeModelItem(obstacle, son
 
 changedModelAction( obstacle, sonar, V).
 
-changedModelAction( sonarRobot, sonarReal, V).
+changedModelAction( sonarRobot, sonarReal, V):-
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
-	%%minDistance( MIN ),
-	%%eval( let, V, MIN),
-	%%changeModelItem( realRobot, fuffolo, false).
+	minDistance( MIN ),
+	eval( let, V, MIN),
+	changeModelItem(obstacle, sonar, yes).
 
-%%changedModelAction( sonarRobot, sonarReal, V):- 
+changedModelAction( sonarRobot, sonarReal, V):- 
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
-	%%changeModelItem( realRobot, fuffolo, true).
+	changeModelItem( realRobot, fuffolo, no).
 
 emitevent( EVID, EVCONTENT ) :- 
 	actorobj( Actor ), 

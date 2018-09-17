@@ -19,10 +19,21 @@ GPIO.setup(BR, GPIO.OUT)
 GPIO.setup(TRIG, GPIO.OUT)
 GPIO.setup(ECHO, GPIO.IN)
 
+def print_help():
+    print('--- FuffaTeam ---', end='\n\n')
+    print('python3 executor_with_sonar.py [move] [time]', end='\n\n')
+    print('-h | --help:\t to see this help message\n')
+    print('[move]: W[w], A[a], S[s], D[d], H[h]\n')
+    print('[time]:\t time in sec (optional) [-1] infinite\n')
+  
 
-def move_forward():
+def move_forward(mv_time):
     GPIO.output(FL,True)
     GPIO.output(FR,True)
+    if mv_time != -1:
+        time.sleep(mv_time)
+        GPIO.output(FL,False)
+        GPIO.output(FR,False) 
 
 def move_right():
     channel_f_r = GPIO.input(FR)
@@ -34,7 +45,7 @@ def move_right():
     
     time.sleep(0.3)    
     GPIO.output(FR,True)
-    time.sleep(0.8)
+    time.sleep(0.68)
     GPIO.output(FR,False)
     GPIO.cleanup()
 
@@ -47,9 +58,9 @@ def move_left():
         GPIO.output(FL,False)
 
     time.sleep(0.3)
-    GPIO.output(FL,True)
-    time.sleep(0.6)
-    GPIO.output(FL,False)
+    GPIO.output(BR,True)
+    time.sleep(0.7)
+    GPIO.output(BR,False)
     GPIO.cleanup()
 
 def move_backward():
@@ -81,26 +92,31 @@ def calculate_distance():
     return distance
     
 
+def main(argv):
 
-if sys.argv[1] == "W" or sys.argv[1] == "w":
-   move_forward()
+    print("Fuffolo is starting..")
+    if sys.argv[1] == "W" or sys.argv[1] == "w":
+        if len(sys.argv) != 3:
+            print_help()
+        else:
+            move_forward(float(sys.argv[2]))
 
-elif sys.argv[1] == "S" or sys.argv[1] == "s":
-    move_backward()
+    elif sys.argv[1] == "S" or sys.argv[1] == "s":
+        move_backward()
 
-elif sys.argv[1] == "D" or sys.argv[1] == "d":
-    move_right()
+    elif sys.argv[1] == "D" or sys.argv[1] == "d":
+        move_right()
 
-elif sys.argv[1] == "A" or sys.argv[1] == "a":
-    move_left()
+    elif sys.argv[1] == "A" or sys.argv[1] == "a":
+        move_left()
 
-elif sys.argv[1] == "H" or sys.argv[1] == "h":
-    stop()
+    elif sys.argv[1] == "H" or sys.argv[1] == "h":
+        stop()
 
-elif sys.argv[1] == "P" or sys.argv[1] == "p":
-    autopilot(30)
-else:
-    print("Not recognized command!")
+    else:
+        print_help()
 
+if __name__ == '__main__':
+    main(sys.argv)
 
 

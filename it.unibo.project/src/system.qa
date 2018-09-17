@@ -210,13 +210,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		onEvent sonar : sonar (sonar1, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar1, DISTANCE);
  		onEvent sonar : sonar (sonar2, soffritti, DISTANCE) -> demo changeModelItem(sonarVirtual, sonar2, DISTANCE);
  		onEvent sonarDetect : sonarDetect (TARGET, soffritti) -> demo changeModelItem(sonarRobot, sonarVirtual, TARGET);
- 		/* In questo caso dovrebbe anche essere aggiornato il resource model oltre che a fermare il robot reale
- 		 * Visto le parentesi delle parentesi graffe dobbiamo scegliere solo una delle due operazioni */
- 		onEvent realSonarDetect : realSonarDetect(sonarReal, DISTANCE) -> publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
- 		//demo changeModelItem(sonarRobot, sonarReal, DISTANCE)//{
- 			//demo changeModelItem(sonarRobot, sonarReal, DISTANCE); //println(DISTANCE)
- 					//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) )
- 		//}
+ 		onEvent realSonarDetect : realSonarDetect(sonarReal, DISTANCE) -> demo changeModelItem(sonarRobot, sonarReal, DISTANCE) 
+ 		//publishMsg "unibo/qasys" for "realrobotexecutor" -m execMoveRobot : usercmd( robotgui(h(low)) ))//
  	]
  	
  	/* Messaggi provenienti dalla console*/
