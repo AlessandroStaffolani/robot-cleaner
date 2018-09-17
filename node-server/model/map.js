@@ -8,6 +8,7 @@ let MapSchema = new Schema(
         name: { type: String, default: 'Room map' },
         date: { type: Date, default: Date.now },
         currentDirection: { type: String, enum: ['w', 'a', 's', 'd'] },
+        roomCleaned: { type: Boolean, default: false },
         boxes: [
             [
                 {

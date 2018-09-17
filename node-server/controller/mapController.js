@@ -14,6 +14,7 @@ exports.get_current_map = (req, res, next) => {
 exports.save_map = (req, res, next) => {
 
     const requestMap = req.body.map;
+    const roomCleaned = req.body.roomCleaned;
     let currentDirection = req.body.currentDirection;
     switch (currentDirection) {
         case "UP": currentDirection = 'w'; break;
@@ -31,6 +32,7 @@ exports.save_map = (req, res, next) => {
                 map.boxes = undefined;
                 map.boxes = requestMap;
                 map.currentDirection = currentDirection;
+                map.roomCleaned = roomCleaned;
                 map.save().then(map => {
                     console.log("send > " + msgstr);
                     clientMqtt.publish(msgstr);
@@ -39,6 +41,7 @@ exports.save_map = (req, res, next) => {
                 .catch(err => next(err));
             } else {
                 new MapModel({
+                    roomCleaned,
                     boxes: requestMap,
                     currentDirection
                 }).save().then(map => {

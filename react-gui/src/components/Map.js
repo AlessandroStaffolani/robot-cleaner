@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Box from './Box';
 import moment from 'moment';
+import Alert from './Alert';
 
 export default class Map extends Component {
     constructor(props) {
@@ -19,7 +20,6 @@ export default class Map extends Component {
     render() {
         const { map } = this.props;
         const { isOpened } = this.state;
-        console.log(map, isOpened);
         return (
             <div className="map-container mt-5 text-center">
                 <h4 className="title">{map.name}</h4>
@@ -28,6 +28,9 @@ export default class Map extends Component {
                 <i className={isOpened ? 'fas opened button-collapse' : 'fas closed button-collapse'} onClick={this.toggleOpen} title="Toggle map" />
 
                 <hr />
+                {map.roomCleaned ?
+                    <Alert value="Room is cleaned" type="success" dismissable={true} />
+                    : ''}
                 <div className={isOpened ? 'map-box show' : 'map-box'}>
                     <div className="map-wrapper text-left">
                         {map.boxes.map((row, i) => (

@@ -7,7 +7,7 @@ const client = new Client({ip: readIpFromArguments(), port: readPortNumberFromAr
 const msgForward = `{ "type": "moveForward", "arg": 250 }`
 //const msgLeft = `{ "type": "turnLeft", "arg": 300 }`
 console.log('Send ' + msgForward);
-client.send( msgForward )
+//client.send( msgForward )
 /* client.send( msgLeft )
 client.send( msgForward ) */
 
