@@ -35,3 +35,7 @@ it\.unibo\.project/scripts/\.DS_Store
 /it.unibo.planner
 
 ~\$alisi del problema \(autopilot\)\.docx
+
+node-server/package-lock\.json
+
+react-gui/package-lock\.json
