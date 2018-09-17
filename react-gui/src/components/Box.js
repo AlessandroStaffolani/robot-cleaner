@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 
 export default class Box extends Component {
     render() {
-        const { box } = this.props;
+        const { box, currentDirection } = this.props;
         let cssClass = '';
+        let cssDirection = '';
         switch (box.content) {
             case '0':
                 cssClass += 'dirty';
@@ -15,7 +16,7 @@ export default class Box extends Component {
                 cssClass += 'obstacle';
                 break;
             case 'R':
-                cssClass += 'robot';
+                cssClass += 'robot ' + currentDirection + '-direction';
                 break;
             default:
                 cssClass = '';

@@ -122,7 +122,7 @@ public class clientRest {
 		}
 	}
 
-	public static void postMap(QActor qa, List<ArrayList<Box>> roomMap) {
+	public static void postMap(QActor qa, List<ArrayList<Box>> roomMap, String currentDirection) {
 
 		try {
 
@@ -161,6 +161,7 @@ public class clientRest {
 			}
 			JSONObject body = new JSONObject();
 			body.put("map", jsonMap);
+			body.put("currentDirection", currentDirection);
 
 			System.out.println(body.toString());
 			

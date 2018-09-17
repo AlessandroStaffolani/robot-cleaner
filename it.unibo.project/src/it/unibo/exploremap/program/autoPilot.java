@@ -49,7 +49,7 @@ public class autoPilot {
 			
 			// AI moves
 			cleanRoom(qa);
-			//it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList());
+			//it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString());
 			
 			System.out.println("===== map after clean");
 			aiutil.showMap();
@@ -78,7 +78,7 @@ public class autoPilot {
 				String obstacleType = getObstacleType(aiutil.getCurrentDirection());
 				aiutil.doMove(obstacleType);
 			}
-			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList());
+			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString());
 		}
 	}
 	
@@ -106,7 +106,7 @@ public class autoPilot {
 					moveRobot(qa, "a", true);
 				}
 			}
-			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList());
+			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString());
 		}
 	}
 	
@@ -124,7 +124,7 @@ public class autoPilot {
 				aiutil.doMove(actions.get(0).toString());
 			}
 			actions = aiutil.doPlan();
-			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList());
+			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString());
 		}
 	}
 	
