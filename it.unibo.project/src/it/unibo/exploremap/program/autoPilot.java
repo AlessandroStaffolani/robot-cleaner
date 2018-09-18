@@ -44,12 +44,15 @@ public class autoPilot {
 			aiutil.showMap();
 			
 			// Static moves
-			forwardToObstacle(qa);
-			traceMap(qa);
+//			forwardToObstacle(qa);
+//			traceMap(qa);
 			
 			// AI moves
 			cleanRoom(qa);
-			it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString(), true);
+			List<Action> actions = aiutil.doPlan();
+			if (actions.isEmpty()) 
+				it.unibo.utils.clientRest.postMap(qa, aiutil.getRoomMap().getRoomMapAsArrayList(), aiutil.getCurrentDirection().toString(), true);
+			
 			
 			System.out.println("===== map after clean");
 			aiutil.showMap();

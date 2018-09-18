@@ -38,7 +38,6 @@
  */
 System robotRoomba
 Event resourceChangeEvent   : resourceChangeEvent( TYPE, NAME, VALUE ) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
-Event resourceChange : resourceChange( TYPE, CATEG, NAME, VALUE ) // Evento generato dal resource model quando c'è un cambiamento di stato
 Event sonar : sonar (NAME, ROBOT, DISTANCE)
 Event sonarDetect : sonarDetect(TARGET, ROBOT)
 Event realSonarDetect : realSonarDetect(NAME, DISTANCE) // Diverso rispetto al sonarDetect virtuale in quanto in questo caso viene inviata la distanza
@@ -48,8 +47,8 @@ Dispatch execMoveRobot : usercmd(CMD)
 Dispatch exec : mindcmd(CMD)
 Dispatch resourceChangeMsg : resourceChangeMsg( TYPE, CATEG, NAME, V )
 
-//pubSubServer "ws://localhost:1884" //virtual robot
-pubSubServer "ws://192.168.137.1:1884" //real robot
+pubSubServer "ws://localhost:1884" //virtual robot
+//pubSubServer "ws://192.168.137.1:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -144,60 +143,18 @@ QActor mindrobot context ctxMindRobot -pubsub {
 	Plan waitPlan[ ]
 	transition stopAfter 3600000   	//1h 
  		whenEvent resourceChangeEvent -> handleEvent,
- 		whenEvent resourceChange -> handleChange,
+ 		//whenEvent resourceChange -> handleChange,
  		whenEvent sonar -> handleSonarChange,
  		whenEvent sonarDetect -> handleSonarChange,
  		whenEvent realSonarDetect -> handleSonarChange,
  		whenMsg moveRobot -> handleMsg,
- 		whenMsg resourceChangeMsg -> handleMsg
+ 		whenMsg resourceChangeMsg -> handleResourceChangeMsg
  	finally repeatPlan 
  	
  	Plan handleEvent resumeLastPlan [
  		printCurrentEvent;
  		onEvent resourceChangeEvent : resourceChangeEvent(sensor, cityTemperature, V) -> demo changeModelItem(temperature, cityTemperature, V) //ReplaceRule currentTemperature(X) with currentTemperature(V);
 
- 	]
- 	
- 	Plan handleChange resumeLastPlan [
- 		printCurrentEvent;
- 		onEvent resourceChange : resourceChange( sensor, sonarRobot, sonarReal, V )
- 		-> {
- 			println("Qui ci siamo!");
- 			forward delegateexecutor -m exec : mindcmd( h(low) );
- 			demo changeModelItem(leds, NAME, off)
- 		};
- 		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, off ) -> {
- 			forward delegateexecutor -m exec : mindcmd( h(low) );
- 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot non si possono muovere
- 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, off);
- 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, off);
- 			println("Mqtt emesso");
- 			demo changeModelItem(leds, NAME, off)
- 		};
- 		onEvent resourceChange : resourceChange( sensor, CATEG, NAME, on ) -> {
- 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot si possono muovere
- 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, on);
- 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, on)
- 		};
- 		onEvent resourceChange : resourceChange( actuator, leds, NAME, off ) 
- 			->{ 
- 				/* Visto che l'emissione degli eventi di entrambi i led avviene quasi in contemporanea QActor non riesce a gestirli.
- 				 * Quindi siamo costretti a fare a mano la chiamata rest al server per entrambi i led
- 				 */
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "1");
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "2");
- 				// pubblico su mqtt che i led sono spenti per il resource model di node
- 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, off);
- 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, off)
- 			};
- 		onEvent resourceChange : resourceChange( actuator, leds, NAME, on ) 
- 			-> { 
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "1");
- 				javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2");
- 				// pubblico su mqtt che i led sono accesi per il resource model di node
- 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, on);
- 				publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, on)
- 			}
  	]
  	
  	Plan handleSonarChange resumeLastPlan [
@@ -269,8 +226,12 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				}	
  			else 
  				 println("Too hot to work or out of time")
-		};
-		onMsg resourceChangeMsg : resourceChangeMsg( actuator, leds, NAME, on ) -> {
+		}
+ 	]
+ 	
+ 	Plan handleResourceChangeMsg resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg resourceChangeMsg : resourceChangeMsg( actuator, leds, NAME, on ) -> {
 			javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "1");
 			javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2");
 			// pubblico su mqtt che i led sono accesi per il resource model di node
@@ -289,11 +250,21 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		};
 		onMsg resourceChangeMsg : resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) 
  		-> {
- 			println("Qui ci siamo!");
  			forward delegateexecutor -m exec : mindcmd( h(low) );
  			demo changeModelItem(leds, NAME, off)
+ 		};
+ 		onMsg resourceChangeMsg : resourceChangeMsg( sensor, CATEG, NAME, off ) -> {
+ 			forward delegateexecutor -m exec : mindcmd( h(low) );
+ 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot non si possono muovere
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, off);
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, off);
+ 			demo changeModelItem(leds, NAME, off)
+ 		};
+ 		onMsg resourceChangeMsg : resourceChangeMsg( sensor, CATEG, NAME, on ) -> {
+ 			// Emetto l'evento che devo aggiornare il resource model di node affinchè sappia che i robot si possono muovere
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, soffritti, on);
+ 			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(executor, fuffolo, on)
  		}
-		
  	]
 }
 

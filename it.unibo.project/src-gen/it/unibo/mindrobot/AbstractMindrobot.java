@@ -59,9 +59,9 @@ public abstract class AbstractMindrobot extends QActor {
 	    	stateTab.put("afterInit",afterInit);
 	    	stateTab.put("waitPlan",waitPlan);
 	    	stateTab.put("handleEvent",handleEvent);
-	    	stateTab.put("handleChange",handleChange);
 	    	stateTab.put("handleSonarChange",handleSonarChange);
 	    	stateTab.put("handleMsg",handleMsg);
+	    	stateTab.put("handleResourceChangeMsg",handleResourceChangeMsg);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -85,7 +85,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
 	    	it.unibo.exploremap.program.autoPilot.setMindQa( myself  );
-	     connectToMqttServer("ws://192.168.137.1:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
@@ -125,8 +125,8 @@ public abstract class AbstractMindrobot extends QActor {
 	    	String myselfName = "waitPlan";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"mindrobot_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleMsg"), stateTab.get("handleMsg") }, 
-	          new String[]{"true","E","resourceChangeEvent", "true","E","resourceChange", "true","E","sonar", "true","E","sonarDetect", "true","E","realSonarDetect", "true","M","moveRobot", "true","M","resourceChangeMsg" },
+	          new StateFun[]{stateTab.get("handleEvent"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleSonarChange"), stateTab.get("handleMsg"), stateTab.get("handleResourceChangeMsg") }, 
+	          new String[]{"true","E","resourceChangeEvent", "true","E","sonar", "true","E","sonarDetect", "true","E","realSonarDetect", "true","M","moveRobot", "true","M","resourceChangeMsg" },
 	          3600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitPlan){  
 	    	 println( getName() + " plan=waitPlan WARNING:" + e_waitPlan.getMessage() );
@@ -169,110 +169,6 @@ public abstract class AbstractMindrobot extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//handleEvent
-	    
-	    StateFun handleChange = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleChange",-1);
-	    	String myselfName = "handleChange";  
-	    	printCurrentEvent(false);
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(sensor,sonarRobot,sonarReal,V)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
-	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			temporaryStr = "\"Qui ci siamo!\"";
-	    			println( temporaryStr );  
-	    			temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
-	    			sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
-	    			parg = "changeModelItem(leds,NAME,off)";
-	    			//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    			solveGoal( parg ); //sept2017
-	    			};//actionseq
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(sensor,CATEG,NAME,off)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
-	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
-	    			sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(executor,soffritti,off)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(executor,fuffolo,off)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			temporaryStr = "\"Mqtt emesso\"";
-	    			println( temporaryStr );  
-	    			parg = "changeModelItem(leds,NAME,off)";
-	    			//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
-	    			solveGoal( parg ); //sept2017
-	    			};//actionseq
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(sensor,CATEG,NAME,on)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
-	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(executor,soffritti,on)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(executor,fuffolo,on)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			};//actionseq
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(actuator,leds,NAME,off)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
-	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "1"  );
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"false", "#00ff00", "2"  );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(actuator,ledHue,off)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(actuator,ledReal,off)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			};//actionseq
-	    	}
-	    	//onEvent 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("resourceChange(actuator,leds,NAME,on)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("resourceChange") && 
-	    		pengine.unify(curT, Term.createTerm("resourceChange(TYPE,CATEG,NAME,VALUE)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			//println("WARNING: variable substitution not yet fully implemented " ); 
-	    			{//actionseq
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "1"  );
-	    			it.unibo.utils.clientRest.sendPutBlink( myself ,"true", "#00ff00", "2"  );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(actuator,ledHue,on)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			//PublisEventhMove
-	    			parg = "resourceChangeEvent(actuator,ledReal,on)";
-	    			sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
-	    			};//actionseq
-	    	}
-	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
-	    }catch(Exception e_handleChange){  
-	    	 println( getName() + " plan=handleChange WARNING:" + e_handleChange.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//handleChange
 	    
 	    StateFun handleSonarChange = () -> {	
 	    try{	
@@ -518,6 +414,18 @@ public abstract class AbstractMindrobot extends QActor {
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
+	    }catch(Exception e_handleMsg){  
+	    	 println( getName() + " plan=handleMsg WARNING:" + e_handleMsg.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//handleMsg
+	    
+	    StateFun handleResourceChangeMsg = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("handleResourceChangeMsg",-1);
+	    	String myselfName = "handleResourceChangeMsg";  
+	    	printCurrentMessage(false);
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("resourceChangeMsg(actuator,leds,NAME,on)");
@@ -562,8 +470,6 @@ public abstract class AbstractMindrobot extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		temporaryStr = "\"Qui ci siamo!\"";
-	    		println( temporaryStr );  
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
 	    		parg = "changeModelItem(leds,NAME,off)";
@@ -571,12 +477,49 @@ public abstract class AbstractMindrobot extends QActor {
 	    		solveGoal( parg ); //sept2017
 	    		};//actionseq
 	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChangeMsg(sensor,CATEG,NAME,off)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("resourceChangeMsg") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChangeMsg(TYPE,CATEG,NAME,V)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
+	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		//PublisEventhMove
+	    		parg = "resourceChangeEvent(executor,soffritti,off)";
+	    		sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    		//PublisEventhMove
+	    		parg = "resourceChangeEvent(executor,fuffolo,off)";
+	    		sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    		parg = "changeModelItem(leds,NAME,off)";
+	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
+	    		solveGoal( parg ); //sept2017
+	    		};//actionseq
+	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("resourceChangeMsg(sensor,CATEG,NAME,on)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("resourceChangeMsg") && 
+	    		pengine.unify(curT, Term.createTerm("resourceChangeMsg(TYPE,CATEG,NAME,V)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		{//actionseq
+	    		//PublisEventhMove
+	    		parg = "resourceChangeEvent(executor,soffritti,on)";
+	    		sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    		//PublisEventhMove
+	    		parg = "resourceChangeEvent(executor,fuffolo,on)";
+	    		sendMsgMqtt(  "unibo/qasys", "resourceChangeEvent", "none", parg );
+	    		};//actionseq
+	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"mindrobot_"+myselfName,false,true);
-	    }catch(Exception e_handleMsg){  
-	    	 println( getName() + " plan=handleMsg WARNING:" + e_handleMsg.getMessage() );
+	    }catch(Exception e_handleResourceChangeMsg){  
+	    	 println( getName() + " plan=handleResourceChangeMsg WARNING:" + e_handleResourceChangeMsg.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
-	    };//handleMsg
+	    };//handleResourceChangeMsg
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

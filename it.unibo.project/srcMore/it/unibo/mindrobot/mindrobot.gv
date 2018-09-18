@@ -10,21 +10,20 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	handleResourceChangeMsg [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	waitPlan [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleSonarChange [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleEvent [ color = black ][ fontcolor = black ][ penwidth = 3 ]
-	handleChange [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	afterInit [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleMsg [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
+	waitPlan -> handleResourceChangeMsg [ label = "resourceChangeMsg" ][ color = red ][ fontcolor = red ][ dir = both ]
 	waitPlan -> handleSonarChange [ label = "sonarDetect" ][ color = red ][ fontcolor = red ][ dir = both ]
-	waitPlan -> handleMsg [ label = "resourceChangeMsg" ][ color = red ][ fontcolor = red ][ dir = both ]
 	init -> afterInit [ label = "switch" ][ color = black ][ fontcolor = black ]
 	waitPlan -> handleSonarChange [ label = "realSonarDetect" ][ color = red ][ fontcolor = red ][ dir = both ]
 	afterInit -> waitPlan [ label = "switch" ][ color = black ][ fontcolor = black ]
 	waitPlan -> handleToutBuiltIn [ label = "timeout(3600000)" ][ color = green ][ fontcolor = green ]
 	waitPlan -> handleEvent [ label = "resourceChangeEvent" ][ color = red ][ fontcolor = red ][ dir = both ]
-	waitPlan -> handleChange [ label = "resourceChange" ][ color = red ][ fontcolor = red ][ dir = both ]
 	waitPlan -> handleSonarChange [ label = "sonar" ][ color = red ][ fontcolor = red ][ dir = both ]
 	waitPlan -> waitPlan [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	waitPlan -> handleMsg [ label = "moveRobot" ][ color = red ][ fontcolor = red ][ dir = both ]
