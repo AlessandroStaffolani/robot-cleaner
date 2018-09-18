@@ -65,7 +65,7 @@ changedModelAction( clock, clock1, V):-
 
 changedModelAction( leds, NAME, V  ):- 
 	%%output(NAME), output(V),
-	emitevent( resourceChange, resourceChange( actuator, leds, NAME, V ) ).
+	sendMsg( mindrobot, resourceChangeMsg, resourceChangeMsg( actuator, leds, NAME, V ) ).
 
 changedModelAction( virtualRobot, soffritti, CMD ).
     		
@@ -84,7 +84,7 @@ changedModelAction( sonarRobot, sonarReal, V):-
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
 	minDistance( MIN ),
 	eval( let, V, MIN),
-	emitevent( resourceChange, resourceChange( sensor, sonarRobot, sonarReal, V ) ),
+	sendMsg( mindrobot, resourceChangeMsg, resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) ),
 	changeModelItem(obstacle, sonar, yes).
 
 changedModelAction( sonarRobot, sonarReal, V):- 
