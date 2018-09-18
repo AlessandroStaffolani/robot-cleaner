@@ -46,9 +46,10 @@ Event realSonarDetect : realSonarDetect(NAME, DISTANCE) // Diverso rispetto al s
 Dispatch moveRobot : usercmd(CMD)
 Dispatch execMoveRobot : usercmd(CMD)
 Dispatch exec : mindcmd(CMD)
+Dispatch resourceChangeMsg : resourceChangeMsg( TYPE, CATEG, NAME, V )
 
-pubSubServer "ws://localhost:1884" //virtual robot
-//pubSubServer "ws://192.168.137.1:1884" //real robot
+//pubSubServer "ws://localhost:1884" //virtual robot
+pubSubServer "ws://192.168.137.1:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -147,7 +148,8 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		whenEvent sonar -> handleSonarChange,
  		whenEvent sonarDetect -> handleSonarChange,
  		whenEvent realSonarDetect -> handleSonarChange,
- 		whenMsg moveRobot -> handleMsg
+ 		whenMsg moveRobot -> handleMsg,
+ 		whenMsg resourceChangeMsg -> handleMsg
  	finally repeatPlan 
  	
  	Plan handleEvent resumeLastPlan [
@@ -267,7 +269,31 @@ QActor mindrobot context ctxMindRobot -pubsub {
  				}	
  			else 
  				 println("Too hot to work or out of time")
-		}
+		};
+		onMsg resourceChangeMsg : resourceChangeMsg( actuator, leds, NAME, on ) -> {
+			javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "1");
+			javaRun it.unibo.utils.clientRest.sendPutBlink("true", "#00ff00", "2");
+			// pubblico su mqtt che i led sono accesi per il resource model di node
+			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, on);
+			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, on)
+		};
+		onMsg resourceChangeMsg : resourceChangeMsg( actuator, leds, NAME, off ) -> {
+			/* Visto che l'emissione degli eventi di entrambi i led avviene quasi in contemporanea QActor non riesce a gestirli.
+			 * Quindi siamo costretti a fare a mano la chiamata rest al server per entrambi i led
+			 */
+			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "1");
+			javaRun it.unibo.utils.clientRest.sendPutBlink("false", "#00ff00", "2");
+			// pubblico su mqtt che i led sono spenti per il resource model di node
+			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledHue, off);
+			publishEvent "unibo/qasys" -e resourceChangeEvent : resourceChangeEvent(actuator, ledReal, off)
+		};
+		onMsg resourceChangeMsg : resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) 
+ 		-> {
+ 			println("Qui ci siamo!");
+ 			forward delegateexecutor -m exec : mindcmd( h(low) );
+ 			demo changeModelItem(leds, NAME, off)
+ 		}
+		
  	]
 }
 

@@ -82,7 +82,7 @@ public abstract class AbstractRealrobotexecutor extends QActor {
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Real Robot ready!\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.137.1:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "realrobotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 

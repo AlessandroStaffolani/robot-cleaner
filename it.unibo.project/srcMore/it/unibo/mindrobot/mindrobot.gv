@@ -18,6 +18,7 @@ digraph finite_state_machine {
 	handleMsg [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
 	waitPlan -> handleSonarChange [ label = "sonarDetect" ][ color = red ][ fontcolor = red ][ dir = both ]
+	waitPlan -> handleMsg [ label = "resourceChangeMsg" ][ color = red ][ fontcolor = red ][ dir = both ]
 	init -> afterInit [ label = "switch" ][ color = black ][ fontcolor = black ]
 	waitPlan -> handleSonarChange [ label = "realSonarDetect" ][ color = red ][ fontcolor = red ][ dir = both ]
 	afterInit -> waitPlan [ label = "switch" ][ color = black ][ fontcolor = black ]
