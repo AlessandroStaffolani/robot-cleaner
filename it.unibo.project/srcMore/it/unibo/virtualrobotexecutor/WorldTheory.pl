@@ -136,6 +136,21 @@ inc(I,K,N):-
 	value( I,V ),
 	N is V + K,
 	assign( I,N ).
+dec(I,K,N):-
+	value( I,V ),
+	N is V - K,
+	assign( I,N ).
+
+emitEvent( EVID, EVCONTENT ) :- 
+	actorobj( Actor ), 
+	%%output( emit( Actor, EVID, EVCONTENT ) ),
+	Actor <- emit( EVID, EVCONTENT ).
+
+sendMsg( DEST, MSGID, MSGCONTENT ) :- 
+	actorobj( Actor ), 
+	%%output( sendMsg( Actor, MSGID, MSGCONTENT ) ),
+	Actor <- sendMsg( MSGID, DEST, dispatch, MSGCONTENT ).
+
 
 actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 
