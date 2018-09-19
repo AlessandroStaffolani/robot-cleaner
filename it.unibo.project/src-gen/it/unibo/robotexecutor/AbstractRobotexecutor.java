@@ -75,15 +75,10 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	it.unibo.utils.clientTcp.initClientConn( myself ,"localhost", "8999"  );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
-	    	if( ! aar.getGoon() ) return ;
-	    	it.unibo.utils.clientTcp.sendMsg( myself ,"{ 'type': 'turnRight', 'arg': 800 }"  );
+	    	customExecute("sh init.sh");
 	    	temporaryStr = "\"Robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.1.4:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "robotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -120,11 +115,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'alarm' }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		customExecute("python3 executor.py h");
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -132,11 +124,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveForward', 'arg': -1 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		customExecute("python3 executor.py w");
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -144,11 +133,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'moveBackward', 'arg': -1 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		customExecute("python3 executor.py s");
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -156,11 +142,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnLeft', 'arg': 800 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		customExecute("python3 executor.py a");
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
@@ -168,11 +151,8 @@ public abstract class AbstractRobotexecutor extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("moveRobot") && 
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		{/* JavaLikeMove */ 
-	    		String arg1 = "{ 'type': 'turnRight', 'arg': 800 }" ;
-	    		//end arg1
-	    		it.unibo.utils.clientTcp.sendMsg(this,arg1 );
-	    		}
+	    		//println("WARNING: variable substitution not yet fully implemented " ); 
+	    		customExecute("python3 executor.py d");
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"robotexecutor_"+myselfName,false,true);
 	    }catch(Exception e_execMove){  

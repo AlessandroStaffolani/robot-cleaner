@@ -4,7 +4,7 @@ import '../components-styles/login.css';
 class Profile extends React.Component {
 
     render() {
-        const { username, password, newPassword, confirmPassword, role, handleChange, handleSubmit, userLogged } = this.props;
+        const { username, password, newPassword, confirmPassword, city, handleChange, handleSubmit } = this.props;
         return (
             <div className="login-wrapper">
                 <h2>Update profile</h2>
@@ -72,23 +72,22 @@ class Profile extends React.Component {
                             {confirmPassword.errorMsg}
                         </div>
                     </div>
-                    {userLogged.role === 'admin' ?
-                        <div className="form-group">
-                            <label htmlFor="role">Role</label>
-                            <input
-                                type="text"
-                                onChange={handleChange}
-                                className={role.className}
-                                value={role.value}
-                                id="role"
-                                name="role"
-                                placeholder="Enter role"
-                            />
-                            <div className="invalid-feedback">
-                                {role.errorMsg}
-                            </div>
+                    <div className="form-group">
+                        <label htmlFor="role">City</label>
+                        <input
+                            type="text"
+                            onChange={handleChange}
+                            className={city.className}
+                            value={city.value}
+                            id="city"
+                            name="city"
+                            placeholder="City role"
+                        />
+                        <small id="cityHelp" className="form-text text-muted">Set up which city will be used to check temperature</small>
+                        <div className="invalid-feedback">
+                            {city.errorMsg}
                         </div>
-                        : ''}
+                    </div>
                     <div className="text-right">
                         <button type="submit" className="btn btn-primary">Update</button>
                     </div>

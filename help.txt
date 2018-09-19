@@ -1,0 +1,12 @@
+# Nei file gradle aggiungere la dipendenza a COAP e AIMA CODE incollando la seguente stringa:
+/*
+TO BE ADDED by the application designer: COAP
+*/
+ 	// https://mvnrepository.com/artifact/org.eclipse.californium/californium-core
+	compile group: 'org.eclipse.californium', name: 'californium-core', version: '2.0.0-M11'
+
+/*
+TO BE ADDED by the application designer: AI 
+*/	
+	// https://mvnrepository.com/artifact/com.googlecode.aima-java/aima-core
+	compile group: 'com.googlecode.aima-java', name: 'aima-core', version: '3.0.0'

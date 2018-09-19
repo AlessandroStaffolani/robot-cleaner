@@ -4,7 +4,7 @@ import '../components-styles/login.css';
 class Register extends React.Component {
 
     render() {
-        const { username, password, confirmPassword, role, handleChange, handleSubmit, handleLinkClick } = this.props;
+        const { username, password, confirmPassword, city, handleChange, handleSubmit, handleLinkClick } = this.props;
         return (
             <div className="login-wrapper">
                 <h2>Register</h2>
@@ -56,18 +56,19 @@ class Register extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="role">Role</label>
+                        <label htmlFor="role">City</label>
                         <input
                             type="text"
                             onChange={handleChange}
-                            className={role.className}
-                            value={role.value}
-                            id="role"
-                            name="role"
-                            placeholder="Enter role"
+                            className={city.className}
+                            value={city.value}
+                            id="city"
+                            name="city"
+                            placeholder="Enter city"
                         />
+                        <small id="cityHelp" className="form-text text-muted">Set up which city will be used to check temperature</small>
                         <div className="invalid-feedback">
-                            {role.errorMsg}
+                            {city.errorMsg}
                         </div>
                     </div>
                     <div className="text-right">

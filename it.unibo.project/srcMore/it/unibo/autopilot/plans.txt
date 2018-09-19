@@ -1,0 +1,4 @@
+plan(1,init, sentence(true,move(print("Autopilot ready")),'','' ))
+plan(1,handleExecMsg, sentence(true,printCurrentMessage(''),'','' ))
+plan(2,handleExecMsg, sentence(true,msgswitch(exec, mindcmd( auto( X)) , not here StateMoveNormal),'','' ))
+plan(3,handleExecMsg, sentence(true,move(resumeplan),'','' ))

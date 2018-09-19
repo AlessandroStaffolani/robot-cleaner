@@ -1,0 +1,3 @@
+plan(1,init, sentence(true,move(print("Test time ready")),'','' ))
+plan(1,handleEvent, sentence(true,eventswitch(constraint, Â»constraint( tempo,V), printCurrentEvent(false) ),'','' ))
+plan(2,handleEvent, sentence(true,move(resumeplan),'','' ))

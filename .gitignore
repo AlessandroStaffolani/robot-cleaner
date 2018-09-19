@@ -1,16 +1,41 @@
 # jetBrains folder
 .idea
 
-# QActor ignores
-it.unibo.*/bin/
-/.metadata/
-RemoteSystemsTempFiles
-.recommenders
-it.unibo.*/.classpath
-it.unibo.*/.gradle
-it.unibo.*/.settings
-
 .DS_Store
 
 # node modules
 */node_modules
+/react-gui/src/config/development.json
+/react-gui/src/config/production.json
+
+
+# eclipse
+it.unibo.*/bin/
+/.metadata/
+RemoteSystemsTempFiles
+.recommenders
+/it.unibo.project/*
+!/it.unibo.project/src/
+!/it.unibo.project/src-gen/
+!/it.unibo.project/srcMore/
+!/it.unibo.project/scripts/
+!/it.unibo.project/resourceModel.pl
+
+philips-hue-lamp/\.project
+
+philips-hue-lamp/\.pydevproject
+
+philips-hue-lamp/\.settings/
+
+philips-hue-lamp/server/package-lock\.json
+
+virtual-robot/server/package-lock\.json
+
+it\.unibo\.project/scripts/\.DS_Store
+/it.unibo.planner
+
+~\$alisi del problema \(autopilot\)\.docx
+
+node-server/package-lock\.json
+
+react-gui/package-lock\.json

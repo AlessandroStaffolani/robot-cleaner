@@ -1,6 +1,6 @@
 const config = {
     floor: {
-        size: {x: 25, y: 20}
+        size: {x: 23.8, y: 20}
     },
     player: {
         //position: { x: 0.5, y: 0.5 },		//CENTER
@@ -9,37 +9,37 @@ const config = {
         speed: 0.2
     },
     sonars: [
-        {
+        /* {
             name: "sonar1",
-            position: {x: 0.05, y: 0.06},
+            position: {x: 0.06, y: 0.09},
             senseAxis: {x: true, y: true}
         },
         {
             name: "sonar2",
             position: {x: 0.94, y: 0.88},
             senseAxis: {x: true, y: true}
-        }
+        } */
     ],
     movingObstacles: [
-        /*{
+        /* {
             name: "moving-obstacle-1",
-            position: {x: .5, y: .5},
+            position: {x: .5, y: .3},
             directionAxis: {x: true, y: false},
             speed: 1,
-            range: 8
-        },
-        {
+            range: 6
+        }, */
+        /* {
             name: "moving-obstacle-2",
-            position: {x: .5, y: .3},
+            position: {x: .4, y: .6},
             directionAxis: {x: true, y: true},
-            speed: 2,
-            range: 4
-        }*/
+            speed: 1,
+            range: 5
+        } */
     ],
     staticObstacles: [
         /*{
-            name: "wall",
-            centerPosition: {x: 0.5, y: 0.5},
+            name: "divider",
+            centerPosition: {x: 0.5, y: 0.35},
             size: {x: 0.98, y: 0.01}
         },*/
         {

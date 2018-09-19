@@ -107,6 +107,14 @@ passport.use(new LocalStrategy(User.authenticate()));*/
 //==============================================================================
 
 /**
+ * Testing
+ */
+
+//const testResourceModel = require('./test/resourceModel');
+
+//==============================================================================
+
+/**
  *Routes
  */
 const index = require('./api/index');
@@ -114,14 +122,20 @@ const robotExecutor = require('./api/robot-executor');
 const user = require('./api/user');
 const auth = require('./api/auth');
 const publicRoute = require('./api/public');
+const weather = require('./api/weather');
+const map = require('./api/map');
+const resourceModel = require('./api/resource-model');
 const authController = require('./controller/authController');
 
 app.use('/', index);
 app.use('/auth/', auth);
 app.use('/public/', publicRoute);
+app.use('/map/', map);
 app.use(authController.is_authenticated);
 app.use('/users/', user);
 app.use('/robot/', robotExecutor);
+app.use('/weather/', weather);
+app.use('/resource/model/', resourceModel);
 
 //==============================================================================
 

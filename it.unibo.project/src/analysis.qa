@@ -1,60 +1,164 @@
-/**
- * Il sistema è formato da 2 componenti il roboto e la console, essi sono dei attori che lavorano su contesti differenti,
- * ovvero su nodi differenti in quanto dal requisito 1 
- * - (r-start): "an authorized user has sent a START command by using a human GUI interface (console) running on a conventional PC or
- * on a smart device (Android)." 
- * - (r-stop): "an authorized user has sent a STOP command by using the console."
- * si evince che la console 
- * deve funzionare su di un PC o uno smart device differente dal robot.
- * Quindi la STRUTTURA base è robot e console
+/** 
+ * Arrivati a questo punto bisogna aggiungere dei dettagli alla struttura che è stata creata in precedenza. In particolare:
+ * mentre il robot è in movimento deve:
+ * 	- se si parla di robot reale deve blinkare un led posizionato su di esso;
+ * 	- se si parla di robot virtuale deve blinkare una lampada in particolare la Led Hue Lamp;
+ * 	- e deve anche evitare ostacoli fissi e mobili presenti all'interno della stanza.
  * 
- * La loro INTERAZIONE avviene tramite scambio di messaggi perchè per il requisito 1 (r-start) si ha che la console deve
- * inviare al robot il comando di start
+ * In questa fase di analisi del problema ci concentremo sul far blinkare il led mentre il robot è in movimento. In particolare
+ * in questo caso vedremo le cose dall'alto, quindi non considereremo un robot virtuale e un robot fisico, ma considereremo un unico robot che
+ * cattura gli aspetti essenziali di entrambi .
  * 
- * Siccome siamo in fase di analisi dei requisiti del problema si fanno delle assunzioni che verranno poi sviscerate in fase di 
- * progettazione:
- * 1) si assume che la console abbia già verificato l'identità dell'utente e che quindi solo chi autorizzato possa inviare i comandi
- * startBot e stopBot
+ * Visto che vengono catturati soltanto gli aspetti essenziali del robot verrà fatto lo stesso per il led. Il che significa che che del led
+ * verrà realizzata una struttura molto generale (il blink del led è una semplice stampa) ma verrà analizzata più nel dettaglio l'interazione
+ * del led con la mind del robot
  * 
- * Al fine di mostrare al committente un prototipo eseguibile per mostrare il soddisfacimento del lavoro si utilizza un'ambiente 
- * virtuale già disponibile nella nostra software house in cui viene simulato il comportamento del sistema
- * 
+ * Sarà l'attore che è stato usato nei precendenti requisiti a stabilire se il led deve blinkare o meno (quindi la mind del robot).
+ * E' stato aggiunto un nuovo attore che simula il comportamento generale del led
+ * Tutto sarà basato sulla generazione di un evento che permette al led di inizare a blinkare
+ * Per ora il non si fa distinzione tra le due strutture di led, il tutto potrà essere stesso specificando nell'evento 
+ * anche la categoria del led, poi sarà l'attore del led a stabilire quale led fare blinkare.
  */
 System robotRoomba
+Event constraint   : constraint(CONSTRAINT, VALUE) // CONSTRAINT contiene il tipo di vincolo VALUE contiene il nuovo valore
+Event ctrlEvent   : ctrlEvent(CMD) //Evento generato per far blinkare un led
 
 Dispatch moveRobot : usercmd(CMD)
+Dispatch execMoveRobot : usercmd(CMD)
 
-Context ctxRobot ip [ host="localhost" port=8032 ] 
-Context ctxConsole ip [ host="localhost" port=8042 ] -httpserver   
+Context ctxRobotAnalysis ip [ host="localhost" port=8032 ]
+Context ctxConsoleAnalysis ip [ host="localhost" port=8042 ] -httpserver
+Context ctxLedAnalysis ip [ host="localhost" port=8052 ]   
 
-QActor robot context ctxRobot {
+QActor robotexecutoranalysis context ctxRobotAnalysis {
 	Plan init normal [
-		println("Robot ready")
+		println("Robot executor ready")
 	]
-	switchTo waitForCmd            
+	switchTo waitForCmd           
 		 
    	Plan waitForCmd[  ]  
   	transition stopAfter 3600000   	//1h 
- 		whenMsg moveRobot   -> execMove  	  
+ 		whenMsg execMoveRobot -> execMove  	  
  	finally repeatPlan 
  	
  	Plan execMove resumeLastPlan [
  		printCurrentMessage;
- 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) -> {
+ 		onMsg execMoveRobot : usercmd( consoleGui( startBot ) ) -> {
  			println("Inizio a spazzare")
  		};
- 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 		onMsg execMoveRobot : usercmd( consoleGui( stopBot ) ) -> {
  			println("Termino a spazzare")
  		}
  	] 
 }
 
-QActor console context ctxConsole -g cyan {
+QActor mindrobotanalysis context ctxRobotAnalysis {
+	Rules {
+		eval( let, X, X ). // lower equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( let, X, V ):- eval( lt, X , V ) .
+		eval( get, X, X ). // greater equal than implementation using worldTheory.pl in src-more/it/unibo/mindrobot/
+		eval( get, X, V ):- eval( gt, X , V ) .
+		maxTemperature(25).
+		startTime(7).
+		endTime(10).
+		currentTemperature(12).
+		currentTime(8).
+		checkTemperature(cold):-
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				eval(let, CURRENT, MAX), !.
+		checkTemperature(hot):- 
+				maxTemperature(MAX), 
+				currentTemperature(CURRENT), 
+				eval(gt, CURRENT, MAX), !.
+		checkTime(X):- 
+				startTime(START),
+				endTime(END),
+				currentTime(CURRENT),
+				eval(get, CURRENT, START),
+				eval(let, CURRENT, END).
+		checkConstraints(X):-
+			checkTemperature(cold),
+			checkTime(X).
+	}
+	
 	Plan init normal [
-		println("Console ready");
+		println("Mind robot ready")
+	]
+	switchTo waitPlan
+	
+	Plan waitPlan[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent constraint -> handleEvent,
+ 		whenMsg moveRobot -> handleMsg
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent constraint : constraint(temp, V) -> ReplaceRule currentTemperature(X) with currentTemperature(V);
+ 		[ !? checkTemperature(hot)  ] {
+ 			forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 			delay 100;
+ 			emit ctrlEvent : ctrlEvent(off) 
+ 			}		
+ 	]
+ 	
+ 	Plan handleMsg resumeLastPlan [
+ 		printCurrentMessage;
+ 		onMsg moveRobot : usercmd( consoleGui( startBot ) ) ->{
+ 			[ !? checkConstraints(X)  ]{
+ 				forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( startBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(on)
+ 				}
+ 			else println("Too hot to work")
+		};
+ 		onMsg moveRobot : usercmd( consoleGui( stopBot ) ) -> {
+ 			[ !? checkConstraints(X)  ] {
+ 				forward robotexecutoranalysis -m execMoveRobot : usercmd( consoleGui( stopBot ) );
+ 				delay 100;
+ 				emit ctrlEvent : ctrlEvent(off)
+ 				}
+ 			else println("Too hot to work")
+		}
+ 	]
+}
+
+QActor ledanalysis context ctxLedAnalysis {
+	Plan init normal [
+		println("Led ready!");
+		println("Led not blink")
+	]
+	switchTo waitMove
+	
+	
+	Plan waitMove[  ]
+	transition stopAfter 3600000   	//1h 
+ 		whenEvent ctrlEvent -> handleEvent
+ 	finally repeatPlan 
+ 	
+ 	Plan handleEvent resumeLastPlan [
+ 		printCurrentEvent;
+ 		onEvent ctrlEvent : ctrlEvent(on) -> println("Led blink");
+ 		onEvent ctrlEvent : ctrlEvent(off) -> println("Led not blink")
+ 	]
+}
+
+/* Per i test del sistema serve qualcuno che simuli l'ambiente e che emetta gli eventi della temperatura e che mandi 
+ * i messaggi di start e stop del robot
+ */
+QActor testanalysis context ctxConsoleAnalysis {
+	Plan init normal [
+		println("Test ready");
 		delay 5000;
-		forward robot -m moveRobot : usercmd( consoleGui( startBot ) );
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
 		delay 1000;
-		forward robot -m moveRobot : usercmd( consoleGui( stopBot ) )
-	] 
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) );
+		delay 4000;
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( startBot ) );
+		delay 2000;
+		forward mindrobotanalysis -m moveRobot : usercmd( consoleGui( stopBot ) )
+	]
+	
+
 }

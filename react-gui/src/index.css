@@ -11,7 +11,7 @@ body {
 
 .app-wrapper {
     max-width: 600px;
-    margin: 50px auto;
+    margin: 50px auto 15px auto;
 }
 
 .app-logo {
@@ -35,6 +35,17 @@ body {
     margin-bottom: 0;
 }
 
+.uc-first {
+    text-transform: capitalize;
+}
+
+.w-60 {
+    width: 60% !important;
+}
+
+.w-40 {
+    width: 40% !important;
+}
 
 @keyframes app-logo-spin {
     from {

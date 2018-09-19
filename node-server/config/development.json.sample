@@ -5,5 +5,7 @@
     "hashBytes": 64,
     "saltBytes": 16,
     "iterations": 872791
-  }
+  },
+  "mqttUrl": "<url>",
+  "mqttTopic": "<topic>"
 }

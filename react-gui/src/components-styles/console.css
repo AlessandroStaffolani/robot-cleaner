@@ -1,1 +1,214 @@
+.main-wrapper:focus {
+    outline: none;
+}
 
+.resource-model-wrapper {
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.headline {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.resource-model-wrapper .system .field-wrapper {
+    text-align: left;
+}
+
+.resource-model-wrapper .system .field-wrapper .title {
+    font-weight: bold;
+}
+
+.resource-model-wrapper .system .field-wrapper .title.executor {
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 2px;
+}
+
+.resource-model-wrapper .system .field-wrapper p {
+    margin-bottom: 0;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .headline-small {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0;
+    font-size: 1rem;
+    display: inline-block;
+    font-weight: 400;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .title {
+    font-weight: 400;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .sub-field-title {
+    text-transform: capitalize;
+    font-weight: 400;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .sub-field-item {
+    font-size: 0.8rem;
+}
+
+.resource-model-wrapper .system .field-wrapper .sub-field .action-command {
+    padding-left: 1rem;
+}
+
+.map-wrapper {
+    border: 4px solid #212121;
+    background-color: #424242;
+    padding: 5px;
+    display: inline-block;
+    position: relative;
+}
+
+.map-date {
+    font-size: 1rem;
+}
+
+.box {
+    border-radius: 2px;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+}
+
+.box .dirty {
+    background-color: #f44336;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.box .clean {
+    background-color: #76ff03;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.box .obstacle {
+    background-color: #9e9e9e;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.box .robot {
+    background-image: url('./robot.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    width: 28px;
+    height: 28px;
+    margin-top: 1px;
+    margin-left: 1px;
+}
+
+.map-container {
+    position: relative;
+}
+
+.button-collapse {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 1.5rem;
+}
+
+.button-collapse:hover {
+    background-color: #e3e3e3;
+    border-radius: 5px;
+}
+
+.map-wrapper .box .robot.w-direction {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+}
+
+.map-wrapper .box .robot.a-direction {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+}
+
+.map-wrapper .box .robot.s-direction {
+}
+
+.map-wrapper .box .robot.d-direction {
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+}
+
+.map-container .map-box {
+    overflow-y: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+}
+
+.map-container .map-box.show {
+    max-height: 2000px;
+}
+
+.map-container .fas.opened::before {
+    content: '\f0d8';
+    -webkit-transition: all 0.8s;
+    transition: all 0.8s;
+}
+
+.map-container .fas.closed::before {
+    content: '\f0d7';
+    -webkit-transition: all 0.8s;
+    transition: all 0.8s;
+}
+
+@keyframes iconOpened {
+    0% {
+        content: '\f0d8';
+    }
+    100% {
+        content: '\f0d7';
+    }
+}
+
+@keyframes iconClosed {
+    0% {
+        content: '\f0d7';
+    }
+    100% {
+        content: '\f0d8';
+    }
+}
+
+.legend {
+
+}
+
+.legend-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.legend-text {
+    font-size: 0.8rem;
+    text-align: left;
+    width: 100%;
+    padding-left: 10px;
+}
