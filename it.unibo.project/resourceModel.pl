@@ -36,6 +36,7 @@ maxTemperature(25).
 startTime(7).
 endTime(10).
 minDistance(30).
+realRobotObstacle(0).
 	
 changedModelAction( temperature, cityTemperature, V  ):-
 	maxTemperature( MAX ),
@@ -84,6 +85,7 @@ changedModelAction( sonarRobot, sonarReal, V):-
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
 	minDistance( MIN ),
 	eval( let, V, MIN),
+	realRobotObstacle(0),
 	sendMsg( mindrobot, resourceChangeMsg, resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) ),
 	output("####### OBSTALCE DETECTED #########"),
 	changeModelItem(obstacle, sonar, yes).
