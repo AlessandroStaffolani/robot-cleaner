@@ -80,7 +80,7 @@ public abstract class AbstractVirtualrobotexecutor extends QActor {
 	    	println( temporaryStr );  
 	    	temporaryStr = "\"Virtual Robot ready\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://192.168.1.123:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "virtualrobotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 

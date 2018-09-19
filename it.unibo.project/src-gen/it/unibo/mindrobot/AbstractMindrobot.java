@@ -85,7 +85,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
 	    	it.unibo.exploremap.program.autoPilot.setMindQa( myself  );
-	     connectToMqttServer("ws://192.168.1.123:1884");
+	     connectToMqttServer("ws://localhost:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
@@ -305,6 +305,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(w(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		replaceRule("\"realRobotObstacle(1)\"", "\"realRobotObstacle(0)\"");
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
@@ -326,6 +327,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(s(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		replaceRule("\"realRobotObstacle(1)\"", "\"realRobotObstacle(0)\"");
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
@@ -344,11 +346,13 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
+	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(a(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		replaceRule("\"realRobotObstacle(1)\"", "\"realRobotObstacle(0)\"");
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -361,11 +365,13 @@ public abstract class AbstractMindrobot extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?model(type(executor,X),name(Y),value(true))" )) != null ){
+	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(d(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		replaceRule("\"realRobotObstacle(1)\"", "\"realRobotObstacle(0)\"");
+	    		};//actionseq
 	    		}
 	    		else{ temporaryStr = "\"Too hot to work or out of time\"";
-	    		temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
 	    		println( temporaryStr );  
 	    		}};//actionseq
 	    	}
@@ -472,6 +478,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(h(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
+	    		replaceRule("\"realRobotObstacle(0)\"", "\"realRobotObstacle(1)\"");
 	    		parg = "changeModelItem(leds,NAME,off)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017

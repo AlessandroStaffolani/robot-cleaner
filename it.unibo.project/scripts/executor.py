@@ -4,10 +4,10 @@ import sys
 
 GPIO.setmode(GPIO.BCM)
 
-BL = 14
-FL = 15
-FR = 18
-BR = 23
+BR = 14
+FR = 15
+FL = 18
+BL = 23
 TRIG = 24
 ECHO = 25
 
@@ -28,12 +28,20 @@ def print_help():
   
 
 def move_forward(mv_time):
-    GPIO.output(FL,True)
-    GPIO.output(FR,True)
+    # Il file obstacle mi segnala che è stato rilevato un ostacolo e quindi il robot non
+    # può muoversi
+    f = open("obstacle", "r")
+    value = f.read()
+
+    if value.strip() == "no":
+        GPIO.output(FL,True)
+        GPIO.output(FR,True)
     if mv_time != -1:
         time.sleep(mv_time)
         GPIO.output(FL,False)
         GPIO.output(FR,False) 
+
+    f.close()
 
 def move_right():
     channel_f_r = GPIO.input(FR)
@@ -44,10 +52,12 @@ def move_right():
         GPIO.output(FL,False)
     
     time.sleep(0.3)    
-    GPIO.output(FR,True)
-    time.sleep(0.68)
-    GPIO.output(FR,False)
-    GPIO.cleanup()
+    GPIO.output(FL,True)
+    GPIO.output(BR,True)
+    time.sleep(0.45)
+    GPIO.output(FL,False)
+    GPIO.output(BR,False)
+    # GPIO.cleanup()
 
 def move_left():
     channel_f_r = GPIO.input(FR)
@@ -58,10 +68,12 @@ def move_left():
         GPIO.output(FL,False)
 
     time.sleep(0.3)
-    GPIO.output(BR,True)
-    time.sleep(0.7)
-    GPIO.output(BR,False)
-    GPIO.cleanup()
+    GPIO.output(FR,True)
+    GPIO.output(BL,True)
+    time.sleep(0.4)
+    GPIO.output(FR,False)
+    GPIO.output(BL,False)
+    # GPIO.cleanup()
 
 def move_backward():
     GPIO.output(BL,True)
@@ -72,7 +84,7 @@ def stop():
     GPIO.output(FL,False)
     GPIO.output(BL,False)
     GPIO.output(BR,False)
-    GPIO.cleanup()
+    # GPIO.cleanup()
 
 def calculate_distance():
     GPIO.output(TRIG,True)
@@ -95,8 +107,14 @@ def calculate_distance():
 def main(argv):
 
     print("Fuffolo is starting..")
+    if len(sys.argv) < 2:
+        print_help()
+        exit(0)
+    
     if sys.argv[1] == "W" or sys.argv[1] == "w":
+        
         if len(sys.argv) != 3:
+            print("qui" + str(len(sys.argv)))
             print_help()
         else:
             move_forward(float(sys.argv[2]))

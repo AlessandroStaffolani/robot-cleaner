@@ -47,8 +47,8 @@ Dispatch execMoveRobot : usercmd(CMD)
 Dispatch exec : mindcmd(CMD)
 Dispatch resourceChangeMsg : resourceChangeMsg( TYPE, CATEG, NAME, V )
 
-//pubSubServer "ws://localhost:1884" //virtual robot
-pubSubServer "ws://192.168.1.123:1884" //real robot
+pubSubServer "ws://localhost:1884" //virtual robot
+//pubSubServer "ws://192.168.1.123:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -182,6 +182,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				forward delegateexecutor -m exec : mindcmd( w(low) );
+ 				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)";
  				/* Unica soluzione per evitare problemi nell'accensione del led reale è cambiare lo stato di uno solo per volta */
  				demo changeModelItem(leds, NAME, on)
  				}		
@@ -191,20 +192,27 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		onMsg moveRobot : usercmd( robotgui(s(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				forward delegateexecutor -m exec : mindcmd( s(low) );
+ 				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)";
  				demo changeModelItem(leds, NAME, on)
  				}		
  			else
  				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(a(X)) ) ->{
- 			[ !? model( type(executor, X), name(Y), value(true) ) ]
- 				forward delegateexecutor -m exec : mindcmd( a(low) )
+ 			[ !? model( type(executor, X), name(Y), value(true) ) ] {
+ 				forward delegateexecutor -m exec : mindcmd( a(low) );
+ 				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)"
+ 				
+ 				}
  			else
  				  println("Too hot to work or out of time")
 		};
 		onMsg moveRobot : usercmd( robotgui(d(X)) ) ->{
- 			[ !? model( type(executor, X), name(Y), value(true) ) ] 
- 				forward delegateexecutor -m exec : mindcmd( d(low) )
+ 			[ !? model( type(executor, X), name(Y), value(true) ) ] {
+ 				forward delegateexecutor -m exec : mindcmd( d(low) );
+ 				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)"
+ 				
+ 				}
  			else
  				  println("Too hot to work or out of time")
 		};
@@ -252,6 +260,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
 		onMsg resourceChangeMsg : resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) 
  		-> {
  			forward delegateexecutor -m exec : mindcmd( h(low) );
+ 			ReplaceRule "realRobotObstacle(0)" with "realRobotObstacle(1)";
  			demo changeModelItem(leds, NAME, off)
  		};
  		onMsg resourceChangeMsg : resourceChangeMsg( sensor, CATEG, NAME, off ) -> {
