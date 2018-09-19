@@ -195,7 +195,10 @@ class Gui extends Component {
                 }
             })
             .then(result => {
-                this.setState({map: result.map});
+                console.log(result.map);
+                if (result.map) {
+                    this.setState({map: result.map});
+                }
             })
             .catch(err => {
                 console.log(err);
