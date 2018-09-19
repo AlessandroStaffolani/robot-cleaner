@@ -78,13 +78,14 @@ changedModelAction( sonarVirtual, NAME, V):- output(modelChanged(sonarVirtual, n
 
 changedModelAction( sonarRobot, sonarVirtual, V):- changeModelItem(obstacle, sonar, yes).
 
-changedModelAction( obstacle, sonar, V).
+changedModelAction( obstacle, sonar, V):- output("OBSTACLE VALUE = ").
 
 changedModelAction( sonarRobot, sonarReal, V):-
 	%%output(modelChanged(sonarRobot, sonarReal, value(V))).
 	minDistance( MIN ),
 	eval( let, V, MIN),
 	sendMsg( mindrobot, resourceChangeMsg, resourceChangeMsg(sensor, sonarRobot, sonarReal, V ) ),
+	output("####### OBSTALCE DETECTED #########"),
 	changeModelItem(obstacle, sonar, yes).
 
 changedModelAction( sonarRobot, sonarReal, V):- 

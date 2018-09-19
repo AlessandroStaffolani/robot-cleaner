@@ -176,7 +176,7 @@ public class autoPilot {
 			if (doMove) aiutil.doMove("s");
 			break;
 		}
-		sleepMillseconds(500);
+		sleepMillseconds(1000);
 	}
 	
 	protected static String getObstacleType(Direction currentDirection) {

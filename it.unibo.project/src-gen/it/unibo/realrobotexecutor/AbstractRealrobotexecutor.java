@@ -75,14 +75,14 @@ public abstract class AbstractRealrobotexecutor extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	customExecute("./send_mqtt.sh 192.168.137.1 unibo/qasys");
+	    	customExecute("./send_mqtt.sh 192.168.1.123 unibo/qasys");
 	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(1500,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Real Robot ready!\"";
 	    	println( temporaryStr );  
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.1.123:1884");
 	    	//switchTo waitForCmd
 	        switchToPlanAsNextState(pr, myselfName, "realrobotexecutor_"+myselfName, 
 	              "waitForCmd",false, false, null); 
@@ -129,7 +129,7 @@ public abstract class AbstractRealrobotexecutor extends QActor {
 	    		pengine.unify(curT, Term.createTerm("usercmd(CMD)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		customExecute("python3 executor.py w 200");
+	    		customExecute("python3 executor.py w 0.7");
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
