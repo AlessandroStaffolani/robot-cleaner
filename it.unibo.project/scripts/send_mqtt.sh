@@ -34,7 +34,7 @@ while true; do
 	echo $msg
 	mosquitto_pub -h $ip -m "$msg" -t $topic
 
-	if test $var -ge 30; then
+	if test $var -ge 40; then
 		echo "no" > obstacle
 	else
 		echo "yes" > obstacle

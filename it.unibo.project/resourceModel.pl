@@ -35,7 +35,7 @@ eval( get, X, V ):- eval( gt, X , V ) .
 maxTemperature(25).
 startTime(7).
 endTime(10).
-minDistance(30).
+minDistance(40).
 realRobotObstacle(0).
 	
 changedModelAction( temperature, cityTemperature, V  ):-

@@ -182,7 +182,7 @@ QActor mindrobot context ctxMindRobot -pubsub {
  		onMsg moveRobot : usercmd( robotgui(w(X)) ) ->{
  			[ !? model( type(executor, X), name(Y), value(true) )   ] {
  				forward delegateexecutor -m exec : mindcmd( w(low) );
- 				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)";
+ 				// ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)";
  				/* Unica soluzione per evitare problemi nell'accensione del led reale è cambiare lo stato di uno solo per volta */
  				demo changeModelItem(leds, NAME, on)
  				}		
@@ -211,7 +211,6 @@ QActor mindrobot context ctxMindRobot -pubsub {
  			[ !? model( type(executor, X), name(Y), value(true) ) ] {
  				forward delegateexecutor -m exec : mindcmd( d(low) );
  				ReplaceRule "realRobotObstacle(1)" with "realRobotObstacle(0)"
- 				
  				}
  			else
  				  println("Too hot to work or out of time")

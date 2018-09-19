@@ -305,7 +305,6 @@ public abstract class AbstractMindrobot extends QActor {
 	    		{//actionseq
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"mindcmd(CMD)","mindcmd(w(low))", guardVars ).toString();
 	    		sendMsg("exec","delegateexecutor", QActorContext.dispatch, temporaryStr ); 
-	    		replaceRule("\"realRobotObstacle(1)\"", "\"realRobotObstacle(0)\"");
 	    		parg = "changeModelItem(leds,NAME,on)";
 	    		//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    		solveGoal( parg ); //sept2017
