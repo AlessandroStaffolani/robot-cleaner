@@ -44,8 +44,8 @@ public class autoPilot {
 			aiutil.showMap();
 			
 			// Static moves
-//			forwardToObstacle(qa);
-//			traceMap(qa);
+			forwardToObstacle(qa);
+			traceMap(qa);
 			
 			// AI moves
 			cleanRoom(qa);

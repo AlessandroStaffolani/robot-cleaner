@@ -47,8 +47,8 @@ Dispatch execMoveRobot : usercmd(CMD)
 Dispatch exec : mindcmd(CMD)
 Dispatch resourceChangeMsg : resourceChangeMsg( TYPE, CATEG, NAME, V )
 
-pubSubServer "ws://localhost:1884" //virtual robot
-//pubSubServer "ws://192.168.1.123:1884" //real robot
+//pubSubServer "ws://localhost:1884" //virtual robot
+pubSubServer "ws://192.168.2.24:1884" //real robot
 
 Context ctxVirtualRobot ip [ host="localhost" port=8032 ] 
 Context ctxMindRobot ip [ host="localhost" port=8030 ]
@@ -97,7 +97,7 @@ QActor realrobotexecutor context ctxRealRobot -pubsub {
 		delay 5000;
 		javaOp "customExecute(\"python3 executor.py a\")";*/ 
 		//javaOp "customExecute(\"python3 obstacle_detector.py 192.168.43.214 &\")"; //indirizzo Ip da cambiare in base all'address del broker
-		javaOp "customExecute(\"./send_mqtt.sh 192.168.1.123 unibo/qasys\")";
+		javaOp "customExecute(\"./send_mqtt.sh 192.168.2.24 unibo/qasys\")";
 		delay 1500;
 		println("Real Robot ready!")
 	]

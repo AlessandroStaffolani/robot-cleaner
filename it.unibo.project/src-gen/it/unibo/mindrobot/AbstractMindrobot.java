@@ -85,7 +85,7 @@ public abstract class AbstractMindrobot extends QActor {
 	    	temporaryStr = "\"Mind robot ready\"";
 	    	println( temporaryStr );  
 	    	it.unibo.exploremap.program.autoPilot.setMindQa( myself  );
-	     connectToMqttServer("ws://localhost:1884");
+	     connectToMqttServer("ws://192.168.2.24:1884");
 	    	//switchTo afterInit
 	        switchToPlanAsNextState(pr, myselfName, "mindrobot_"+myselfName, 
 	              "afterInit",false, false, null); 
