@@ -1,0 +1,75 @@
+
+%Robot===================================================================
+\subsection{Robot}
+Il robot \`e un componente IoT del sistema in grado di muoversi su una superficie piana all'interno di una stanza.\\
+Essendo un'architettura IoT (\textit{Internet of things}), quindi in grado di comunicare in un sistema distribuito, pu\`o essere comandato in remoto. A tale scopo il robot mette a disposizione di un utente (autenticato) una console contenente una serie di comandi attraverso il quale sar\`a possibile comandarlo.\\
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{SchemaRobot.png}
+    \caption{SchemaRobot}
+    \label{fig:my_label}
+\end{figure}
+\vspace*{3ex}
+Questo componente viene fornito dalla nostra software house in due versioni:
+\begin{itemize}
+    \item Virtuale (virtual robot);
+    \item Reale (real robot).
+\end{itemize}
+Nelle seguenti sezioni analizzeremo in generale come sono realizzate queste due versioni.
+\pagebreak
+
+
+
+%Real robot======================================================================
+\subsubsection{Real Robot}.
+\\
+Il robot sar\`a realizzato mediante le seguente componenti:
+\begin{itemize}
+    \item 1 x Raspberry pi 3;
+    \item 1 x Bridge motor (L298N);
+    \item 2 x Gear Motor;
+    \item 1 x Sesore ultrasonico (HC-SR04);
+    \item 1 x green led;
+    \item 1 x power bank.
+\end{itemize}
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{RealRobot.jpg}
+    \caption{Real Robot}
+    \label{fig:my_label}
+\end{figure}
+Il robot, come gi\`a anticipato, \`e una componente IoT del sistema, questo signiica che deve essere in grado di connettersi alla rete e di eseguire dei compiti inviati in remoto dalla console.\\
+Mediante il sensore ultrasonico (chiamato realsonar nei capitoli successivi) il robot sar\`a in grado di rilevare eventuali ostacoli che incontrer\`a nel suo cammino.
+Il led (non riportato in figura) \`e un dispositivo elettronico che sfrutta la capacit\`a di alcuni materiali semiconduttori di produrre fotoni attraverso un fenomeno di emissione spontanea. Il led fornito dalla software house \`e di colore verde ed \`e integrato nel real robot.\\
+Le altre componenti (power bank, Bridge motor e Gear Motors) permettono al robot di effettuare dei movimenti programmati.
+\pagebreak
+
+% Virtual robot======================================================================
+\subsubsection{Virtual Robot}.
+\\
+Il virtual robot \`e un'applicazione web fornita dalla software house, che ci sar\`a utile sia simulare i comportamenti del robot fisico in un ambiente virtuale e sia per effettuare operazioni di testing.\\
+\begin{figure}
+    \includegraphics[width=1\textwidth]{VirtualRobot.png}
+    \caption{Virtual Robot}
+    \label{fig:my_label}
+\end{figure}
+\\Come si pu\`o notare dalla figura, sono presenti due sonar (start-point e end-point) che delimitano la stanza in cui il virtual robot pu\`o muoversi. Da ci\`o ne consegue che la stanza, che sar\`a possibile simulare attraverso il virtual robot, potr\`a essere o un quadrato o un rettangolo.\\
+Come nel caso del real robot, anche quest'ultimo \`e dotato di un sonar in grado di rilevare gli ostacoli. Inoltre in quest'ambiente virtuale \`e possibile inserire ostacoli fissi (tavoli, armadi, sedie, ecc.) e ostacoli mobili (animali, persone, palloni, ecc.), questo per pemettere una simulazione pi\`u accurata. 
+\pagebreak
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Console.png}
+    \caption{Console (esempio)}
+    \label{fig:my_label}
+\end{figure}
+
+
+
+ In particolare:
+\begin{itemize}
+    \item se si parla di \textbf{robot reale} deve lampeggiare un led posizionato su di esso;
+    \item se si parla di \textbf{robot virtuale} deve lampeggiare una Led Hue Lamp.
+\end{itemize}
+
